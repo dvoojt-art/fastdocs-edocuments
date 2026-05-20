@@ -13,12 +13,19 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden">
       {/* Floating Circles layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
+        {/* Original coins */}
         <div className="absolute top-[15%] left-[10%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0s' }}></div>
         <div className="absolute top-[25%] right-[15%] w-8 h-8 rounded-full bg-black animate-float" style={{ animationDelay: '1s' }}></div>
         <div className="absolute top-[50%] left-[5%] w-5 h-5 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute bottom-[20%] right-[10%] w-7 h-7 rounded-full bg-primary animate-float" style={{ animationDelay: '1.5s' }}></div>
         <div className="absolute bottom-[30%] left-[20%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0.5s' }}></div>
         <div className="absolute top-[40%] right-[25%] w-4 h-4 rounded-full bg-black animate-float" style={{ animationDelay: '2.5s' }}></div>
+        
+        {/* Bigger Gray Circles */}
+        <div className="absolute top-[60%] right-[8%] w-12 h-12 rounded-full bg-slate-200/50 animate-float" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute bottom-[10%] left-[30%] w-20 h-20 rounded-full bg-slate-100/50 animate-float" style={{ animationDelay: '0.8s' }}></div>
+        <div className="absolute top-[10%] left-[45%] w-16 h-16 rounded-full bg-slate-200/40 animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute middle-[50%] right-[40%] w-24 h-24 rounded-full bg-slate-100/30 animate-float" style={{ animationDelay: '1.2s' }}></div>
       </div>
 
       {/* Navigation */}
