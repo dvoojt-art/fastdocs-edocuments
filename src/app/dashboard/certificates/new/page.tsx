@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { FileText, Download, Send, Copy, Check, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useFirestore } from "@/firebase"
@@ -140,17 +141,44 @@ export default function NewCertificatePage() {
                     id="startDate" 
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                    onChange={(e) => {
+                      const newStart = e.target.value;
+                      setFormData(prev => ({
+                        ...prev,
+                        startDate: newStart,
+                        endDate: prev.endDate === "Present" ? "Present" : newStart
+                      }))
+                    }}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="endDate" className="font-bold uppercase text-[10px]">End Date</Label>
                   <Input 
                     id="endDate" 
+                    type={formData.endDate === "Present" ? "text" : "date"}
                     placeholder="or 'Present'"
-                    value={formData.endDate}
+                    disabled={formData.endDate === "Present"}
+                    value={formData.endDate === "Present" ? "Currently Employed" : formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
                   />
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Checkbox 
+                      id="present" 
+                      checked={formData.endDate === "Present"}
+                      onCheckedChange={(checked) => {
+                        setFormData({
+                          ...formData, 
+                          endDate: checked ? "Present" : formData.startDate
+                        })
+                      }}
+                    />
+                    <label
+                      htmlFor="present"
+                      className="text-[10px] font-bold uppercase leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      Present (Current Employee)
+                    </label>
+                  </div>
                 </div>
               </div>
 
