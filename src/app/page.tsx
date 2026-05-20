@@ -14,9 +14,9 @@ export default function HomePage() {
       <header className="px-6 h-20 flex items-center border-b border-foreground/10">
         <div className="flex items-center gap-2">
           <div className="bg-primary h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl">
-            C
+            F
           </div>
-          <span className="font-headline font-bold text-2xl tracking-tight">Callbox Docs</span>
+          <span className="font-headline font-bold text-2xl tracking-tight">FastDocs</span>
         </div>
         <nav className="ml-auto flex gap-6 items-center">
           <Button asChild variant="ghost" className="hidden sm:inline-flex font-bold hover:bg-black hover:text-background">
@@ -40,13 +40,13 @@ export default function HomePage() {
                 </div>
                 <h1 className="text-5xl font-headline font-bold tracking-tighter sm:text-7xl md:text-8xl leading-none">
                   Callbox Davao <br />
-                  <span className="bg-primary text-primary-foreground px-4 py-1">Online Documents</span>
+                  <span className="bg-background text-foreground border-4 border-foreground px-4 py-1 inline-block mt-4">Online Documents</span>
                 </h1>
-                <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80">
+                <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80 mt-6">
                   The centralized hub for Callbox Davao employees to request and access official HR documents and certificates instantly.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button asChild size="lg" className="h-16 px-10 rounded-full text-lg font-bold group">
                   <Link href="/dashboard">
                     Access Dashboard
@@ -92,9 +92,9 @@ export default function HomePage() {
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="bg-primary h-6 w-6 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xs">
-              C
+              F
             </div>
-            <span className="font-headline font-bold text-lg">Callbox Davao</span>
+            <span className="font-headline font-bold text-lg">FastDocs</span>
           </div>
           <p className="text-sm font-medium opacity-60 italic">
             Empowering the Davao workforce through digital transformation.
