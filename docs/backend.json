@@ -29,6 +29,7 @@
         "employmentStatus": { "type": "string" },
         "purposeOfCertificate": { "type": "string" },
         "narrative": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
         "createdAt": { "type": "string", "format": "date-time" }
       }
     }
