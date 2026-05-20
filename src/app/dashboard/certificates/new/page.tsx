@@ -77,8 +77,7 @@ export default function NewCertificatePage() {
         <div className="lg:col-span-5 space-y-6">
           <Card className="border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl font-bold">Metadata</CardTitle>
-              <CardDescription className="font-medium opacity-70">Core employee information</CardDescription>
+              <CardTitle className="font-headline text-2xl font-bold">EMPLOYEE INFORMATION</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="space-y-2">
