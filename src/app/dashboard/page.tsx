@@ -112,7 +112,9 @@ export default function DashboardPage() {
               <CardTitle className="font-headline font-bold text-2xl">Recent Stream</CardTitle>
               <CardDescription className="font-bold opacity-60">Real-time system actions</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" className="font-bold border border-foreground hover:bg-black hover:text-background">View Logs</Button>
+            <Button asChild variant="ghost" size="sm" className="font-bold border border-foreground hover:bg-black hover:text-background">
+              <Link href="/dashboard/logs">View Logs</Link>
+            </Button>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-4">
@@ -155,9 +157,11 @@ export default function DashboardPage() {
                   New Certificate
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full border-2 border-background bg-transparent text-background hover:bg-white hover:text-black font-bold h-12">
-                <Users className="mr-2 h-4 w-4" />
-                Add Employee
+              <Button asChild variant="outline" className="w-full border-2 border-background bg-transparent text-background hover:bg-white hover:text-black font-bold h-12">
+                <Link href="/dashboard/employees/new">
+                  <Users className="mr-2 h-4 w-4" />
+                  Add Employee
+                </Link>
               </Button>
             </CardContent>
           </Card>

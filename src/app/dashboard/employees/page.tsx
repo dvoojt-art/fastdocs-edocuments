@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, UserPlus, Filter, MoreHorizontal } from "lucide-react"
+import Link from "next/link"
 
 const employees = [
   { id: "EMP001", name: "Alice Johnson", position: "Software Engineer", dept: "Engineering", status: "Active", joinDate: "Jan 12, 2022" },
@@ -23,9 +23,11 @@ export default function EmployeesPage() {
           <h2 className="text-3xl font-headline font-bold">Employee Insight Hub</h2>
           <p className="text-muted-foreground">Manage your centralized employee database.</p>
         </div>
-        <Button className="rounded-full">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Employee
+        <Button asChild className="rounded-full">
+          <Link href="/dashboard/employees/new">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add Employee
+          </Link>
         </Button>
       </div>
 
