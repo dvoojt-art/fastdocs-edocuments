@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Zap, Loader2, Download, Send, CheckCircle2, Copy, Check } from "lucide-react"
+import { Zap, Loader2, Download, Send, Copy, Check } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function NewCertificatePage() {
@@ -21,7 +21,6 @@ export default function NewCertificatePage() {
     startDate: "",
     endDate: "",
     employmentStatus: "Active",
-    achievementsOrContributions: "",
     purposeOfCertificate: ""
   })
   const { toast } = useToast()
@@ -160,17 +159,6 @@ export default function NewCertificatePage() {
                   className="border-foreground/20"
                   value={formData.purposeOfCertificate}
                   onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="achievements" className="font-bold">Achievements (Optional)</Label>
-                <Textarea 
-                  id="achievements" 
-                  placeholder="Key contributions or recognitions..." 
-                  className="border-foreground/20 min-h-[80px]"
-                  value={formData.achievementsOrContributions}
-                  onChange={(e) => setFormData({...formData, achievementsOrContributions: e.target.value})}
                 />
               </div>
             </CardContent>

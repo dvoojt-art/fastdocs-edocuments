@@ -18,10 +18,6 @@ const DraftCertificateNarrativeInputSchema = z.object({
   startDate: z.string().describe('The date the employee started their employment.'),
   endDate: z.string().describe('The date the employment ended, or "Present" if still employed.'),
   employmentStatus: z.string().describe('The current status of the employee (e.g., Active, Resigned, Terminated).'),
-  achievementsOrContributions: z
-    .string()
-    .optional()
-    .describe('Optional: Key achievements or contributions of the employee relevant to the certificate.'),
   purposeOfCertificate: z
     .string()
     .describe('The specific purpose for which the certificate is being issued.'),
@@ -53,7 +49,6 @@ Certificate Type: {{{certificateType}}}
 Employee Name: {{{employeeName}}}
 Employment Period: From {{{startDate}}} to {{{endDate}}}
 Employment Status: {{{employmentStatus}}}
-{{#if achievementsOrContributions}}Achievements/Contributions: {{{achievementsOrContributions}}}{{/if}}
 Purpose of Certificate: {{{purposeOfCertificate}}}
 
 Please generate a narrative that can be used directly in the certificate. Ensure the dates and status are reflected accurately in a formal tone.`,
