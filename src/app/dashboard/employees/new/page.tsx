@@ -10,9 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UserPlus, ArrowLeft, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { useFirestore } from "@/firebase"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError } from "@/firebase/errors"
 
 export default function NewEmployeePage() {
   const [loading, setLoading] = useState(false)
+  const db = useFirestore()
   const router = useRouter()
   const { toast } = useToast()
   
@@ -32,7 +37,7 @@ export default function NewEmployeePage() {
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.position) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields marked with *.",
         variant: "destructive"
       })
       return
@@ -40,15 +45,28 @@ export default function NewEmployeePage() {
 
     setLoading(true)
     
-    // Simulate API call/Firestore write
-    setTimeout(() => {
-      setLoading(false)
-      toast({
-        title: "Employee Added",
-        description: `${formData.firstName} ${formData.lastName} has been registered successfully.`,
+    if (db) {
+      addDoc(collection(db, "employees"), {
+        ...formData,
+        createdAt: serverTimestamp()
       })
-      router.push("/dashboard/employees")
-    }, 1500)
+      .then(() => {
+        toast({
+          title: "Employee Registered",
+          description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
+        })
+        router.push("/dashboard/employees")
+      })
+      .catch(async (err) => {
+        const permissionError = new FirestorePermissionError({
+          path: "employees",
+          operation: "create",
+          requestResourceData: formData
+        })
+        errorEmitter.emit("permission-error", permissionError)
+        setLoading(false)
+      })
+    }
   }
 
   return (
@@ -68,7 +86,7 @@ export default function NewEmployeePage() {
       <form onSubmit={handleSubmit}>
         <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card">
           <CardHeader className="bg-primary border-b border-foreground p-6">
-            <CardTitle className="font-headline font-bold text-xl uppercase">Employee Profile Details</CardTitle>
+            <CardTitle className="font-headline font-bold text-xl uppercase text-primary-foreground">Employee Profile Details</CardTitle>
           </CardHeader>
           <CardContent className="p-8 space-y-6">
             <div className="grid grid-cols-2 gap-6">
@@ -126,7 +144,7 @@ export default function NewEmployeePage() {
                   <SelectTrigger className="border-2 border-foreground h-12 rounded-none">
                     <SelectValue placeholder="Select dept" />
                   </SelectTrigger>
-                  <SelectContent className="border-2 border-foreground rounded-none">
+                  <SelectContent className="border-2 border-foreground rounded-none bg-background">
                     <SelectItem value="Sales">Sales</SelectItem>
                     <SelectItem value="Operations">Operations</SelectItem>
                     <SelectItem value="Engineering">Engineering</SelectItem>
@@ -157,10 +175,11 @@ export default function NewEmployeePage() {
                   <SelectTrigger className="border-2 border-foreground h-12 rounded-none">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="border-2 border-foreground rounded-none">
+                  <SelectContent className="border-2 border-foreground rounded-none bg-background">
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="On Leave">On Leave</SelectItem>
                     <SelectItem value="Probationary">Probationary</SelectItem>
+                    <SelectItem value="Resigned">Resigned</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
