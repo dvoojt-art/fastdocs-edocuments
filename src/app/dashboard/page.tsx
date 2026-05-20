@@ -1,104 +1,103 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
-  FileCheck, 
+  Zap, 
   Users, 
   Clock, 
   TrendingUp, 
   MoreHorizontal,
-  ChevronRight
+  FilePlus,
+  ArrowRight
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 const stats = [
   {
-    title: "Documents Generated",
+    title: "Drafts Ready",
     value: "1,250",
-    change: "+12% from last month",
-    icon: FileCheck,
-    color: "text-primary",
-    bgColor: "bg-primary/10"
+    change: "+12% total volume",
+    icon: Zap,
+    color: "text-foreground",
+    bgColor: "bg-black/5"
   },
   {
-    title: "Active Employees",
+    title: "Team Size",
     value: "432",
-    change: "3 new this week",
+    change: "Active Employees",
     icon: Users,
-    color: "text-blue-600",
-    bgColor: "bg-blue-100"
+    color: "text-foreground",
+    bgColor: "bg-black/5"
   },
   {
-    title: "Pending Approvals",
+    title: "Waiting",
     value: "18",
-    change: "Requires action",
+    change: "Pending Approvals",
     icon: Clock,
-    color: "text-amber-600",
-    bgColor: "bg-amber-100"
+    color: "text-foreground",
+    bgColor: "bg-black/5"
   },
   {
-    title: "Efficiency Rate",
+    title: "Speed",
     value: "95%",
-    change: "+4% vs manual",
+    change: "Efficiency Score",
     icon: TrendingUp,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-100"
+    color: "text-foreground",
+    bgColor: "bg-black/5"
   }
 ]
 
 const recentActivities = [
   {
     id: 1,
-    action: "COE Generated",
+    action: "Certificate Drafted",
     user: "Robert Fox",
-    time: "2 minutes ago",
-    status: "Completed"
+    time: "2m ago",
+    status: "Done"
   },
   {
     id: 2,
-    action: "Profile Updated",
+    action: "Member Joined",
     user: "Esther Howard",
-    time: "45 minutes ago",
-    status: "Completed"
+    time: "45m ago",
+    status: "Done"
   },
   {
     id: 3,
-    action: "Clearance Requested",
+    action: "Signature Req",
     user: "Cody Fisher",
-    time: "1 hour ago",
-    status: "Pending Approval"
-  },
-  {
-    id: 4,
-    action: "Bulk Document Batch",
-    user: "HR System",
-    time: "3 hours ago",
-    status: "Processing"
+    time: "1h ago",
+    status: "Pending"
   }
 ]
 
 export default function DashboardPage() {
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-headline font-bold text-foreground">Welcome back, HR Team</h2>
-        <p className="text-muted-foreground mt-1">Here's a summary of document generation activity today.</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">Welcome, HR Lead</h2>
+          <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">FastDocs Performance Overview</p>
+        </div>
+        <Button asChild className="rounded-full font-bold h-12 px-6">
+          <Link href="/dashboard/certificates/new">
+            <Zap className="mr-2 h-4 w-4 fill-current" />
+            Quick Draft Document
+          </Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm">
+          <Card key={i} className="border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">
                 {stat.title}
               </CardTitle>
-              <div className={`${stat.bgColor} p-2 rounded-lg`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-3xl font-bold font-headline">{stat.value}</div>
+              <p className="text-[10px] font-bold uppercase mt-1 opacity-50">
                 {stat.change}
               </p>
             </CardContent>
@@ -106,36 +105,35 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-none shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-foreground/10 pb-6">
             <div>
-              <CardTitle className="font-headline">Recent Activity</CardTitle>
-              <CardDescription>Live log of system interactions</CardDescription>
+              <CardTitle className="font-headline font-bold text-2xl">Recent Stream</CardTitle>
+              <CardDescription className="font-bold opacity-60">Real-time system actions</CardDescription>
             </div>
-            <Button variant="outline" size="sm">View All Logs</Button>
+            <Button variant="ghost" size="sm" className="font-bold border border-foreground hover:bg-black hover:text-background">View Logs</Button>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
+          <CardContent className="pt-6">
+            <div className="space-y-4">
               {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+                <div key={activity.id} className="flex items-center justify-between bg-black/5 p-4 rounded-lg border border-transparent hover:border-foreground transition-all">
                   <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
-                      <FileCheck className="h-5 w-5 text-muted-foreground" />
+                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center border border-foreground">
+                      <Zap className="h-5 w-5 text-primary-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{activity.action}</p>
-                      <p className="text-xs text-muted-foreground">{activity.user} • {activity.time}</p>
+                      <p className="text-sm font-bold">{activity.action}</p>
+                      <p className="text-xs font-medium opacity-60">{activity.user} • {activity.time}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
-                      activity.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 
-                      activity.status === 'Pending Approval' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+                    <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border border-foreground ${
+                      activity.status === 'Done' ? 'bg-primary text-primary-foreground' : 'bg-white text-black'
                     }`}>
                       {activity.status}
                     </span>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-black hover:text-background">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </div>
@@ -145,40 +143,36 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm bg-primary text-primary-foreground">
-          <CardHeader>
-            <CardTitle className="font-headline">Quick Actions</CardTitle>
-            <CardDescription className="text-primary-foreground/70">Common workflows for HR admins</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button asChild className="w-full bg-white text-primary hover:bg-white/90">
-              <Link href="/dashboard/certificates/new">
-                <FilePlus className="mr-2 h-4 w-4" />
-                Generate New Certificate
-              </Link>
-            </Button>
-            <Button variant="secondary" className="w-full">
-              <Users className="mr-2 h-4 w-4" />
-              Add New Employee
-            </Button>
-            <Button variant="secondary" className="w-full">
-              <Clock className="mr-2 h-4 w-4" />
-              Review Approvals
-            </Button>
-          </CardContent>
-          <div className="px-6 pb-6 pt-2">
-            <div className="rounded-xl bg-white/10 p-4 border border-white/20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold">STORAGE USAGE</span>
-                <span className="text-xs">74%</span>
-              </div>
-              <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-white w-3/4"></div>
-              </div>
-              <p className="text-[10px] mt-2 text-white/60">Cloud vault encrypted and secure.</p>
+        <div className="space-y-6">
+          <Card className="border-2 border-foreground bg-black text-background shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)]">
+            <CardHeader>
+              <CardTitle className="font-headline font-bold text-2xl">Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button asChild className="w-full bg-background text-foreground hover:bg-primary border-2 border-transparent font-bold h-12">
+                <Link href="/dashboard/certificates/new">
+                  <FilePlus className="mr-2 h-4 w-4" />
+                  New Certificate
+                </Link>
+              </Button>
+              <Button variant="outline" className="w-full border-2 border-background bg-transparent text-background hover:bg-white hover:text-black font-bold h-12">
+                <Users className="mr-2 h-4 w-4" />
+                Add Employee
+              </Button>
+            </CardContent>
+          </Card>
+
+          <div className="bg-primary p-6 rounded-xl border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="font-headline font-bold text-lg mb-2">Vault Usage</h4>
+            <div className="h-3 w-full bg-black/20 rounded-full overflow-hidden border border-foreground">
+              <div className="h-full bg-black w-[74%]"></div>
+            </div>
+            <div className="flex justify-between mt-2 text-xs font-bold">
+              <span>74% Capacity</span>
+              <span>Secure</span>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   )

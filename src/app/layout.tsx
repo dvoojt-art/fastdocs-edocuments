@@ -1,10 +1,9 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'DokuFlow - HR Data Encoding & Automation',
-  description: 'A centralized platform for automated HR document generation.',
+  title: 'FastDocs - Instant HR Documents',
+  description: 'The fastest way to generate professional HR certificates and documents.',
 };
 
 export default function RootLayout({
