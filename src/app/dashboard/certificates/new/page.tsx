@@ -17,17 +17,19 @@ export default function NewCertificatePage() {
   const [formData, setFormData] = useState({
     employeeName: "",
     certificateType: "Certificate of Employment",
-    employmentDetails: "",
+    startDate: "",
+    endDate: "",
+    employmentStatus: "Active",
     achievementsOrContributions: "",
     purposeOfCertificate: ""
   })
   const { toast } = useToast()
 
   const handleDraft = async () => {
-    if (!formData.employeeName || !formData.employmentDetails || !formData.purposeOfCertificate) {
+    if (!formData.employeeName || !formData.startDate || !formData.endDate || !formData.purposeOfCertificate) {
       toast({
         title: "Required Fields",
-        description: "Missing employee name or details.",
+        description: "Please fill in all mandatory fields.",
         variant: "destructive"
       })
       return
@@ -92,15 +94,45 @@ export default function NewCertificatePage() {
                 </Select>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="startDate" className="font-bold">START DATE</Label>
+                  <Input 
+                    id="startDate" 
+                    type="date"
+                    className="border-foreground/20"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="endDate" className="font-bold">END DATE</Label>
+                  <Input 
+                    id="endDate" 
+                    placeholder="or 'Present'"
+                    className="border-foreground/20"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="details" className="font-bold">Employment Summary</Label>
-                <Textarea 
-                  id="details" 
-                  className="min-h-[80px] border-foreground/20"
-                  placeholder="Position, Department, Dates..." 
-                  value={formData.employmentDetails}
-                  onChange={(e) => setFormData({...formData, employmentDetails: e.target.value})}
-                />
+                <Label htmlFor="status" className="font-bold">EMPLOYMENT STATUS</Label>
+                <Select 
+                  value={formData.employmentStatus}
+                  onValueChange={(v) => setFormData({...formData, employmentStatus: v})}
+                >
+                  <SelectTrigger className="border-foreground/20">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border-2 border-foreground">
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Resigned">Resigned</SelectItem>
+                    <SelectItem value="Terminated">Terminated</SelectItem>
+                    <SelectItem value="On Leave">On Leave</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

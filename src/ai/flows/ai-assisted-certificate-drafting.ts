@@ -15,9 +15,9 @@ const DraftCertificateNarrativeInputSchema = z.object({
   certificateType: z
     .string()
     .describe('The type of certificate being generated (e.g., "Certificate of Employment", "Certificate of Recognition").'),
-  employmentDetails: z
-    .string()
-    .describe('A summary of the employee\u0027s employment details, such as position, department, and employment dates.'),
+  startDate: z.string().describe('The date the employee started their employment.'),
+  endDate: z.string().describe('The date the employment ended, or "Present" if still employed.'),
+  employmentStatus: z.string().describe('The current status of the employee (e.g., Active, Resigned, Terminated).'),
   achievementsOrContributions: z
     .string()
     .optional()
@@ -51,11 +51,12 @@ const draftNarrativePrompt = ai.definePrompt({
 
 Certificate Type: {{{certificateType}}}
 Employee Name: {{{employeeName}}}
-Employment Details: {{{employmentDetails}}}
+Employment Period: From {{{startDate}}} to {{{endDate}}}
+Employment Status: {{{employmentStatus}}}
 {{#if achievementsOrContributions}}Achievements/Contributions: {{{achievementsOrContributions}}}{{/if}}
 Purpose of Certificate: {{{purposeOfCertificate}}}
 
-Please generate a narrative that can be used directly in the certificate.`,
+Please generate a narrative that can be used directly in the certificate. Ensure the dates and status are reflected accurately in a formal tone.`,
 });
 
 const aiAssistedCertificateDraftingFlow = ai.defineFlow(
