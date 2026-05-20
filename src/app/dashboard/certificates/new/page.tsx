@@ -1,14 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { draftCertificateNarrative } from "@/ai/flows/ai-assisted-certificate-drafting"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Zap, Loader2, Download, Send, Copy, Check } from "lucide-react"
+import { FileText, Loader2, Download, Send, Copy, Check, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function NewCertificatePage() {
@@ -25,34 +23,81 @@ export default function NewCertificatePage() {
   })
   const { toast } = useToast()
 
+  const generateStaticNarrative = (data: typeof formData) => {
+    const { employeeName, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate } = data;
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const period = endDate.toLowerCase() === 'present' ? `since ${startDate}` : `from ${startDate} to ${endDate}`;
+    const purpose = purposeOfCertificate || 'general reference';
+
+    switch (certificateType) {
+      case "Certificate of Employment":
+        return `TO WHOM IT MAY CONCERN:
+
+This is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.
+
+This certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.
+
+Issued this ${today} at Davao City, Philippines.`;
+
+      case "Certificate of Recognition":
+        return `CERTIFICATE OF RECOGNITION
+
+This certificate is proudly presented to
+
+${employeeName.toUpperCase()}
+
+In recognition of their dedicated service and exemplary performance during their tenure ${period}. Your commitment to excellence and professional contributions have been a vital part of Callbox Davao's success.
+
+Given this ${today}.`;
+
+      case "Clearance Certificate":
+        return `CLEARANCE CERTIFICATE
+
+This is to certify that ${employeeName} has been officially cleared of all financial and property accountabilities with Callbox Davao as of ${endDate}. 
+
+${employeeName} served the company ${period} and has successfully completed the standard exit and turnover process.
+
+Issued for: ${purpose}`;
+
+      case "Recommendation Letter":
+        return `LETTER OF RECOMMENDATION
+
+To Whom It May Concern,
+
+It is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure at Callbox Davao ${period}, ${employeeName} served as a valued ${employmentStatus} member of our organization.
+
+They have consistently shown a high level of professionalism and dedication to their duties. We wish them the very best in their future career path.
+
+Date: ${today}`;
+
+      default:
+        return `This document serves as an official record for ${employeeName} regarding their employment ${period}. 
+Status: ${employmentStatus}
+Purpose: ${purpose}`;
+    }
+  }
+
   const handleDraft = async () => {
     if (!formData.employeeName || !formData.startDate || !formData.endDate || !formData.purposeOfCertificate) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all mandatory fields before drafting.",
+        description: "Please fill in all mandatory fields before generating.",
         variant: "destructive"
       })
       return
     }
 
     setLoading(true)
-    try {
-      const result = await draftCertificateNarrative(formData)
-      setDraftedNarrative(result.narrative)
+    // Simulate a brief generation delay for better UX
+    setTimeout(() => {
+      const result = generateStaticNarrative(formData)
+      setDraftedNarrative(result)
       toast({
-        title: "Draft Generated",
+        title: "Document Generated",
         description: "Your certificate narrative is ready for review.",
       })
-    } catch (error: any) {
-      console.error(error)
-      toast({
-        title: "AI Generation Failed",
-        description: error.message || "There was an error communicating with the AI service. Please ensure your API key is valid.",
-        variant: "destructive"
-      })
-    } finally {
       setLoading(false)
-    }
+    }, 800)
   }
 
   const handleCopy = () => {
@@ -154,7 +199,7 @@ export default function NewCertificatePage() {
                 <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
                 <Input 
                   id="purpose" 
-                  placeholder="e.g. Bank loan application, personal record" 
+                  placeholder="e.g. Bank loan application" 
                   className="border-foreground/20"
                   value={formData.purposeOfCertificate}
                   onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
@@ -167,8 +212,8 @@ export default function NewCertificatePage() {
                 className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all bg-primary hover:bg-primary/90 text-primary-foreground" 
                 disabled={loading}
               >
-                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Zap className="mr-2 h-5 w-5 fill-current" />}
-                Draft Narrative
+                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileText className="mr-2 h-5 w-5" />}
+                Generate Narrative
               </Button>
             </CardFooter>
           </Card>
@@ -179,7 +224,6 @@ export default function NewCertificatePage() {
             <CardHeader className="flex flex-row items-center justify-between border-b border-foreground/10 pb-6">
               <div>
                 <CardTitle className="font-headline font-bold text-2xl">Output Preview</CardTitle>
-                <CardDescription className="font-medium opacity-70">Review and refine the generated text</CardDescription>
               </div>
               {draftedNarrative && (
                 <Button variant="outline" size="sm" onClick={handleCopy} className="border-2 border-foreground font-bold">
@@ -204,14 +248,14 @@ export default function NewCertificatePage() {
                     Enter details to generate
                   </p>
                   <p className="text-sm mt-2 max-w-xs">
-                    Our AI will craft a professional and legally sound narrative for your certificate.
+                    Your professional HR narrative will be constructed based on the data provided.
                   </p>
                 </div>
               )}
               {loading && (
                 <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
                   <Loader2 className="h-12 w-12 animate-spin mb-4" />
-                  <p className="font-bold text-lg animate-pulse">Drafting with AI...</p>
+                  <p className="font-bold text-lg animate-pulse">Generating Document...</p>
                 </div>
               )}
             </CardContent>
