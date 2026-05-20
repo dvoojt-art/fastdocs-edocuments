@@ -1,0 +1,71 @@
+'use server';
+/**
+ * @fileOverview An AI assistant that suggests professional wording for HR certificate narratives.
+ *
+ * - draftCertificateNarrative - A function that handles the AI-powered drafting of certificate narratives.
+ * - DraftCertificateNarrativeInput - The input type for the draftCertificateNarrative function.
+ * - DraftCertificateNarrativeOutput - The return type for the draftCertificateNarrative function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const DraftCertificateNarrativeInputSchema = z.object({
+  employeeName: z.string().describe('The full name of the employee.'),
+  certificateType: z
+    .string()
+    .describe('The type of certificate being generated (e.g., "Certificate of Employment", "Certificate of Recognition").'),
+  employmentDetails: z
+    .string()
+    .describe('A summary of the employee\u0027s employment details, such as position, department, and employment dates.'),
+  achievementsOrContributions: z
+    .string()
+    .optional()
+    .describe('Optional: Key achievements or contributions of the employee relevant to the certificate.'),
+  purposeOfCertificate: z
+    .string()
+    .describe('The specific purpose for which the certificate is being issued.'),
+});
+export type DraftCertificateNarrativeInput = z.infer<
+  typeof DraftCertificateNarrativeInputSchema
+>;
+
+const DraftCertificateNarrativeOutputSchema = z.object({
+  narrative: z.string().describe('The suggested professional wording for the certificate narrative.'),
+});
+export type DraftCertificateNarrativeOutput = z.infer<
+  typeof DraftCertificateNarrativeOutputSchema
+>;
+
+export async function draftCertificateNarrative(
+  input: DraftCertificateNarrativeInput
+): Promise<DraftCertificateNarrativeOutput> {
+  return aiAssistedCertificateDraftingFlow(input);
+}
+
+const draftNarrativePrompt = ai.definePrompt({
+  name: 'draftNarrativePrompt',
+  input: {schema: DraftCertificateNarrativeInputSchema},
+  output: {schema: DraftCertificateNarrativeOutputSchema},
+  prompt: `You are an expert HR professional assistant. Your task is to draft professional and contextually relevant wording for HR certificate narratives based on the provided employee history and certificate purpose. The narrative should be polite, accurate, and suitable for formal documents. Do not include a greeting or closing, just the narrative body.
+
+Certificate Type: {{{certificateType}}}
+Employee Name: {{{employeeName}}}
+Employment Details: {{{employmentDetails}}}
+{{#if achievementsOrContributions}}Achievements/Contributions: {{{achievementsOrContributions}}}{{/if}}
+Purpose of Certificate: {{{purposeOfCertificate}}}
+
+Please generate a narrative that can be used directly in the certificate.`,
+});
+
+const aiAssistedCertificateDraftingFlow = ai.defineFlow(
+  {
+    name: 'aiAssistedCertificateDraftingFlow',
+    inputSchema: DraftCertificateNarrativeInputSchema,
+    outputSchema: DraftCertificateNarrativeOutputSchema,
+  },
+  async input => {
+    const {output} = await draftNarrativePrompt(input);
+    return output!;
+  }
+);
