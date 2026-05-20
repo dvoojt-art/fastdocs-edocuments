@@ -31,7 +31,7 @@ export default function NewEmployeePage() {
     email: ""
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.position) {
@@ -46,6 +46,7 @@ export default function NewEmployeePage() {
     setLoading(true)
     
     if (db) {
+      // Initiate background write following optimistic update pattern
       addDoc(collection(db, "employees"), {
         ...formData,
         createdAt: serverTimestamp()
@@ -98,6 +99,7 @@ export default function NewEmployeePage() {
                   className="border-2 border-foreground h-12 rounded-none focus:ring-0"
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -108,6 +110,7 @@ export default function NewEmployeePage() {
                   className="border-2 border-foreground h-12 rounded-none focus:ring-0"
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                  required
                 />
               </div>
             </div>
@@ -121,6 +124,7 @@ export default function NewEmployeePage() {
                 className="border-2 border-foreground h-12 rounded-none focus:ring-0"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
               />
             </div>
 
@@ -133,6 +137,7 @@ export default function NewEmployeePage() {
                   className="border-2 border-foreground h-12 rounded-none focus:ring-0"
                   value={formData.position}
                   onChange={(e) => setFormData({...formData, position: e.target.value})}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -191,8 +196,17 @@ export default function NewEmployeePage() {
               className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all" 
               disabled={loading}
             >
-              {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <UserPlus className="mr-2 h-5 w-5" />}
-              Save Employee Record
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Saving Record...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="mr-2 h-5 w-5" />
+                  Save Employee Record
+                </>
+              )}
             </Button>
           </CardFooter>
         </Card>
