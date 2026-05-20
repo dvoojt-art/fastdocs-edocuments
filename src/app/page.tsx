@@ -36,7 +36,7 @@ export default function HomePage() {
               <div className="space-y-4 max-w-4xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-foreground px-4 py-1 text-sm font-bold uppercase tracking-widest">
                   <Zap className="h-4 w-4 fill-current" />
-                  Official Portal
+                  INSTANT GENERATION
                 </div>
                 <h1 className="text-5xl font-headline font-bold tracking-tighter sm:text-7xl md:text-8xl leading-none">
                   Callbox Davao <br />
