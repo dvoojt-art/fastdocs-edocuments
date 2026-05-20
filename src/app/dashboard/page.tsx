@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   Zap, 
@@ -10,67 +12,67 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-
-const stats = [
-  {
-    title: "Drafts Ready",
-    value: "1,250",
-    change: "+12% total volume",
-    icon: Zap,
-    color: "text-foreground",
-    bgColor: "bg-black/5"
-  },
-  {
-    title: "Team Size",
-    value: "432",
-    change: "Active Employees",
-    icon: Users,
-    color: "text-foreground",
-    bgColor: "bg-black/5"
-  },
-  {
-    title: "Waiting",
-    value: "18",
-    change: "Pending Approvals",
-    icon: Clock,
-    color: "text-foreground",
-    bgColor: "bg-black/5"
-  },
-  {
-    title: "Speed",
-    value: "95%",
-    change: "Efficiency Score",
-    icon: TrendingUp,
-    color: "text-foreground",
-    bgColor: "bg-black/5"
-  }
-]
-
-const recentActivities = [
-  {
-    id: 1,
-    action: "Certificate Drafted",
-    user: "Robert Fox",
-    time: "2m ago",
-    status: "Done"
-  },
-  {
-    id: 2,
-    action: "Member Joined",
-    user: "Esther Howard",
-    time: "45m ago",
-    status: "Done"
-  },
-  {
-    id: 3,
-    action: "Signature Req",
-    user: "Cody Fisher",
-    time: "1h ago",
-    status: "Pending"
-  }
-]
+import { useCollection, useFirestore } from "@/firebase"
+import { collection, query, limit, orderBy } from "firebase/firestore"
+import { useMemoFirebase } from "@/firebase/firestore/use-memo-firebase"
 
 export default function DashboardPage() {
+  const db = useFirestore()
+
+  const certificatesQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, "certificates")
+  }, [db])
+
+  const employeesQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, "employees")
+  }, [db])
+
+  const recentActivitiesQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return query(collection(db, "certificates"), orderBy("createdAt", "desc"), limit(5))
+  }, [db])
+
+  const { data: certificates } = useCollection(certificatesQuery)
+  const { data: employees } = useCollection(employeesQuery)
+  const { data: recentCerts } = useCollection(recentActivitiesQuery)
+
+  const stats = [
+    {
+      title: "Drafts Ready",
+      value: certificates?.length || 0,
+      change: "Total certificates generated",
+      icon: Zap,
+      color: "text-foreground",
+      bgColor: "bg-black/5"
+    },
+    {
+      title: "Team Size",
+      value: employees?.length || 0,
+      change: "Active Employees",
+      icon: Users,
+      color: "text-foreground",
+      bgColor: "bg-black/5"
+    },
+    {
+      title: "Waiting",
+      value: "0",
+      change: "Pending Approvals",
+      icon: Clock,
+      color: "text-foreground",
+      bgColor: "bg-black/5"
+    },
+    {
+      title: "Speed",
+      value: "100%",
+      change: "Efficiency Score",
+      icon: TrendingUp,
+      color: "text-foreground",
+      bgColor: "bg-black/5"
+    }
+  ]
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -118,22 +120,20 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              {recentActivities.map((activity) => (
+              {recentCerts?.map((activity) => (
                 <div key={activity.id} className="flex items-center justify-between bg-black/5 p-4 rounded-lg border border-transparent hover:border-foreground transition-all">
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center border border-foreground">
                       <Zap className="h-5 w-5 text-primary-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold">{activity.action}</p>
-                      <p className="text-xs font-medium opacity-60">{activity.user} • {activity.time}</p>
+                      <p className="text-sm font-bold">{activity.certificateType}</p>
+                      <p className="text-xs font-medium opacity-60">{activity.employeeName} • {activity.createdAt?.toDate().toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full border border-foreground ${
-                      activity.status === 'Done' ? 'bg-primary text-primary-foreground' : 'bg-white text-black'
-                    }`}>
-                      {activity.status}
+                    <span className="text-[10px] font-bold uppercase px-3 py-1 rounded-full border border-foreground bg-primary text-primary-foreground">
+                      Done
                     </span>
                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-black hover:text-background">
                       <MoreHorizontal className="h-4 w-4" />
@@ -141,6 +141,9 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
+              {recentCerts?.length === 0 && (
+                <p className="text-center py-8 opacity-40 italic">No recent activity found.</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -169,10 +172,10 @@ export default function DashboardPage() {
           <div className="bg-primary p-6 rounded-xl border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <h4 className="font-headline font-bold text-lg mb-2">Vault Usage</h4>
             <div className="h-3 w-full bg-black/20 rounded-full overflow-hidden border border-foreground">
-              <div className="h-full bg-black w-[74%]"></div>
+              <div className="h-full bg-black w-[15%]"></div>
             </div>
             <div className="flex justify-between mt-2 text-xs font-bold">
-              <span>74% Capacity</span>
+              <span>15% Capacity</span>
               <span>Secure</span>
             </div>
           </div>

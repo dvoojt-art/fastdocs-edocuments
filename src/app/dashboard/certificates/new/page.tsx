@@ -8,8 +8,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileText, Loader2, Download, Send, Copy, Check, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useFirestore } from "@/firebase"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError } from "@/firebase/errors"
 
 export default function NewCertificatePage() {
+  const db = useFirestore()
   const [loading, setLoading] = useState(false)
   const [draftedNarrative, setDraftedNarrative] = useState("")
   const [copied, setCopied] = useState(false)
@@ -88,13 +93,29 @@ Purpose: ${purpose}`;
     }
 
     setLoading(true)
-    // Simulate a brief generation delay for better UX
+    
     setTimeout(() => {
       const result = generateStaticNarrative(formData)
       setDraftedNarrative(result)
+      
+      if (db) {
+        addDoc(collection(db, "certificates"), {
+          ...formData,
+          narrative: result,
+          createdAt: serverTimestamp()
+        }).catch(async (err) => {
+          const permissionError = new FirestorePermissionError({
+            path: "certificates",
+            operation: "create",
+            requestResourceData: formData
+          })
+          errorEmitter.emit("permission-error", permissionError)
+        })
+      }
+
       toast({
         title: "Document Generated",
-        description: "Your certificate narrative is ready for review.",
+        description: "Your certificate narrative is ready and saved to drafts.",
       })
       setLoading(false)
     }, 800)
@@ -122,7 +143,7 @@ Purpose: ${purpose}`;
         <div className="lg:col-span-5 space-y-6">
           <Card className="border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl font-bold">EMPLOYEE INFORMATION</CardTitle>
+              <CardTitle className="font-headline text-2xl font-bold uppercase">Employee Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="space-y-2">
