@@ -12,17 +12,13 @@ import { useToast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
   const { toast } = useToast()
-  const [loading, setLoading] = useState(false)
 
   const handleSave = () => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      toast({
-        title: "Settings Saved",
-        description: "Your system configurations have been updated successfully.",
-      })
-    }, 1000)
+    // Immediate feedback without artificial delay
+    toast({
+      title: "Settings Saved",
+      description: "Your system configurations have been updated successfully.",
+    })
   }
 
   return (
@@ -113,10 +109,9 @@ export default function SettingsPage() {
             <CardFooter className="bg-black/5 p-8 border-t border-foreground/10">
               <Button 
                 onClick={handleSave}
-                disabled={loading}
                 className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
               >
-                {loading ? "Saving..." : <><Save className="mr-2 h-5 w-5" /> Save Changes</>}
+                <Save className="mr-2 h-5 w-5" /> Save Changes
               </Button>
             </CardFooter>
           </Card>

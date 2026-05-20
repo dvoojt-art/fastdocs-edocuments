@@ -36,53 +36,19 @@ export default function NewCertificatePage() {
 
     switch (certificateType) {
       case "Certificate of Employment":
-        return `TO WHOM IT MAY CONCERN:
-
-This is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.
-
-This certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.
-
-Issued this ${today} at Davao City, Philippines.`;
-
+        return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
       case "Certificate of Recognition":
-        return `CERTIFICATE OF RECOGNITION
-
-This certificate is proudly presented to
-
-${employeeName.toUpperCase()}
-
-In recognition of their dedicated service and exemplary performance during their tenure ${period}. Your commitment to excellence and professional contributions have been a vital part of Callbox Davao's success.
-
-Given this ${today}.`;
-
+        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}. Your commitment to excellence and professional contributions have been a vital part of Callbox Davao's success.\n\nGiven this ${today}.`;
       case "Clearance Certificate":
-        return `CLEARANCE CERTIFICATE
-
-This is to certify that ${employeeName} has been officially cleared of all financial and property accountabilities with Callbox Davao as of ${endDate}. 
-
-${employeeName} served the company ${period} and has successfully completed the standard exit and turnover process.
-
-Issued for: ${purpose}`;
-
+        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName} has been officially cleared of all financial and property accountabilities with Callbox Davao as of ${endDate}.\n\n${employeeName} served the company ${period} and has successfully completed the standard exit and turnover process.\n\nIssued for: ${purpose}`;
       case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION
-
-To Whom It May Concern,
-
-It is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure at Callbox Davao ${period}, ${employeeName} served as a valued ${employmentStatus} member of our organization.
-
-They have consistently shown a high level of professionalism and dedication to their duties. We wish them the very best in their future career path.
-
-Date: ${today}`;
-
+        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure at Callbox Davao ${period}, ${employeeName} served as a valued ${employmentStatus} member of our organization.\n\nThey have consistently shown a high level of professionalism and dedication to their duties. We wish them the very best in their future career path.\n\nDate: ${today}`;
       default:
-        return `This document serves as an official record for ${employeeName} regarding their employment ${period}. 
-Status: ${employmentStatus}
-Purpose: ${purpose}`;
+        return `This document serves as an official record for ${employeeName} regarding their employment ${period}.\nStatus: ${employmentStatus}\nPurpose: ${purpose}`;
     }
   }
 
-  const handleDraft = async () => {
+  const handleDraft = () => {
     if (!formData.employeeName || !formData.startDate || !formData.endDate || !formData.purposeOfCertificate) {
       toast({
         title: "Missing Information",
@@ -92,13 +58,12 @@ Purpose: ${purpose}`;
       return
     }
 
-    setLoading(true)
-    
-    // Immediate generation without artificial delay
+    // Instant local generation
     const result = generateStaticNarrative(formData)
     setDraftedNarrative(result)
     
     if (db) {
+      // Background write without awaiting
       addDoc(collection(db, "certificates"), {
         ...formData,
         narrative: result,
@@ -115,9 +80,8 @@ Purpose: ${purpose}`;
 
     toast({
       title: "Document Generated",
-      description: "Your certificate narrative is ready and saved to drafts.",
+      description: "Your certificate narrative is ready.",
     })
-    setLoading(false)
   }
 
   const handleCopy = () => {
@@ -125,10 +89,10 @@ Purpose: ${purpose}`;
     navigator.clipboard.writeText(draftedNarrative)
     setCopied(true)
     toast({
-      title: "Copied to clipboard",
-      description: "You can now paste the narrative into your document editor.",
+      title: "Copied",
+      description: "Narrative copied to clipboard.",
     })
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), 1500)
   }
 
   return (
@@ -230,9 +194,8 @@ Purpose: ${purpose}`;
               <Button 
                 onClick={handleDraft} 
                 className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all bg-primary hover:bg-primary/90 text-primary-foreground" 
-                disabled={loading}
               >
-                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <FileText className="mr-2 h-5 w-5" />}
+                <FileText className="mr-2 h-5 w-5" />
                 Generate Narrative
               </Button>
             </CardFooter>
@@ -272,14 +235,8 @@ Purpose: ${purpose}`;
                   </p>
                 </div>
               )}
-              {loading && (
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
-                  <Loader2 className="h-12 w-12 animate-spin mb-4" />
-                  <p className="font-bold text-lg animate-pulse">Generating Document...</p>
-                </div>
-              )}
             </CardContent>
-            {draftedNarrative && !loading && (
+            {draftedNarrative && (
               <CardFooter className="grid grid-cols-2 gap-4 border-t border-foreground/10 p-6 bg-black/5">
                 <Button variant="outline" className="w-full font-bold border-2 border-foreground h-12 hover:bg-black hover:text-background">
                   <Download className="mr-2 h-4 w-4" />
