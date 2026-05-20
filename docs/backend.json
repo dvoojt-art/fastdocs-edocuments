@@ -1,0 +1,49 @@
+
+{
+  "entities": {
+    "Employee": {
+      "title": "Employee",
+      "description": "A member of the Callbox Davao team.",
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "On Leave", "Probationary", "Resigned"] },
+        "joinDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["firstName", "lastName", "email", "position"]
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "description": "A generated HR document narrative.",
+      "type": "object",
+      "properties": {
+        "employeeName": { "type": "string" },
+        "certificateType": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "employmentStatus": { "type": "string" },
+        "purposeOfCertificate": { "type": "string" },
+        "narrative": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "/employees/{employeeId}": {
+      "schema": "Employee",
+      "description": "Collection of employee records."
+    },
+    "/certificates/{certificateId}": {
+      "schema": "Certificate",
+      "description": "Collection of generated certificates."
+    }
+  }
+}
