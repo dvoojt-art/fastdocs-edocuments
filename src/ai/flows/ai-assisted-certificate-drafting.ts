@@ -41,6 +41,7 @@ export async function draftCertificateNarrative(
 
 const draftNarrativePrompt = ai.definePrompt({
   name: 'draftNarrativePrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: DraftCertificateNarrativeInputSchema},
   output: {schema: DraftCertificateNarrativeOutputSchema},
   prompt: `You are an expert HR professional assistant. Your task is to draft professional and contextually relevant wording for HR certificate narratives based on the provided employee history and certificate purpose. The narrative should be polite, accurate, and suitable for formal documents. Do not include a greeting or closing, just the narrative body.
@@ -62,6 +63,9 @@ const aiAssistedCertificateDraftingFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await draftNarrativePrompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('AI failed to generate a narrative.');
+    }
+    return output;
   }
 );
