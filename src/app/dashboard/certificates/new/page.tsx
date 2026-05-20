@@ -14,6 +14,7 @@ import { useFirestore } from "@/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+import { jsPDF } from "jspdf"
 
 export default function NewCertificatePage() {
   const db = useFirestore()
@@ -89,6 +90,35 @@ export default function NewCertificatePage() {
     navigator.clipboard.writeText(draftedNarrative)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
+  }
+
+  const handleDownloadPDF = () => {
+    if (!draftedNarrative) return
+    
+    const doc = new jsPDF()
+    const splitText = doc.splitTextToSize(draftedNarrative, 180)
+    
+    // Add header
+    doc.setFontSize(22)
+    doc.setTextColor(0, 0, 0)
+    doc.text("CALLBOX DAVAO", 105, 20, { align: "center" })
+    
+    // Add horizontal line
+    doc.setLineWidth(0.5)
+    doc.line(20, 25, 190, 25)
+    
+    // Add narrative
+    doc.setFontSize(12)
+    doc.text(splitText, 15, 40)
+    
+    // Save PDF
+    const filename = `${formData.employeeName.replace(/\s+/g, '_')}_${formData.certificateType.replace(/\s+/g, '_')}.pdf`
+    doc.save(filename)
+
+    toast({
+      title: "PDF Exported",
+      description: "Your document is ready for download.",
+    })
   }
 
   return (
@@ -226,10 +256,16 @@ export default function NewCertificatePage() {
             <CardHeader className="flex flex-row items-center justify-between border-b border-foreground/10 pb-6">
               <CardTitle className="font-headline font-bold text-2xl">Output Preview</CardTitle>
               {draftedNarrative && (
-                <Button variant="outline" size="sm" onClick={handleCopy} className="border-2 border-foreground font-bold">
-                  {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                  {copied ? "Copied" : "Copy Text"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="border-2 border-foreground font-bold hover:bg-primary">
+                    <Download className="h-4 w-4 mr-2" />
+                    PDF
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleCopy} className="border-2 border-foreground font-bold">
+                    {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                    {copied ? "Copied" : "Copy"}
+                  </Button>
+                </div>
               )}
             </CardHeader>
             <CardContent className="flex-1 p-0">
