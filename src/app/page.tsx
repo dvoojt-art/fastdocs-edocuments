@@ -40,7 +40,7 @@ export default function HomePage() {
                 </div>
                 <h1 className="text-5xl font-headline font-bold tracking-tighter sm:text-7xl md:text-8xl leading-none">
                   Callbox Davao <br />
-                  <span className="bg-background text-foreground border-4 border-foreground px-4 py-1 inline-block mt-4">Online Documents</span>
+                  Online Documents
                 </h1>
                 <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80 mt-6">
                   The centralized hub for Callbox Davao employees to request and access official HR documents and certificates instantly.
