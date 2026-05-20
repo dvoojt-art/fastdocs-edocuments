@@ -64,7 +64,7 @@ const aiAssistedCertificateDraftingFlow = ai.defineFlow(
   async input => {
     const {output} = await draftNarrativePrompt(input);
     if (!output) {
-      throw new Error('AI failed to generate a narrative.');
+      throw new Error('AI failed to generate a narrative. Please check your API key.');
     }
     return output;
   }

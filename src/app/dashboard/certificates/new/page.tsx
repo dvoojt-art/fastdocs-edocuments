@@ -43,11 +43,11 @@ export default function NewCertificatePage() {
         title: "Draft Generated",
         description: "Your certificate narrative is ready for review.",
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       toast({
         title: "AI Generation Failed",
-        description: "There was an error communicating with the AI service. Please try again.",
+        description: error.message || "There was an error communicating with the AI service. Please ensure your API key is valid.",
         variant: "destructive"
       })
     } finally {
