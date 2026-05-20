@@ -51,6 +51,7 @@ export default function DashboardPage() {
       loading: loadingCerts,
       change: "Total documents in vault",
       icon: Zap,
+      href: "/dashboard/certificates"
     },
     {
       title: "Team Size",
@@ -58,6 +59,7 @@ export default function DashboardPage() {
       loading: loadingEmps,
       change: "Registered team members",
       icon: Users,
+      href: "/dashboard/employees"
     },
     {
       title: "Waiting",
@@ -65,6 +67,7 @@ export default function DashboardPage() {
       loading: loadingWaiting,
       change: "Pending HR approval",
       icon: Clock,
+      href: "/dashboard/approvals"
     },
     {
       title: "Efficiency",
@@ -72,6 +75,7 @@ export default function DashboardPage() {
       loading: false,
       change: "Instant generation speed",
       icon: TrendingUp,
+      href: "/dashboard/logs"
     }
   ]
 
@@ -94,24 +98,26 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <Card key={i} className="border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              {stat.loading ? (
-                <div className="h-9 w-12 bg-foreground/10 animate-pulse" />
-              ) : (
-                <div className="text-4xl font-bold font-headline">{stat.value}</div>
-              )}
-              <p className="text-[10px] font-bold uppercase mt-2 opacity-50">
-                {stat.change}
-              </p>
-            </CardContent>
-          </Card>
+          <Link key={i} href={stat.href}>
+            <Card className="border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="h-4 w-4" />
+              </CardHeader>
+              <CardContent>
+                {stat.loading ? (
+                  <div className="h-9 w-12 bg-foreground/10 animate-pulse" />
+                ) : (
+                  <div className="text-4xl font-bold font-headline">{stat.value}</div>
+                )}
+                <p className="text-[10px] font-bold uppercase mt-2 opacity-50">
+                  {stat.change}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
@@ -123,17 +129,23 @@ export default function DashboardPage() {
           <div className="space-y-4">
             {loadingRecent ? (
               <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div>
-            ) : recentCerts?.map((activity) => (
-              <div key={activity.id} className="flex items-center justify-between bg-black/5 p-4 border-2 border-transparent hover:border-foreground transition-all">
-                <div>
-                  <p className="text-sm font-bold uppercase">{activity.certificateType}</p>
-                  <p className="text-[10px] font-bold opacity-60 uppercase">{activity.employeeName} • {activity.status || "Pending"}</p>
+            ) : recentCerts && recentCerts.length > 0 ? (
+              recentCerts.map((activity) => (
+                <div key={activity.id} className="flex items-center justify-between bg-black/5 p-4 border-2 border-transparent hover:border-foreground transition-all">
+                  <div>
+                    <p className="text-sm font-bold uppercase">{activity.certificateType}</p>
+                    <p className="text-[10px] font-bold opacity-60 uppercase">{activity.employeeName} • {activity.status || "Pending"}</p>
+                  </div>
+                  <Button asChild variant="ghost" size="icon">
+                    <Link href={`/dashboard/certificates`}><ArrowRight className="h-4 w-4" /></Link>
+                  </Button>
                 </div>
-                <Button asChild variant="ghost" size="icon">
-                  <Link href={`/dashboard/certificates`}><ArrowRight className="h-4 w-4" /></Link>
-                </Button>
+              ))
+            ) : (
+              <div className="text-center py-10 opacity-40 italic">
+                No recent activity to show.
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>
