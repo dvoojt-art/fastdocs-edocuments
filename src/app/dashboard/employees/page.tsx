@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -101,7 +102,7 @@ export default function EmployeesPage() {
                     <TableCell>
                       <Badge 
                         className={`rounded-none border-2 border-foreground font-bold ${
-                          emp.status === 'Active' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                          emp.status === 'Active' ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {emp.status}
