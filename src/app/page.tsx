@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { 
@@ -9,9 +10,19 @@ import {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Floating Circles layer */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
+        <div className="absolute top-[15%] left-[10%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0s' }}></div>
+        <div className="absolute top-[25%] right-[15%] w-8 h-8 rounded-full bg-black animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-[50%] left-[5%] w-5 h-5 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-[20%] right-[10%] w-7 h-7 rounded-full bg-primary animate-float" style={{ animationDelay: '1.5s' }}></div>
+        <div className="absolute bottom-[30%] left-[20%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute top-[40%] right-[25%] w-4 h-4 rounded-full bg-black animate-float" style={{ animationDelay: '2.5s' }}></div>
+      </div>
+
       {/* Navigation */}
-      <header className="px-6 h-20 flex items-center border-b border-foreground/10">
+      <header className="px-6 h-20 flex items-center border-b border-foreground/10 relative z-10">
         <div className="flex items-center gap-2">
           <div className="bg-primary h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl">
             F
@@ -28,13 +39,13 @@ export default function HomePage() {
         </nav>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {/* Hero Section */}
         <section className="w-full py-20 md:py-32 lg:py-40 px-6">
           <div className="container mx-auto">
             <div className="flex flex-col items-center space-y-8 text-center">
               <div className="space-y-4 max-w-4xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-foreground px-4 py-1 text-sm font-bold uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 rounded-full border border-foreground px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm">
                   <Zap className="h-4 w-4 fill-current" />
                   INSTANT GENERATION
                 </div>
@@ -59,7 +70,7 @@ export default function HomePage() {
         </section>
 
         {/* Simplified Benefits */}
-        <section className="w-full py-20 border-t border-foreground/10">
+        <section className="w-full py-20 border-t border-foreground/10 bg-background/80 backdrop-blur-sm">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
               <div className="space-y-4">
@@ -88,7 +99,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="w-full border-t border-foreground/10 py-10 px-6">
+      <footer className="w-full border-t border-foreground/10 py-10 px-6 relative z-10 bg-background">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="bg-primary h-6 w-6 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xs">
