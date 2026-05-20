@@ -46,17 +46,11 @@ export default function NewEmployeePage() {
     setLoading(true)
     
     if (db) {
-      // Initiate background write following optimistic update pattern
+      // Initiate background write immediately without awaiting.
+      // Firebase SDK handles offline persistence and background sync.
       addDoc(collection(db, "employees"), {
         ...formData,
         createdAt: serverTimestamp()
-      })
-      .then(() => {
-        toast({
-          title: "Employee Registered",
-          description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
-        })
-        router.push("/dashboard/employees")
       })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
@@ -65,8 +59,14 @@ export default function NewEmployeePage() {
           requestResourceData: formData
         })
         errorEmitter.emit("permission-error", permissionError)
-        setLoading(false)
       })
+
+      // Provide immediate feedback and navigate
+      toast({
+        title: "Employee Registered",
+        description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
+      })
+      router.push("/dashboard/employees")
     }
   }
 

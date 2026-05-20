@@ -94,31 +94,30 @@ Purpose: ${purpose}`;
 
     setLoading(true)
     
-    setTimeout(() => {
-      const result = generateStaticNarrative(formData)
-      setDraftedNarrative(result)
-      
-      if (db) {
-        addDoc(collection(db, "certificates"), {
-          ...formData,
-          narrative: result,
-          createdAt: serverTimestamp()
-        }).catch(async (err) => {
-          const permissionError = new FirestorePermissionError({
-            path: "certificates",
-            operation: "create",
-            requestResourceData: formData
-          })
-          errorEmitter.emit("permission-error", permissionError)
+    // Immediate generation without artificial delay
+    const result = generateStaticNarrative(formData)
+    setDraftedNarrative(result)
+    
+    if (db) {
+      addDoc(collection(db, "certificates"), {
+        ...formData,
+        narrative: result,
+        createdAt: serverTimestamp()
+      }).catch(async (err) => {
+        const permissionError = new FirestorePermissionError({
+          path: "certificates",
+          operation: "create",
+          requestResourceData: formData
         })
-      }
-
-      toast({
-        title: "Document Generated",
-        description: "Your certificate narrative is ready and saved to drafts.",
+        errorEmitter.emit("permission-error", permissionError)
       })
-      setLoading(false)
-    }, 800)
+    }
+
+    toast({
+      title: "Document Generated",
+      description: "Your certificate narrative is ready and saved to drafts.",
+    })
+    setLoading(false)
   }
 
   const handleCopy = () => {
