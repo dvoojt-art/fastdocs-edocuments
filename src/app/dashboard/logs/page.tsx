@@ -53,10 +53,10 @@ export default function LogsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.id} className="border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-card">
+          <Card key={stat.id} className="shadow-sm border">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4" />
+              <stat.icon className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stat.value}</div>
@@ -65,19 +65,19 @@ export default function LogsPage() {
         ))}
       </div>
 
-      <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card overflow-hidden">
-        <CardHeader className="border-b border-foreground/10 bg-black text-background">
-          <CardTitle className="font-headline font-bold text-2xl">Activity Log</CardTitle>
+      <Card className="shadow-sm border overflow-hidden">
+        <CardHeader className="border-b bg-muted/50">
+          <CardTitle className="font-headline font-bold text-2xl uppercase">Activity Log</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-black/5">
-              <TableRow className="hover:bg-transparent border-b-2 border-foreground/10">
-                <TableHead className="font-bold text-foreground">Action</TableHead>
-                <TableHead className="font-bold text-foreground">Target Employee</TableHead>
-                <TableHead className="font-bold text-foreground">Date</TableHead>
-                <TableHead className="font-bold text-foreground">Status</TableHead>
-                <TableHead className="font-bold text-foreground">Document Type</TableHead>
+            <TableHeader className="bg-muted/20">
+              <TableRow className="hover:bg-transparent border-b">
+                <TableHead className="font-bold">Action</TableHead>
+                <TableHead className="font-bold">Target Employee</TableHead>
+                <TableHead className="font-bold">Date</TableHead>
+                <TableHead className="font-bold">Status</TableHead>
+                <TableHead className="font-bold">Document Type</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,10 +90,10 @@ export default function LogsPage() {
                 </TableRow>
               ) : (
                 certificates?.map((log) => (
-                  <TableRow key={log.id} className="hover:bg-primary/5 border-b border-foreground/5">
+                  <TableRow key={log.id} className="hover:bg-muted/30">
                     <TableCell className="font-bold">
                       <div className="flex items-center gap-2">
-                        <Zap className="h-3 w-3 fill-primary" />
+                        <Zap className="h-3 w-3 fill-primary text-primary" />
                         Draft Generated
                       </div>
                     </TableCell>
@@ -102,7 +102,7 @@ export default function LogsPage() {
                       {log.createdAt?.toDate().toLocaleString() || "Just now"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="default" className="rounded-none border-2 border-foreground font-bold">
+                      <Badge variant="outline" className="font-bold border-green-500 text-green-600 bg-green-50">
                         Success
                       </Badge>
                     </TableCell>

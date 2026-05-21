@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -11,7 +10,8 @@ import {
   ArrowRight,
   Loader2,
   Eye,
-  FileText
+  FileText,
+  Activity
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -98,7 +98,7 @@ export default function DashboardPage() {
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Real-time HR Operations Overview</p>
         </div>
         <div className="flex gap-3">
-          <Button asChild className="rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all h-12 font-bold px-6 bg-primary text-primary-foreground">
+          <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground shadow-sm hover:shadow-md transition-all">
             <Link href="/dashboard/certificates/new">
               <Zap className="mr-2 h-4 w-4 fill-current" />
               Quick Draft
@@ -110,16 +110,16 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <Link key={i} href={stat.href}>
-            <Card className="border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer h-full">
+            <Card className="bg-card hover:border-primary/50 transition-all cursor-pointer h-full shadow-sm hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">
                   {stat.title}
                 </CardTitle>
-                <stat.icon className="h-4 w-4" />
+                <stat.icon className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
                 {stat.loading ? (
-                  <div className="h-9 w-12 bg-foreground/10 animate-pulse" />
+                  <div className="h-9 w-12 bg-foreground/10 animate-pulse rounded" />
                 ) : (
                   <div className="text-4xl font-bold font-headline">{stat.value}</div>
                 )}
@@ -132,31 +132,34 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card">
-        <CardHeader className="border-b border-foreground/10 pb-6 bg-black/5">
-          <CardTitle className="font-headline font-bold text-2xl">Activity Stream</CardTitle>
+      <Card className="shadow-sm">
+        <CardHeader className="border-b bg-muted/30 pb-6">
+          <div className="flex items-center gap-2">
+            <Activity className="h-5 w-5 text-primary" />
+            <CardTitle className="font-headline font-bold text-2xl">Activity Stream</CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-4">
             {loadingRecent ? (
-              <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div>
+              <div className="flex justify-center py-10"><Loader2 className="animate-spin text-primary" /></div>
             ) : recentCerts && recentCerts.length > 0 ? (
               recentCerts.map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between bg-black/5 p-4 border-2 border-transparent hover:border-foreground transition-all">
+                <div key={activity.id} className="flex items-center justify-between bg-muted/50 p-4 border border-transparent rounded-lg hover:border-primary/20 hover:bg-muted transition-all">
                   <div>
                     <p className="text-sm font-bold uppercase">{activity.certificateType}</p>
                     <p className="text-[10px] font-bold opacity-60 uppercase">{activity.employeeName} • {activity.status || "Pending"}</p>
                   </div>
                   <div className="flex gap-2">
                     <Button 
-                      variant="ghost" 
+                      variant="outline" 
                       size="icon" 
-                      className="hover:bg-primary hover:text-primary-foreground border-2 border-transparent hover:border-foreground"
+                      className="hover:bg-primary hover:text-primary-foreground"
                       onClick={() => setSelectedActivity(activity)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button asChild variant="ghost" size="icon" className="hover:bg-black hover:text-background border-2 border-transparent hover:border-foreground">
+                    <Button asChild variant="ghost" size="icon">
                       <Link href={`/dashboard/certificates`}><ArrowRight className="h-4 w-4" /></Link>
                     </Button>
                   </div>
@@ -172,8 +175,8 @@ export default function DashboardPage() {
       </Card>
 
       <Dialog open={!!selectedActivity} onOpenChange={() => setSelectedActivity(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none">
-          <DialogHeader className="border-b border-foreground/10 pb-4">
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="border-b pb-4">
             <div className="flex items-center gap-2 text-primary">
               <FileText className="h-5 w-5" />
               <DialogTitle className="font-headline font-bold text-2xl uppercase">Document Context</DialogTitle>
@@ -183,14 +186,14 @@ export default function DashboardPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-6">
-            <div className="bg-black/5 p-8 border-2 border-foreground/10 min-h-[200px] whitespace-pre-wrap font-medium leading-relaxed">
+            <div className="bg-muted p-8 rounded-lg min-h-[200px] whitespace-pre-wrap font-medium leading-relaxed">
               {selectedActivity?.narrative || "No narrative text available for this activity."}
             </div>
           </div>
           <div className="flex justify-end pt-4">
             <Button 
               onClick={() => setSelectedActivity(null)}
-              className="rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all font-bold"
+              className="font-bold"
             >
               Close Preview
             </Button>

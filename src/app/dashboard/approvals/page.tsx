@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -55,22 +54,22 @@ export default function ApprovalsPage() {
         <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Review and authorize HR document requests</p>
       </div>
 
-      <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card overflow-hidden">
-        <CardHeader className="bg-black text-background p-6">
+      <Card className="shadow-sm border overflow-hidden">
+        <CardHeader className="bg-muted/50 border-b p-6">
           <div className="flex items-center gap-3">
-            <Clock className="h-6 w-6" />
+            <Clock className="h-6 w-6 text-primary" />
             <CardTitle className="font-headline font-bold text-2xl uppercase">Pending Requests</CardTitle>
           </div>
-          <CardDescription className="text-background/60 font-medium">Items requiring your immediate attention</CardDescription>
+          <CardDescription className="opacity-60 font-medium">Items requiring your immediate attention</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-black/5">
+            <TableHeader className="bg-muted/20">
               <TableRow>
-                <TableHead className="font-bold text-foreground uppercase text-xs">NAME</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-xs">Document Type</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-xs">Request Date</TableHead>
-                <TableHead className="text-right font-bold text-foreground uppercase text-xs">Actions</TableHead>
+                <TableHead className="font-bold uppercase text-xs">NAME</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Document Type</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Request Date</TableHead>
+                <TableHead className="text-right font-bold uppercase text-xs">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -82,7 +81,7 @@ export default function ApprovalsPage() {
                 </TableRow>
               ) : pendingCerts && pendingCerts.length > 0 ? (
                 pendingCerts.map((cert) => (
-                  <TableRow key={cert.id} className="hover:bg-primary/5 border-b border-foreground/5">
+                  <TableRow key={cert.id} className="hover:bg-muted/30">
                     <TableCell className="font-bold">{cert.employeeName}</TableCell>
                     <TableCell className="font-medium">{cert.certificateType}</TableCell>
                     <TableCell className="text-muted-foreground font-medium">
@@ -93,7 +92,7 @@ export default function ApprovalsPage() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="border-2 border-foreground hover:bg-black hover:text-background font-bold"
+                          className="font-bold hover:bg-green-500 hover:text-white hover:border-green-500 transition-colors"
                           onClick={() => handleAction(cert.id, "Approved")}
                         >
                           <Check className="h-4 w-4 mr-1" /> Approve
@@ -101,7 +100,7 @@ export default function ApprovalsPage() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="border-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground font-bold"
+                          className="font-bold hover:bg-destructive hover:text-white hover:border-destructive transition-colors"
                           onClick={() => handleAction(cert.id, "Rejected")}
                         >
                           <X className="h-4 w-4 mr-1" /> Reject

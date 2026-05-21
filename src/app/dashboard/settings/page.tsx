@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -90,19 +89,19 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-4">
           <nav className="flex flex-col gap-2">
-            <Button variant="ghost" className="justify-start font-bold border-2 border-foreground bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <Button variant="outline" className="justify-start font-bold bg-primary text-primary-foreground border-transparent shadow-sm">
               <Building2 className="mr-2 h-4 w-4" />
               Organization
             </Button>
-            <Button variant="ghost" className="justify-start font-bold border-2 border-transparent hover:border-foreground transition-all">
+            <Button variant="ghost" className="justify-start font-bold">
               <UserCog className="mr-2 h-4 w-4" />
               Account
             </Button>
-            <Button variant="ghost" className="justify-start font-bold border-2 border-transparent hover:border-foreground transition-all">
+            <Button variant="ghost" className="justify-start font-bold">
               <Bell className="mr-2 h-4 w-4" />
               Notifications
             </Button>
-            <Button variant="ghost" className="justify-start font-bold border-2 border-transparent hover:border-foreground transition-all">
+            <Button variant="ghost" className="justify-start font-bold">
               <Shield className="mr-2 h-4 w-4" />
               Security
             </Button>
@@ -110,8 +109,8 @@ export default function SettingsPage() {
         </div>
 
         <div className="md:col-span-2 space-y-6">
-          <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card">
-            <CardHeader className="bg-primary border-b-2 border-foreground p-6">
+          <Card className="shadow-sm border">
+            <CardHeader className="bg-primary/10 border-b p-6">
               <CardTitle className="font-headline font-bold text-xl uppercase">Company Information</CardTitle>
             </CardHeader>
             <CardContent className="p-8 space-y-6">
@@ -121,7 +120,7 @@ export default function SettingsPage() {
                   id="companyName" 
                   value={formData.companyName} 
                   onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                  className="border-2 border-foreground h-12 rounded-none" 
+                  className="h-12" 
                 />
               </div>
               <div className="space-y-2">
@@ -130,7 +129,7 @@ export default function SettingsPage() {
                   id="address" 
                   value={formData.address} 
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="border-2 border-foreground h-12 rounded-none" 
+                  className="h-12" 
                 />
               </div>
               <div className="grid grid-cols-2 gap-6">
@@ -140,7 +139,7 @@ export default function SettingsPage() {
                     id="hrLead" 
                     value={formData.hrLead} 
                     onChange={(e) => setFormData({...formData, hrLead: e.target.value})}
-                    className="border-2 border-foreground h-12 rounded-none" 
+                    className="h-12" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -149,14 +148,14 @@ export default function SettingsPage() {
                     id="email" 
                     value={formData.supportEmail} 
                     onChange={(e) => setFormData({...formData, supportEmail: e.target.value})}
-                    className="border-2 border-foreground h-12 rounded-none" 
+                    className="h-12" 
                   />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card">
+          <Card className="shadow-sm border">
             <CardHeader className="p-6">
               <CardTitle className="font-headline font-bold text-xl uppercase">Preferences</CardTitle>
             </CardHeader>
@@ -171,7 +170,7 @@ export default function SettingsPage() {
                   onCheckedChange={(checked) => setFormData({...formData, autoSaveDrafts: checked})}
                 />
               </div>
-              <Separator className="bg-foreground/10" />
+              <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="font-bold text-sm">Email Notifications</Label>
@@ -182,7 +181,7 @@ export default function SettingsPage() {
                   onCheckedChange={(checked) => setFormData({...formData, emailNotifications: checked})}
                 />
               </div>
-              <Separator className="bg-foreground/10" />
+              <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="font-bold text-sm">Audit Trail</Label>
@@ -194,11 +193,11 @@ export default function SettingsPage() {
                 />
               </div>
             </CardContent>
-            <CardFooter className="bg-black/5 p-8 border-t border-foreground/10">
+            <CardFooter className="bg-muted/30 p-8 border-t">
               <Button 
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
+                className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"
               >
                 {saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
                 {saving ? "Saving Changes..." : "Save Changes"}

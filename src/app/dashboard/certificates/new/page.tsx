@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -147,7 +146,7 @@ export default function NewCertificatePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-5 space-y-6">
-          <Card className="border-2 border-foreground shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-card">
+          <Card className="shadow-sm border">
             <CardHeader>
               <CardTitle className="font-headline text-2xl font-bold uppercase">Employee Information</CardTitle>
             </CardHeader>
@@ -157,7 +156,6 @@ export default function NewCertificatePage() {
                 <Input 
                   id="employeeName" 
                   placeholder="e.g. Juan Dela Cruz" 
-                  className="border-foreground/20"
                   value={formData.employeeName}
                   onChange={(e) => setFormData({...formData, employeeName: e.target.value})}
                 />
@@ -169,10 +167,10 @@ export default function NewCertificatePage() {
                   value={formData.certificateType}
                   onValueChange={(v) => setFormData({...formData, certificateType: v})}
                 >
-                  <SelectTrigger className="border-foreground/20">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border-2 border-foreground">
+                  <SelectContent>
                     <SelectItem value="Certificate of Employment">Certificate of Employment</SelectItem>
                     <SelectItem value="Certificate of Termination">Certificate of Termination</SelectItem>
                     <SelectItem value="Certificate of Recognition">Certificate of Recognition</SelectItem>
@@ -222,7 +220,7 @@ export default function NewCertificatePage() {
                     />
                     <label
                       htmlFor="present"
-                      className="text-[10px] font-bold uppercase leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      className="text-[10px] font-bold uppercase leading-none cursor-pointer"
                     >
                       Present (Current Employee)
                     </label>
@@ -236,10 +234,10 @@ export default function NewCertificatePage() {
                   value={formData.employmentStatus}
                   onValueChange={(v) => setFormData({...formData, employmentStatus: v})}
                 >
-                  <SelectTrigger className="border-foreground/20">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border-2 border-foreground">
+                  <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="Resigned">Resigned</SelectItem>
                     <SelectItem value="Terminated">Terminated</SelectItem>
@@ -260,7 +258,7 @@ export default function NewCertificatePage() {
             <CardFooter className="pt-2">
               <Button 
                 onClick={handleDraft} 
-                className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all" 
+                className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all" 
               >
                 <FileText className="mr-2 h-5 w-5" />
                 Generate & Queue
@@ -270,16 +268,16 @@ export default function NewCertificatePage() {
         </div>
 
         <div className="lg:col-span-7">
-          <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-full flex flex-col bg-card overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-foreground/10 pb-6">
+          <Card className="shadow-sm border h-full flex flex-col overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between border-b pb-6">
               <CardTitle className="font-headline font-bold text-2xl">Output Preview</CardTitle>
               {draftedNarrative && (
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="border-2 border-foreground font-bold hover:bg-primary">
+                  <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="font-bold">
                     <Download className="h-4 w-4 mr-2" />
                     PDF
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleCopy} className="border-2 border-foreground font-bold">
+                  <Button variant="outline" size="sm" onClick={handleCopy} className="font-bold">
                     {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
                     {copied ? "Copied" : "Copy"}
                   </Button>

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -46,13 +45,13 @@ export default function CertificatesPage() {
         </div>
       </div>
 
-      <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card overflow-hidden">
-        <CardHeader className="border-b border-foreground/10 pb-6 bg-black/5">
+      <Card className="shadow-sm overflow-hidden border">
+        <CardHeader className="border-b pb-6 bg-muted/20">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               placeholder="Search by employee name..." 
-              className="pl-10 border-2 border-foreground/20 rounded-none h-12" 
+              className="pl-10 h-12" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -60,13 +59,13 @@ export default function CertificatesPage() {
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-black text-background">
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead className="font-bold text-background uppercase text-xs">NAME</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Type</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Generated Date</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Status</TableHead>
-                <TableHead className="text-right font-bold text-background uppercase text-xs">Actions</TableHead>
+                <TableHead className="font-bold uppercase text-xs">NAME</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Type</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Generated Date</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Status</TableHead>
+                <TableHead className="text-right font-bold uppercase text-xs">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -77,19 +76,19 @@ export default function CertificatesPage() {
                   </TableCell>
                 </TableRow>
               ) : filteredCerts?.map((cert) => (
-                <TableRow key={cert.id} className="hover:bg-primary/5">
+                <TableRow key={cert.id} className="hover:bg-muted/30">
                   <TableCell className="font-bold">{cert.employeeName}</TableCell>
                   <TableCell className="font-medium">{cert.certificateType}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {cert.createdAt?.toDate().toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <Badge className={`rounded-none border-2 border-foreground font-bold ${getStatusColor(cert.status)}`}>
+                    <Badge className={`font-bold ${getStatusColor(cert.status)}`}>
                       {cert.status || "Pending"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="hover:bg-black hover:text-background border border-transparent hover:border-foreground">
+                    <Button variant="ghost" size="icon" className="hover:bg-primary/10">
                       <Eye className="h-4 w-4" />
                     </Button>
                   </TableCell>
