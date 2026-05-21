@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -53,7 +54,7 @@ export default function NewCertificatePage() {
 
     switch (certificateType) {
       case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${formattedStart} to ${formattedEnd}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is issued upon the request of the employee for ${purpose}.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${formattedStart} to ${formattedEnd}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated.\n\nEmployment Status: Terminated due to ${terminationReason || 'company-wide retrenchment'}.\n\nThe termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is issued upon the request of the employee for ${purpose}.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
       case "Certificate of Employment":
         return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
       case "Certificate of Recognition":
@@ -191,18 +192,6 @@ export default function NewCertificatePage() {
                 </Select>
               </div>
 
-              {formData.certificateType === "Certificate of Termination" && (
-                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <Label htmlFor="terminationReason" className="font-bold">Reason for Termination</Label>
-                  <Input 
-                    id="terminationReason" 
-                    placeholder="e.g. company-wide retrenchment" 
-                    value={formData.terminationReason}
-                    onChange={(e) => setFormData({...formData, terminationReason: e.target.value})}
-                  />
-                </div>
-              )}
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="startDate" className="font-bold uppercase text-[10px]">Start Date</Label>
@@ -268,6 +257,19 @@ export default function NewCertificatePage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {formData.certificateType === "Certificate of Termination" && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <Label htmlFor="terminationReason" className="font-bold">Reason for Termination</Label>
+                  <Input 
+                    id="terminationReason" 
+                    placeholder="e.g. company-wide retrenchment" 
+                    value={formData.terminationReason}
+                    onChange={(e) => setFormData({...formData, terminationReason: e.target.value})}
+                  />
+                  <p className="text-[10px] opacity-60 font-medium italic">This reason will appear explicitly in the narrative.</p>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
