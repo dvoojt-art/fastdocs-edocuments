@@ -44,12 +44,6 @@ export default function CertificatesPage() {
           <h2 className="text-4xl font-headline font-bold tracking-tight">Document Vault</h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Manage generated HR documents</p>
         </div>
-        <Button asChild className="rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold">
-          <Link href="/dashboard/certificates/new">
-            <FileText className="mr-2 h-4 w-4" />
-            New Certificate
-          </Link>
-        </Button>
       </div>
 
       <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card overflow-hidden">
