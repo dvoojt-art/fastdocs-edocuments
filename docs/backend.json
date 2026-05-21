@@ -23,6 +23,7 @@
       "type": "object",
       "properties": {
         "employeeName": { "type": "string" },
+        "position": { "type": "string" },
         "certificateType": { "type": "string" },
         "startDate": { "type": "string" },
         "endDate": { "type": "string" },

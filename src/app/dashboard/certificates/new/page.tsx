@@ -22,6 +22,7 @@ export default function NewCertificatePage() {
   const [copied, setCopied] = useState(false)
   const [formData, setFormData] = useState({
     employeeName: "",
+    position: "",
     certificateType: "Certificate of Employment",
     startDate: "",
     endDate: "",
@@ -43,7 +44,7 @@ export default function NewCertificatePage() {
   }
 
   const generateStaticNarrative = (data: typeof formData) => {
-    const { employeeName, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate, terminationReason } = data;
+    const { employeeName, position, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate, terminationReason } = data;
     const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     
     const formattedStart = formatDateString(startDate);
@@ -51,28 +52,29 @@ export default function NewCertificatePage() {
     
     const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
     const purpose = purposeOfCertificate || 'whatever legal purpose it may serve';
+    const roleString = position ? `, ${position},` : "";
 
     switch (certificateType) {
       case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${formattedStart} to ${formattedEnd}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}${roleString} was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${formattedStart} to ${formattedEnd}. As of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
       case "Certificate of Employment":
-        return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
+        return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName}${roleString} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
       case "Certificate of Recognition":
-        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\nGiven this ${today}.`;
+        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\nGiven this ${today}.`;
       case "Clearance Certificate":
-        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName} has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose}`;
+        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}${roleString} has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose}`;
       case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\nDate: ${today}`;
+        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure as ${position || 'a valued team member'} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\nDate: ${today}`;
       default:
-        return `Document for ${employeeName}\nStatus: ${employmentStatus}\nPurpose: ${purpose}`;
+        return `Document for ${employeeName}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}`;
     }
   }
 
   const handleDraft = () => {
-    if (!formData.employeeName || !formData.startDate || !formData.endDate) {
+    if (!formData.employeeName || !formData.position || !formData.startDate || !formData.endDate) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all mandatory fields.",
+        description: "Please fill in all mandatory fields including Position.",
         variant: "destructive"
       })
       return
@@ -170,6 +172,16 @@ export default function NewCertificatePage() {
                   placeholder="e.g. Juan Dela Cruz" 
                   value={formData.employeeName}
                   onChange={(e) => setFormData({...formData, employeeName: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="position" className="font-bold">Position</Label>
+                <Input 
+                  id="position" 
+                  placeholder="e.g. Sales Specialist" 
+                  value={formData.position}
+                  onChange={(e) => setFormData({...formData, position: e.target.value})}
                 />
               </div>
               
