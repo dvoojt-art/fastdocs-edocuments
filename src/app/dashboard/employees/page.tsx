@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, UserPlus, MoreHorizontal, Loader2, Mail, Copy, Edit, Trash2 } from "lucide-react"
+import { Search, UserPlus, MoreHorizontal, Loader2, Mail, Copy, Edit, Trash2, Users } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore"
@@ -79,10 +79,12 @@ export default function EmployeesPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-headline font-bold tracking-tight">Employee Insight Hub</h2>
+          <h2 className="text-4xl font-headline font-bold tracking-tight">
+            Employee Insight <span className="text-primary">Hub</span>
+          </h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Manage your centralized employee database</p>
         </div>
-        <Button asChild className="rounded-none border-2 border-foreground active:translate-x-1 active:translate-y-1 transition-all h-12 font-bold shadow-none">
+        <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground transition-all shadow-none">
           <Link href="/dashboard/employees/new">
             <UserPlus className="mr-2 h-4 w-4" />
             Add Employee
@@ -90,14 +92,15 @@ export default function EmployeesPage() {
         </Button>
       </div>
 
-      <Card className="border-2 border-foreground bg-card overflow-hidden shadow-none">
-        <CardHeader className="border-b border-foreground/10 pb-6 bg-black/5">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div className="relative flex-1">
+      <Card className="shadow-none border overflow-hidden">
+        <CardHeader className="border-b bg-muted/30 pb-6">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-primary" />
+            <div className="relative flex-1 max-w-md ml-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Search employees by name, position or department..." 
-                className="pl-10 border-2 border-foreground/20 focus:border-foreground rounded-none h-12 shadow-none"
+                placeholder="Search team members..." 
+                className="pl-10 h-10 bg-background"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -106,14 +109,14 @@ export default function EmployeesPage() {
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-black text-background">
-              <TableRow className="hover:bg-transparent border-none">
-                <TableHead className="font-bold text-background uppercase text-xs">Full Name</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Position</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Department</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Status</TableHead>
-                <TableHead className="font-bold text-background uppercase text-xs">Join Date</TableHead>
-                <TableHead className="text-right font-bold text-background uppercase text-xs">Actions</TableHead>
+            <TableHeader className="bg-muted/20">
+              <TableRow>
+                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Full Name</TableHead>
+                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Position</TableHead>
+                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Department</TableHead>
+                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Status</TableHead>
+                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Join Date</TableHead>
+                <TableHead className="text-right font-bold uppercase text-[10px] tracking-wider">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,12 +124,12 @@ export default function EmployeesPage() {
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-20">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto opacity-20" />
-                    <p className="mt-4 font-bold opacity-30 uppercase text-xs">Syncing team records...</p>
+                    <p className="mt-4 font-bold opacity-30 uppercase text-[10px] tracking-widest">Syncing team records...</p>
                   </TableCell>
                 </TableRow>
               ) : filteredEmployees && filteredEmployees.length > 0 ? (
                 filteredEmployees.map((emp) => (
-                  <TableRow key={emp.id} className="hover:bg-primary/5 border-b border-foreground/5">
+                  <TableRow key={emp.id} className="hover:bg-muted/30">
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-bold">{emp.firstName} {emp.lastName}</span>
@@ -137,13 +140,13 @@ export default function EmployeesPage() {
                     </TableCell>
                     <TableCell className="font-medium">{emp.position}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="rounded-none border-foreground/20 font-bold uppercase text-[10px]">
+                      <Badge variant="secondary" className="font-bold text-[10px] uppercase">
                         {emp.department}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        className={`rounded-none border-2 border-foreground font-bold shadow-none ${
+                        className={`font-bold ${
                           emp.status === 'Active' ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'
                         }`}
                       >
@@ -156,11 +159,11 @@ export default function EmployeesPage() {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="hover:bg-black hover:text-background border border-transparent hover:border-foreground">
+                          <Button variant="ghost" size="icon">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-none border-2 border-foreground shadow-none">
+                        <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem className="font-bold cursor-pointer">
                             <Edit className="mr-2 h-4 w-4" /> Edit Profile
                           </DropdownMenuItem>

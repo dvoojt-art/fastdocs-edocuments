@@ -50,6 +50,13 @@ export default function NewEmployeePage() {
         ...formData,
         createdAt: serverTimestamp()
       })
+      .then(() => {
+        toast({
+          title: "Employee Registered",
+          description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
+        })
+        router.push("/dashboard/employees")
+      })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
           path: "employees",
@@ -58,53 +65,50 @@ export default function NewEmployeePage() {
         })
         errorEmitter.emit("permission-error", permissionError)
       })
-
-      toast({
-        title: "Employee Registered",
-        description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
-      })
-      router.push("/dashboard/employees")
+      .finally(() => setLoading(false))
     }
   }
 
   return (
     <div className="max-w-2xl mx-auto space-y-8 pb-20">
       <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon" className="border-2 border-foreground hover:bg-black hover:text-background rounded-none shadow-none">
+        <Button asChild variant="ghost" size="icon" className="hover:bg-muted">
           <Link href="/dashboard/employees">
             <ArrowLeft className="h-5 w-5" />
           </Link>
         </Button>
         <div>
-          <h2 className="text-3xl font-headline font-bold tracking-tight">Add New Employee</h2>
-          <p className="font-bold opacity-60 uppercase text-[10px] tracking-widest">Register a new team member to the hub</p>
+          <h2 className="text-3xl font-headline font-bold tracking-tight">
+            Add New <span className="text-primary">Employee</span>
+          </h2>
+          <p className="font-bold opacity-60 uppercase text-[10px] tracking-widest mt-1">Register a new team member to the hub</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <Card className="border-2 border-foreground bg-card rounded-none shadow-none">
-          <CardHeader className="bg-primary border-b border-foreground p-6">
-            <CardTitle className="font-headline font-bold text-xl uppercase text-primary-foreground">Employee Profile Details</CardTitle>
+        <Card className="shadow-none border">
+          <CardHeader className="bg-muted/30 border-b p-6">
+            <CardTitle className="font-headline font-bold text-xl uppercase">Profile Details</CardTitle>
           </CardHeader>
           <CardContent className="p-8 space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="font-bold text-xs uppercase">First Name*</Label>
+                <Label htmlFor="firstName" className="font-bold text-[10px] uppercase">First Name*</Label>
                 <Input 
                   id="firstName" 
                   placeholder="e.g. Juan" 
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
+                  className="h-12"
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="font-bold text-xs uppercase">Last Name*</Label>
+                <Label htmlFor="lastName" className="font-bold text-[10px] uppercase">Last Name*</Label>
                 <Input 
                   id="lastName" 
                   placeholder="e.g. Dela Cruz" 
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
+                  className="h-12"
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                   required
@@ -113,12 +117,12 @@ export default function NewEmployeePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-bold text-xs uppercase">Work Email*</Label>
+              <Label htmlFor="email" className="font-bold text-[10px] uppercase">Work Email*</Label>
               <Input 
                 id="email" 
                 type="email"
                 placeholder="juan@callbox.com" 
-                className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
+                className="h-12"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 required
@@ -127,26 +131,26 @@ export default function NewEmployeePage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="position" className="font-bold text-xs uppercase">Position*</Label>
+                <Label htmlFor="position" className="font-bold text-[10px] uppercase">Position*</Label>
                 <Input 
                   id="position" 
                   placeholder="e.g. Sales Specialist" 
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
+                  className="h-12"
                   value={formData.position}
                   onChange={(e) => setFormData({...formData, position: e.target.value})}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dept" className="font-bold text-xs uppercase">Department</Label>
+                <Label htmlFor="dept" className="font-bold text-[10px] uppercase">Department</Label>
                 <Select 
                   value={formData.department}
                   onValueChange={(v) => setFormData({...formData, department: v})}
                 >
-                  <SelectTrigger className="border-2 border-foreground h-12 rounded-none shadow-none">
+                  <SelectTrigger className="h-12">
                     <SelectValue placeholder="Select dept" />
                   </SelectTrigger>
-                  <SelectContent className="border-2 border-foreground rounded-none bg-background shadow-none">
+                  <SelectContent>
                     <SelectItem value="Sales">Sales</SelectItem>
                     <SelectItem value="Operations">Operations</SelectItem>
                     <SelectItem value="Engineering">Engineering</SelectItem>
@@ -159,25 +163,25 @@ export default function NewEmployeePage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="joinDate" className="font-bold text-xs uppercase">Join Date</Label>
+                <Label htmlFor="joinDate" className="font-bold text-[10px] uppercase">Join Date</Label>
                 <Input 
                   id="joinDate" 
                   type="date"
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
+                  className="h-12"
                   value={formData.joinDate}
                   onChange={(e) => setFormData({...formData, joinDate: e.target.value})}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status" className="font-bold text-xs uppercase">Employment Status</Label>
+                <Label htmlFor="status" className="font-bold text-[10px] uppercase">Employment Status</Label>
                 <Select 
                   value={formData.status}
                   onValueChange={(v) => setFormData({...formData, status: v})}
                 >
-                  <SelectTrigger className="border-2 border-foreground h-12 rounded-none shadow-none">
+                  <SelectTrigger className="h-12">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="border-2 border-foreground rounded-none bg-background shadow-none">
+                  <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="On Leave">On Leave</SelectItem>
                     <SelectItem value="Probationary">Probationary</SelectItem>
@@ -188,10 +192,10 @@ export default function NewEmployeePage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="bg-black/5 p-8 border-t border-foreground/10">
+          <CardFooter className="bg-muted/30 p-8 border-t">
             <Button 
               type="submit"
-              className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground active:translate-x-1 active:translate-y-1 transition-all shadow-none" 
+              className="w-full h-14 font-bold text-lg shadow-none" 
               disabled={loading}
             >
               {loading ? (
