@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, UserPlus, Filter, MoreHorizontal, Loader2, Mail } from "lucide-react"
+import { Search, UserPlus, MoreHorizontal, Loader2, Mail } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
@@ -28,6 +27,17 @@ export default function EmployeesPage() {
     emp.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     emp.position?.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const formatLongDate = (dateStr: string) => {
+    if (!dateStr) return "N/A";
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -56,10 +66,6 @@ export default function EmployeesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="border-2 border-foreground font-bold h-12 rounded-none">
-              <Filter className="mr-2 h-4 w-4" />
-              Advanced Filters
-            </Button>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -109,7 +115,7 @@ export default function EmployeesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground font-medium">
-                      {emp.joinDate || "N/A"}
+                      {formatLongDate(emp.joinDate)}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" className="hover:bg-black hover:text-background border border-transparent hover:border-foreground">

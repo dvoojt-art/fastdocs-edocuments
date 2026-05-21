@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,8 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, FileText, Download, Eye, Loader2, Filter } from "lucide-react"
-import Link from "next/link"
+import { Search, Eye, Loader2 } from "lucide-react"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { useState } from "react"
@@ -35,6 +33,12 @@ export default function CertificatesPage() {
       case "Pending": return "bg-primary text-primary-foreground"
       default: return "bg-muted text-muted-foreground"
     }
+  }
+
+  const formatLongDate = (date: any) => {
+    if (!date) return "N/A";
+    const d = date.toDate ? date.toDate() : new Date(date);
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
   return (
@@ -84,7 +88,7 @@ export default function CertificatesPage() {
                     <TableCell className="font-bold">{cert.employeeName}</TableCell>
                     <TableCell className="font-medium">{cert.certificateType}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {cert.createdAt?.toDate().toLocaleDateString()}
+                      {formatLongDate(cert.createdAt)}
                     </TableCell>
                     <TableCell>
                       <Badge className={`font-bold ${getStatusColor(cert.status)}`}>

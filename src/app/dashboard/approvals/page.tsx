@@ -3,8 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Check, X, Eye, Loader2, Clock } from "lucide-react"
+import { Check, X, Loader2, Clock } from "lucide-react"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, where, orderBy, doc, updateDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
@@ -47,6 +46,12 @@ export default function ApprovalsPage() {
       })
   }
 
+  const formatLongDate = (date: any) => {
+    if (!date) return "N/A";
+    const d = date.toDate ? date.toDate() : new Date(date);
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -87,7 +92,7 @@ export default function ApprovalsPage() {
                     <TableCell className="font-bold">{cert.employeeName}</TableCell>
                     <TableCell className="font-medium">{cert.certificateType}</TableCell>
                     <TableCell className="text-muted-foreground font-medium">
-                      {cert.createdAt?.toDate().toLocaleDateString()}
+                      {formatLongDate(cert.createdAt)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

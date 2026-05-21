@@ -44,6 +44,19 @@ export default function LogsPage() {
     },
   ]
 
+  const formatLongDateTime = (date: any) => {
+    if (!date) return "Just now";
+    const d = date.toDate ? date.toDate() : new Date(date);
+    return d.toLocaleString('en-US', { 
+      month: 'long', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    });
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -105,7 +118,7 @@ export default function LogsPage() {
                     </TableCell>
                     <TableCell className="font-medium">{log.employeeName}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {log.createdAt?.toDate().toLocaleString() || "Just now"}
+                      {formatLongDateTime(log.createdAt)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-bold border-green-500 text-green-600 bg-green-50">
