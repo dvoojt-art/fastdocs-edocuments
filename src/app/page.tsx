@@ -58,7 +58,7 @@ export default function HomePage() {
           <div className="container mx-auto">
             <div className="flex flex-col items-center space-y-8 text-center">
               <div className="space-y-4 max-w-4xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-foreground px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#0f326e] px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm text-[#0f326e]">
                   <Zap className="h-4 w-4 fill-current" />
                   INSTANT GENERATION
                 </div>
@@ -118,7 +118,7 @@ export default function HomePage() {
             <div className="bg-primary h-6 w-6 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xs">
               F
             </div>
-            <span className="font-headline font-bold text-lg">FastDocs</span>
+            <span className="font-headline font-bold text-lg text-[#0f326e]">FastDocs</span>
           </div>
           <p className="text-sm font-medium opacity-60 italic">
             Empowering the Davao workforce through digital transformation.
