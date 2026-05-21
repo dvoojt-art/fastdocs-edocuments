@@ -140,7 +140,9 @@ export default function NewCertificatePage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
       <div>
-        <h2 className="text-4xl font-headline font-bold tracking-tight">Create Document</h2>
+        <h2 className="text-4xl font-headline font-bold tracking-tight">
+          Create <span className="text-primary">Document</span>
+        </h2>
         <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Generate professional HR narratives instantly</p>
       </div>
 
