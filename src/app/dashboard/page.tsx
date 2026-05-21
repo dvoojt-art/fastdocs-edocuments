@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   Zap, 
@@ -8,16 +9,26 @@ import {
   Clock, 
   TrendingUp, 
   ArrowRight,
-  Loader2
+  Loader2,
+  Eye,
+  FileText
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useCollection, useFirestore } from "@/firebase"
 import { collection, query, limit, orderBy, where } from "firebase/firestore"
 import { useMemoFirebase } from "@/firebase/firestore/use-memo-firebase"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
 export default function DashboardPage() {
   const db = useFirestore()
+  const [selectedActivity, setSelectedActivity] = useState<any>(null)
 
   const certificatesQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -136,9 +147,19 @@ export default function DashboardPage() {
                     <p className="text-sm font-bold uppercase">{activity.certificateType}</p>
                     <p className="text-[10px] font-bold opacity-60 uppercase">{activity.employeeName} • {activity.status || "Pending"}</p>
                   </div>
-                  <Button asChild variant="ghost" size="icon">
-                    <Link href={`/dashboard/certificates`}><ArrowRight className="h-4 w-4" /></Link>
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="hover:bg-primary hover:text-primary-foreground border-2 border-transparent hover:border-foreground"
+                      onClick={() => setSelectedActivity(activity)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button asChild variant="ghost" size="icon" className="hover:bg-black hover:text-background border-2 border-transparent hover:border-foreground">
+                      <Link href={`/dashboard/certificates`}><ArrowRight className="h-4 w-4" /></Link>
+                    </Button>
+                  </div>
                 </div>
               ))
             ) : (
@@ -149,6 +170,33 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={!!selectedActivity} onOpenChange={() => setSelectedActivity(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none">
+          <DialogHeader className="border-b border-foreground/10 pb-4">
+            <div className="flex items-center gap-2 text-primary">
+              <FileText className="h-5 w-5" />
+              <DialogTitle className="font-headline font-bold text-2xl uppercase">Document Context</DialogTitle>
+            </div>
+            <DialogDescription className="font-bold opacity-60 uppercase text-[10px] tracking-widest">
+              Reviewing {selectedActivity?.certificateType} for {selectedActivity?.employeeName}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6">
+            <div className="bg-black/5 p-8 border-2 border-foreground/10 min-h-[200px] whitespace-pre-wrap font-medium leading-relaxed">
+              {selectedActivity?.narrative || "No narrative text available for this activity."}
+            </div>
+          </div>
+          <div className="flex justify-end pt-4">
+            <Button 
+              onClick={() => setSelectedActivity(null)}
+              className="rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all font-bold"
+            >
+              Close Preview
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
