@@ -48,7 +48,7 @@ export default function HomePage() {
             <Link href="/dashboard">Login</Link>
           </Button>
           <Button asChild size="lg" className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 border-none">
-            <Link href="/dashboard">Go to App</Link>
+            <Link href="/dashboard">Login</Link>
           </Button>
         </nav>
       </header>
