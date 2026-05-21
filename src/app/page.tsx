@@ -28,14 +28,14 @@ export default function HomePage() {
         <div className="absolute top-[50%] right-[40%] w-24 h-24 rounded-full bg-slate-100/30 animate-float" style={{ animationDelay: '1.2s' }}></div>
 
         {/* Even Bigger Yellow Circles */}
-        <div className="absolute top-[75%] left-[60%] w-32 h-32 rounded-full bg-primary/20 animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-[35%] left-[75%] w-56 h-56 rounded-full bg-primary/10 animate-float" style={{ animationDelay: '3.5s' }}></div>
-        <div className="absolute bottom-[5%] right-[25%] w-40 h-40 rounded-full bg-primary/15 animate-float" style={{ animationDelay: '1.8s' }}></div>
-        <div className="absolute top-[80%] right-[10%] w-28 h-28 rounded-full bg-primary/25 animate-float" style={{ animationDelay: '0.2s' }}></div>
+        <div className="absolute top-[75%] left-[60%] w-48 h-48 rounded-full bg-primary/20 animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[35%] left-[75%] w-72 h-72 rounded-full bg-primary/10 animate-float" style={{ animationDelay: '3.5s' }}></div>
+        <div className="absolute bottom-[5%] right-[25%] w-64 h-64 rounded-full bg-primary/15 animate-float" style={{ animationDelay: '1.8s' }}></div>
+        <div className="absolute top-[80%] right-[10%] w-56 h-56 rounded-full bg-primary/25 animate-float" style={{ animationDelay: '0.2s' }}></div>
       </div>
 
       {/* Navigation */}
-      <header className="px-6 h-20 flex items-center border-b border-foreground/10 relative z-10">
+      <header className="px-6 h-20 flex items-center border-b border-white/10 relative z-10 bg-[#0f326e] text-white">
         <div className="flex items-center gap-2">
           <div className="bg-primary h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl">
             F
@@ -43,10 +43,10 @@ export default function HomePage() {
           <span className="font-headline font-bold text-2xl tracking-tight">FastDocs</span>
         </div>
         <nav className="ml-auto flex gap-6 items-center">
-          <Button asChild variant="ghost" className="hidden sm:inline-flex font-bold hover:bg-black hover:text-background">
+          <Button asChild variant="ghost" className="hidden sm:inline-flex font-bold text-white hover:bg-white hover:text-[#0f326e]">
             <Link href="/dashboard">Login</Link>
           </Button>
-          <Button asChild size="lg" className="rounded-full font-bold">
+          <Button asChild size="lg" className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 border-none">
             <Link href="/dashboard">Go to App</Link>
           </Button>
         </nav>
