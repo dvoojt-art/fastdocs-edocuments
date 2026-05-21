@@ -25,7 +25,13 @@ export default function HomePage() {
         <div className="absolute top-[60%] right-[8%] w-12 h-12 rounded-full bg-slate-200/50 animate-float" style={{ animationDelay: '3s' }}></div>
         <div className="absolute bottom-[10%] left-[30%] w-20 h-20 rounded-full bg-slate-100/50 animate-float" style={{ animationDelay: '0.8s' }}></div>
         <div className="absolute top-[10%] left-[45%] w-16 h-16 rounded-full bg-slate-200/40 animate-float" style={{ animationDelay: '4s' }}></div>
-        <div className="absolute middle-[50%] right-[40%] w-24 h-24 rounded-full bg-slate-100/30 animate-float" style={{ animationDelay: '1.2s' }}></div>
+        <div className="absolute top-[50%] right-[40%] w-24 h-24 rounded-full bg-slate-100/30 animate-float" style={{ animationDelay: '1.2s' }}></div>
+
+        {/* Even Bigger Yellow Circles */}
+        <div className="absolute top-[75%] left-[60%] w-32 h-32 rounded-full bg-primary/20 animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[35%] left-[75%] w-56 h-56 rounded-full bg-primary/10 animate-float" style={{ animationDelay: '3.5s' }}></div>
+        <div className="absolute bottom-[5%] right-[25%] w-40 h-40 rounded-full bg-primary/15 animate-float" style={{ animationDelay: '1.8s' }}></div>
+        <div className="absolute top-[80%] right-[10%] w-28 h-28 rounded-full bg-primary/25 animate-float" style={{ animationDelay: '0.2s' }}></div>
       </div>
 
       {/* Navigation */}
