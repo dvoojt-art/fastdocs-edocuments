@@ -44,9 +44,6 @@ export default function HomePage() {
           <span className="font-headline font-bold text-2xl tracking-tight">FastDocs</span>
         </div>
         <nav className="ml-auto flex gap-6 items-center">
-          <Button asChild variant="ghost" className="hidden sm:inline-flex font-bold text-white hover:bg-white hover:text-[#0f326e]">
-            <Link href="/dashboard">Login</Link>
-          </Button>
           <Button asChild size="lg" className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 border-none">
             <Link href="/dashboard">Login</Link>
           </Button>
