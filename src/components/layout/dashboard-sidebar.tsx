@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { 
   LayoutDashboard, 
   Users, 
@@ -10,7 +10,9 @@ import {
   Settings, 
   CheckSquare, 
   Zap,
-  Activity
+  Activity,
+  LogOut,
+  ChevronUp
 } from "lucide-react"
 
 import {
@@ -26,6 +28,15 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/firebase"
+import { signOut } from "firebase/auth"
 
 const data = {
   navMain: [
@@ -84,6 +95,17 @@ const data = {
 
 export function DashboardSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const auth = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      router.push("/")
+    } catch (error) {
+      console.error("Logout failed:", error)
+    }
+  }
 
   return (
     <Sidebar collapsible="icon" className="border-r border-foreground/10">
@@ -123,16 +145,42 @@ export function DashboardSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter className="border-t border-foreground/10 p-4">
-        <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
-            JD
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold">Jane Doe</span>
-            <span className="text-[10px] font-bold uppercase opacity-50">HR Administrator</span>
-          </div>
-        </div>
+      <SidebarFooter className="border-t border-foreground/10 p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+                    JD
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">Jane Doe</span>
+                    <span className="truncate text-xs">HR Administrator</span>
+                  </div>
+                  <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                align="start"
+                sideOffset={4}
+              >
+                <DropdownMenuItem 
+                  onClick={handleLogout} 
+                  className="cursor-pointer font-bold focus:bg-destructive focus:text-destructive-foreground"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
