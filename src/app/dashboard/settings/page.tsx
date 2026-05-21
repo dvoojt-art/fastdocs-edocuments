@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
-import { Save, Building2, Bell, Shield, UserCog, Loader2 } from "lucide-react"
+import { Save, Building2, Bell, Shield, UserCog, Loader2, CheckCircle2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useFirestore, useDoc } from "@/firebase"
 import { doc, setDoc } from "firebase/firestore"
@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const { data: settings, loading: loadingSettings } = useDoc(settingsRef)
 
   const [saving, setSaving] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   const [formData, setFormData] = useState({
     companyName: "",
     address: "",
@@ -32,6 +33,7 @@ export default function SettingsPage() {
     auditTrail: true,
   })
 
+  // Sync initial data from Firestore
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -43,32 +45,46 @@ export default function SettingsPage() {
         emailNotifications: settings.emailNotifications ?? false,
         auditTrail: settings.auditTrail ?? true,
       })
+      setHasChanges(false)
     }
   }, [settings])
 
-  const handleSave = () => {
+  const saveSettings = useCallback((data: typeof formData) => {
     if (!db) return
     
     setSaving(true)
     
-    setDoc(settingsRef, formData, { merge: true })
+    setDoc(settingsRef, data, { merge: true })
       .then(() => {
-        toast({
-          title: "Settings Saved",
-          description: "Your system configurations have been updated successfully.",
-        })
+        setHasChanges(false)
       })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
           path: settingsRef.path,
           operation: "write",
-          requestResourceData: formData,
+          requestResourceData: data,
         })
         errorEmitter.emit("permission-error", permissionError)
       })
       .finally(() => {
         setSaving(false)
       })
+  }, [db, settingsRef])
+
+  // Auto-save logic: 1 second debounce
+  useEffect(() => {
+    if (!hasChanges || loadingSettings) return
+
+    const timeoutId = setTimeout(() => {
+      saveSettings(formData)
+    }, 1000)
+
+    return () => clearTimeout(timeoutId)
+  }, [formData, hasChanges, loadingSettings, saveSettings])
+
+  const handleChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    setHasChanges(true)
   }
 
   if (loadingSettings) {
@@ -81,9 +97,30 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      <div>
-        <h2 className="text-4xl font-headline font-bold tracking-tight">System Settings</h2>
-        <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Configure FastDocs for your organization</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-4xl font-headline font-bold tracking-tight">
+            System <span className="text-primary">Settings</span>
+          </h2>
+          <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Configure FastDocs for your organization</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {saving ? (
+            <div className="flex items-center gap-2 text-xs font-bold uppercase opacity-50">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Saving...
+            </div>
+          ) : !hasChanges && !loadingSettings && settings ? (
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-green-600">
+              <CheckCircle2 className="h-3 w-3" />
+              All changes saved
+            </div>
+          ) : hasChanges ? (
+            <div className="text-xs font-bold uppercase opacity-50 italic">
+              Changes pending...
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -119,7 +156,7 @@ export default function SettingsPage() {
                 <Input 
                   id="companyName" 
                   value={formData.companyName} 
-                  onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                  onChange={(e) => handleChange('companyName', e.target.value)}
                   className="h-12" 
                 />
               </div>
@@ -128,7 +165,7 @@ export default function SettingsPage() {
                 <Input 
                   id="address" 
                   value={formData.address} 
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  onChange={(e) => handleChange('address', e.target.value)}
                   className="h-12" 
                 />
               </div>
@@ -138,7 +175,7 @@ export default function SettingsPage() {
                   <Input 
                     id="hrLead" 
                     value={formData.hrLead} 
-                    onChange={(e) => setFormData({...formData, hrLead: e.target.value})}
+                    onChange={(e) => handleChange('hrLead', e.target.value)}
                     className="h-12" 
                   />
                 </div>
@@ -147,7 +184,7 @@ export default function SettingsPage() {
                   <Input 
                     id="email" 
                     value={formData.supportEmail} 
-                    onChange={(e) => setFormData({...formData, supportEmail: e.target.value})}
+                    onChange={(e) => handleChange('supportEmail', e.target.value)}
                     className="h-12" 
                   />
                 </div>
@@ -167,7 +204,7 @@ export default function SettingsPage() {
                 </div>
                 <Switch 
                   checked={formData.autoSaveDrafts} 
-                  onCheckedChange={(checked) => setFormData({...formData, autoSaveDrafts: checked})}
+                  onCheckedChange={(checked) => handleChange('autoSaveDrafts', checked)}
                 />
               </div>
               <Separator />
@@ -178,7 +215,7 @@ export default function SettingsPage() {
                 </div>
                 <Switch 
                   checked={formData.emailNotifications} 
-                  onCheckedChange={(checked) => setFormData({...formData, emailNotifications: checked})}
+                  onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
                 />
               </div>
               <Separator />
@@ -189,18 +226,18 @@ export default function SettingsPage() {
                 </div>
                 <Switch 
                   checked={formData.auditTrail} 
-                  onCheckedChange={(checked) => setFormData({...formData, auditTrail: checked})}
+                  onCheckedChange={(checked) => handleChange('auditTrail', checked)}
                 />
               </div>
             </CardContent>
             <CardFooter className="bg-muted/30 p-8 border-t">
               <Button 
-                onClick={handleSave}
-                disabled={saving}
+                onClick={() => saveSettings(formData)}
+                disabled={saving || !hasChanges}
                 className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"
               >
                 {saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-                {saving ? "Saving Changes..." : "Save Changes"}
+                {saving ? "Saving Changes..." : "Save Changes Now"}
               </Button>
             </CardFooter>
           </Card>
