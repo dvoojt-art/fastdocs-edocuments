@@ -69,7 +69,7 @@ export default function HomePage() {
                     </span>
                   </span>
                   x Davao <br />
-                  Online Documents
+                  e-Documents
                 </h1>
                 <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80 mt-6">
                   The centralized hub for Callbox Davao employees to request and access official HR documents and certificates instantly.
@@ -88,7 +88,7 @@ export default function HomePage() {
         </section>
 
         {/* Simplified Benefits */}
-        <section className="w-full py-20 border-t border-foreground/10 bg-background/80 backdrop-blur-sm">
+        <section id="benefits" className="w-full py-20 border-t border-foreground/10 bg-background/80 backdrop-blur-sm">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
               <div className="space-y-4">
