@@ -37,6 +37,8 @@ export default function NewCertificatePage() {
     const purpose = purposeOfCertificate || 'general reference';
 
     switch (certificateType) {
+      case "Certificate of Termination":
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${startDate} to ${endDate}.\n\nAs of ${endDate}, the employment of the above-named employee has been officially terminated due to company-wide retrenchment. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is issued upon the request of the employee for whatever legal purpose it may serve.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
       case "Certificate of Employment":
         return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
       case "Certificate of Recognition":
@@ -51,7 +53,7 @@ export default function NewCertificatePage() {
   }
 
   const handleDraft = () => {
-    if (!formData.employeeName || !formData.startDate || !formData.endDate || !formData.purposeOfCertificate) {
+    if (!formData.employeeName || !formData.startDate || !formData.endDate) {
       toast({
         title: "Missing Information",
         description: "Please fill in all mandatory fields.",
@@ -157,6 +159,7 @@ export default function NewCertificatePage() {
                   </SelectTrigger>
                   <SelectContent className="bg-background border-2 border-foreground">
                     <SelectItem value="Certificate of Employment">Certificate of Employment</SelectItem>
+                    <SelectItem value="Certificate of Termination">Certificate of Termination</SelectItem>
                     <SelectItem value="Certificate of Recognition">Certificate of Recognition</SelectItem>
                     <SelectItem value="Clearance Certificate">Clearance Certificate</SelectItem>
                     <SelectItem value="Recommendation Letter">Recommendation Letter</SelectItem>
