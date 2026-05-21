@@ -410,15 +410,17 @@ export default function NewCertificatePage() {
                 </div>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
-                <Input 
-                  id="purpose" 
-                  placeholder={formData.certificateType === "Certificate of Employment" ? "e.g. employment purposes only" : "e.g. Bank loan application"} 
-                  value={formData.purposeOfCertificate}
-                  onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
-                />
-              </div>
+              {formData.certificateType !== "Certificate of Termination" && (
+                <div className="space-y-2">
+                  <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
+                  <Input 
+                    id="purpose" 
+                    placeholder={formData.certificateType === "Certificate of Employment" ? "e.g. employment purposes only" : "e.g. Bank loan application"} 
+                    value={formData.purposeOfCertificate}
+                    onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
+                  />
+                </div>
+              )}
             </CardContent>
             <CardFooter className="pt-2">
               <Button 
