@@ -62,7 +62,7 @@ export default function CertificatesPage() {
           <Table>
             <TableHeader className="bg-black text-background">
               <TableRow>
-                <TableHead className="font-bold text-background uppercase text-xs">Employee Name</TableHead>
+                <TableHead className="font-bold text-background uppercase text-xs">NAME</TableHead>
                 <TableHead className="font-bold text-background uppercase text-xs">Type</TableHead>
                 <TableHead className="font-bold text-background uppercase text-xs">Generated Date</TableHead>
                 <TableHead className="font-bold text-background uppercase text-xs">Status</TableHead>
