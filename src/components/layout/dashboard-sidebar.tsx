@@ -12,7 +12,8 @@ import {
   Zap,
   Activity,
   LogOut,
-  ChevronUp
+  ChevronUp,
+  Users
 } from "lucide-react"
 
 import {
@@ -47,6 +48,11 @@ const data = {
           title: "Dashboard",
           url: "/dashboard",
           icon: LayoutDashboard,
+        },
+        {
+          title: "Employees",
+          url: "/dashboard/employees",
+          icon: Users,
         },
         {
           title: "Documents",
