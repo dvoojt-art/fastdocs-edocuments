@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,7 +41,9 @@ export default function CertificatesPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-headline font-bold tracking-tight">Document Vault</h2>
+          <h2 className="text-4xl font-headline font-bold tracking-tight">
+            Document <span className="text-primary">Vault</span>
+          </h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Manage generated HR documents</p>
         </div>
       </div>
@@ -75,25 +78,33 @@ export default function CertificatesPage() {
                     <Loader2 className="h-8 w-8 animate-spin mx-auto opacity-20" />
                   </TableCell>
                 </TableRow>
-              ) : filteredCerts?.map((cert) => (
-                <TableRow key={cert.id} className="hover:bg-muted/30">
-                  <TableCell className="font-bold">{cert.employeeName}</TableCell>
-                  <TableCell className="font-medium">{cert.certificateType}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {cert.createdAt?.toDate().toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`font-bold ${getStatusColor(cert.status)}`}>
-                      {cert.status || "Pending"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="hover:bg-primary/10">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+              ) : filteredCerts && filteredCerts.length > 0 ? (
+                filteredCerts.map((cert) => (
+                  <TableRow key={cert.id} className="hover:bg-muted/30">
+                    <TableCell className="font-bold">{cert.employeeName}</TableCell>
+                    <TableCell className="font-medium">{cert.certificateType}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {cert.createdAt?.toDate().toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`font-bold ${getStatusColor(cert.status)}`}>
+                        {cert.status || "Pending"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" className="hover:bg-primary/10">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-20 opacity-40 italic">
+                    {searchTerm ? "No documents match your search criteria." : "No documents found in the vault."}
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
