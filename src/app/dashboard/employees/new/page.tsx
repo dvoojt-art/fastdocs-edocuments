@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -185,6 +186,7 @@ export default function NewEmployeePage() {
                     <SelectItem value="On Leave">On Leave</SelectItem>
                     <SelectItem value="Probationary">Probationary</SelectItem>
                     <SelectItem value="Resigned">Resigned</SelectItem>
+                    <SelectItem value="End of Contract">End of Contract</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

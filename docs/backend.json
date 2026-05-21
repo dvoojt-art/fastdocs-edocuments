@@ -11,7 +11,7 @@
         "email": { "type": "string", "format": "email" },
         "position": { "type": "string" },
         "department": { "type": "string" },
-        "status": { "type": "string", "enum": ["Active", "On Leave", "Probationary", "Resigned"] },
+        "status": { "type": "string", "enum": ["Active", "On Leave", "Probationary", "Resigned", "End of Contract"] },
         "joinDate": { "type": "string", "format": "date" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
