@@ -175,45 +175,45 @@ export default function NewCertificatePage() {
     
     // Header - Top yellow decorative bars
     doc.setFillColor(255, 210, 100)
-    doc.rect(margin, 10, contentWidth, 2, 'F')
+    doc.rect(margin, 5, contentWidth, 1.5, 'F')
     doc.setFillColor(255, 180, 50)
-    doc.rect(margin, 13, contentWidth * 0.4, 1, 'F')
+    doc.rect(margin, 7.5, contentWidth * 0.4, 0.8, 'F')
     
     // Header Bar - Gray Angled Background
     doc.setFillColor(240, 242, 245)
-    doc.rect(margin, 20, contentWidth, 25, 'F')
+    doc.rect(margin, 10, contentWidth, 20, 'F')
     doc.setFillColor(100, 115, 130)
-    doc.triangle(margin + contentWidth * 0.6, 20, margin + contentWidth, 20, margin + contentWidth, 45, 'F')
-    doc.rect(margin + contentWidth * 0.6, 20, contentWidth * 0.4, 25, 'F')
+    doc.triangle(margin + contentWidth * 0.65, 10, margin + contentWidth, 10, margin + contentWidth, 30, 'F')
+    doc.rect(margin + contentWidth * 0.65, 10, contentWidth * 0.35, 20, 'F')
     
     // Logo Text
     doc.setTextColor(15, 50, 110)
     doc.setFont("helvetica", "bold")
-    doc.setFontSize(24)
-    doc.text("callbox", margin + 10, 35)
+    doc.setFontSize(20)
+    doc.text("callbox", margin + 8, 22)
     
     doc.setTextColor(120, 130, 140)
-    doc.setFontSize(10)
-    doc.text("ContactDB, Inc.", margin + 10, 42)
+    doc.setFontSize(8)
+    doc.text("ContactDB, Inc.", margin + 8, 27)
     
     // Right Header Text
     doc.setTextColor(255, 255, 255)
-    doc.setFontSize(9)
+    doc.setFontSize(8)
     doc.setFont("helvetica", "bold")
-    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 10, 32, { align: "right" })
-    doc.text("SALES SUPPORT", margin + contentWidth - 10, 37, { align: "right" })
+    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 8, 18, { align: "right" })
+    doc.text("SALES SUPPORT", margin + contentWidth - 8, 22, { align: "right" })
     
     // Content Styling
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(10) // Slightly smaller font to fit longer text
+    doc.setFontSize(8.5) // Reduced font size to fit more content
     
     const lines = draftedNarrative.split('\n')
-    let currentY = 65
+    let currentY = 40
 
-    lines.forEach((line, index) => {
+    lines.forEach((line) => {
       if (line.trim() === "") {
-        currentY += 5
+        currentY += 4 // Reduced empty line spacing
         return
       }
 
@@ -222,58 +222,49 @@ export default function NewCertificatePage() {
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(16)
+        doc.setFontSize(14)
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 15
+        currentY += 10
         doc.setFont("helvetica", "normal")
-        doc.setFontSize(10)
+        doc.setFontSize(8.5)
       } else if (isIssuedLine) {
-        currentY += 5
+        currentY += 4
         doc.text(line, margin, currentY)
-        currentY += 20
+        currentY += 12
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
-        // Check for page overflow
-        if (currentY + (splitText.length * 6) > pageHeight - 40) {
-            doc.addPage()
-            currentY = 20
-        }
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 5) + 2
+        currentY += (splitText.length * 4.2) + 1 // Tighter leading
       }
     })
 
-    // Signature Block
-    if (currentY + 20 > pageHeight - 40) {
-        doc.addPage()
-        currentY = 20
-    }
-    const signatureY = currentY + 10
+    // Signature Block - Moved up
+    const signatureY = currentY + 5
     doc.setFont("helvetica", "bold")
     doc.text("Orwill Jane M. Linaza", margin, signatureY)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(9)
-    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 5)
+    doc.setFontSize(8)
+    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 4)
     
-    // Footer Section
-    const footerY = pageHeight - 30
+    // Footer Section - Positioned closer to bottom but safe
+    const footerY = pageHeight - 18
     doc.setDrawColor(230, 230, 230)
-    doc.setLineWidth(0.5)
+    doc.setLineWidth(0.3)
     doc.line(margin, footerY, pageWidth - margin, footerY)
     
     const colWidth = contentWidth / 6
-    doc.setFontSize(6)
+    doc.setFontSize(5.5)
     doc.setTextColor(150, 150, 150)
     
     FOOTER_DATA.forEach((item, i) => {
       const x = margin + (i * colWidth)
       doc.setFont("helvetica", "bold")
-      doc.text(item.city, x, footerY + 5)
+      doc.text(item.city, x, footerY + 3)
       doc.setFont("helvetica", "normal")
-      const addrLines = doc.splitTextToSize(item.address, colWidth - 5)
-      doc.text(addrLines, x, footerY + 8)
+      const addrLines = doc.splitTextToSize(item.address, colWidth - 4)
+      doc.text(addrLines, x, footerY + 5.5)
       if (item.phone) {
-        doc.text(item.phone, x, footerY + 8 + (addrLines.length * 3))
+        doc.text(item.phone, x, footerY + 5.5 + (addrLines.length * 2.5))
       }
     })
 
@@ -461,21 +452,21 @@ export default function NewCertificatePage() {
             <CardContent className="flex-1 p-0 bg-white flex flex-col">
               {draftedNarrative ? (
                 <div className="flex-1 flex flex-col">
-                  <div className="p-12 space-y-6 flex-1">
-                    <div className="max-w-2xl mx-auto space-y-8">
+                  <div className="p-8 space-y-4 flex-1">
+                    <div className="max-w-2xl mx-auto space-y-4">
                       {/* Header Simulation */}
-                      <div className="border-b-2 border-primary pb-4 mb-8 flex justify-between items-end">
+                      <div className="border-b-2 border-primary pb-3 mb-4 flex justify-between items-end">
                         <div>
-                          <h3 className="text-2xl font-bold text-[#0f326e] italic">callbox</h3>
-                          <p className="text-[10px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
+                          <h3 className="text-xl font-bold text-[#0f326e] italic">callbox</h3>
+                          <p className="text-[8px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
+                          <p className="text-[8px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
                         </div>
                       </div>
 
                       {draftedNarrative.split('\n').map((line, i) => {
-                        if (line.trim() === "") return <div key={i} className="h-4" />;
+                        if (line.trim() === "") return <div key={i} className="h-2" />;
                         
                         const isTitle = line === "CERTIFICATION" || line === "CERTIFICATE OF EMPLOYMENT" || line === "CERTIFICATE OF TERMINATION" || line === "CERTIFICATE OF RECOGNITION" || line === "CLEARANCE CERTIFICATE" || line === "LETTER OF RECOMMENDATION";
                         const isIssuedLine = line.includes("Issued this");
@@ -484,9 +475,9 @@ export default function NewCertificatePage() {
                           <p 
                             key={i} 
                             className={cn(
-                              "text-sm leading-[1.6] font-medium font-body text-foreground",
-                              isTitle ? "text-center font-bold uppercase tracking-wider mb-8 text-2xl" : "text-justify",
-                              isIssuedLine ? "mt-12 font-semibold italic" : ""
+                              "text-[10px] leading-[1.4] font-medium font-body text-foreground",
+                              isTitle ? "text-center font-bold uppercase tracking-wider mb-4 text-lg" : "text-justify",
+                              isIssuedLine ? "mt-6 font-semibold italic" : ""
                             )}
                           >
                             {line}
@@ -495,23 +486,23 @@ export default function NewCertificatePage() {
                       })}
 
                       {/* Signature Simulation */}
-                      <div className="mt-16 pt-8">
-                        <div className="w-64 border-t border-muted-foreground/30 pt-2">
-                          <p className="font-bold text-lg">Orwill Jane M. Linaza</p>
-                          <p className="text-sm opacity-60">People Operations Officer | HR & Administrator</p>
+                      <div className="mt-8 pt-4">
+                        <div className="w-56 border-t border-muted-foreground/30 pt-1">
+                          <p className="font-bold text-base">Orwill Jane M. Linaza</p>
+                          <p className="text-[9px] opacity-60">People Operations Officer | HR & Administrator</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Footer Simulation */}
-                  <div className="border-t border-muted-foreground/10 p-6 bg-muted/5">
-                    <div className="grid grid-cols-6 gap-2">
+                  <div className="border-t border-muted-foreground/10 p-4 bg-muted/5">
+                    <div className="grid grid-cols-6 gap-1">
                       {FOOTER_DATA.map((item, i) => (
-                        <div key={i} className="space-y-1">
-                          <p className="text-[8px] font-bold uppercase text-muted-foreground">{item.city}</p>
-                          <p className="text-[7px] leading-tight text-muted-foreground/70">{item.address}</p>
-                          {item.phone && <p className="text-[7px] font-medium text-muted-foreground/70">{item.phone}</p>}
+                        <div key={i} className="space-y-0.5">
+                          <p className="text-[7px] font-bold uppercase text-muted-foreground">{item.city}</p>
+                          <p className="text-[6px] leading-tight text-muted-foreground/70">{item.address}</p>
+                          {item.phone && <p className="text-[6px] font-medium text-muted-foreground/70">{item.phone}</p>}
                         </div>
                       ))}
                     </div>
