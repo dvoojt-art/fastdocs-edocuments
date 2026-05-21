@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -100,23 +101,22 @@ export default function NewCertificatePage() {
     const formattedStart = formatDateString(startDate);
     const formattedEnd = formatDateString(endDate);
     
-    const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart}, to ${formattedEnd}`;
-    const purpose = purposeOfCertificate || 'whatever legal purpose it may serve';
+    const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
+    const purpose = purposeOfCertificate || 'employment purposes only';
     
-    const roleString = position ? `, holding the position of ${position},` : "";
     const issuedLine = getIssuedDateString();
 
     switch (certificateType) {
-      case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}${roleString} was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
       case "Certificate of Employment":
-        return `CERTIFICATE OF EMPLOYMENT\n\nTO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName}${roleString} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\n${issuedLine}`;
+        return `CERTIFICATION\n\nThis is to certify that ${employeeName} was an employee of Contact DB Inc. (Callbox Inc.) ${period} as a ${position}.\n\nThis is to further certify that he/she is cleared from all money and property accountabilities with the company.\n\nThis also serves notice that employee is bound by surviving confidentiality and non-competition provisions in his contract with Contact DB Incorporated, quoted as follows:\n\n"Confidentiality. During the Employment Period and for an indefinite period thereafter, an employee shall not use, divulge, communicate or disclose any protected intellectual property, confidential information, trade secrets, records relating to the business, affairs, products or services of Contact DB Incorporated or its affiliates, or any Person having dealings therewith, or permit or encourage the use of such confidential information by another."\n\n"Non-Competition. During the Employment Period and within One year from the termination thereof:\n\nEmployee shall not promote, participate, engage or have any other interest directly or indirectly, in any other business, undertaking or activity similar or substantially similar to the business operations or activities of Contact DB Incorporated or any of its affiliates, in any jurisdiction where the company is holding office. For this purpose, "directly or indirectly engage in any business similar to or substantially similar to that of Contact DB Incorporated" shall include, but is not limited to, engaging in the same business as owner, partner, agent, representative, consultant, officer, director or as an employee of any person, firm, or corporation or other entity;\n\nNeither shall employee directly or indirectly solicit, obtain, secure or render services to any prospective or present client which has been solicited or serviced by Contact DB Incorporated. Or any of its affiliates; nor shall an employee recruits any of the employees of the Company including those of its affiliates to engage in a business similar or the same to that of Contact DB Incorporated."\n\nThis certification is issued as requested by the above-named employee for ${purpose}.\n\n${issuedLine}`;
+      case "Certificate of Termination":
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, holding the position of ${position}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
       case "Certificate of Recognition":
         return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\n${issuedLine}`;
       case "Clearance Certificate":
-        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}${roleString} has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose}\n\n${issuedLine}`;
+        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}, holding the position of ${position}, has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose || 'whatever legal purpose it may serve'}\n\n${issuedLine}`;
       case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure ${roleString} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\n${issuedLine}`;
+        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure as ${position} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\n${issuedLine}`;
       default:
         return `Document for ${employeeName}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}\n\n${issuedLine}`;
     }
@@ -206,45 +206,54 @@ export default function NewCertificatePage() {
     // Content Styling
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(11)
+    doc.setFontSize(10) // Slightly smaller font to fit longer text
     
     const lines = draftedNarrative.split('\n')
-    let currentY = 70
+    let currentY = 65
 
     lines.forEach((line, index) => {
       if (line.trim() === "") {
-        currentY += 6
+        currentY += 5
         return
       }
 
-      const isTitle = index === 0;
+      const isTitle = line === "CERTIFICATION" || line === "CERTIFICATE OF EMPLOYMENT" || line === "CERTIFICATE OF TERMINATION" || line === "CERTIFICATE OF RECOGNITION" || line === "CLEARANCE CERTIFICATE" || line === "LETTER OF RECOMMENDATION";
       const isIssuedLine = line.includes("Issued this");
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
         doc.setFontSize(16)
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 20
+        currentY += 15
         doc.setFont("helvetica", "normal")
-        doc.setFontSize(11)
+        doc.setFontSize(10)
       } else if (isIssuedLine) {
-        currentY += 10
+        currentY += 5
         doc.text(line, margin, currentY)
-        currentY += 25
+        currentY += 20
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
+        // Check for page overflow
+        if (currentY + (splitText.length * 6) > pageHeight - 40) {
+            doc.addPage()
+            currentY = 20
+        }
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 7) + 2
+        currentY += (splitText.length * 5) + 2
       }
     })
 
     // Signature Block
+    if (currentY + 20 > pageHeight - 40) {
+        doc.addPage()
+        currentY = 20
+    }
     const signatureY = currentY + 10
     doc.setFont("helvetica", "bold")
     doc.text("Orwill Jane M. Linaza", margin, signatureY)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(10)
-    doc.text("People Operations Support", margin, signatureY + 6)
+    doc.setFontSize(9)
+    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 5)
     
     // Footer Section
     const footerY = pageHeight - 30
@@ -410,17 +419,15 @@ export default function NewCertificatePage() {
                 </div>
               )}
 
-              {formData.certificateType !== "Certificate of Termination" && (
-                <div className="space-y-2">
-                  <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
-                  <Input 
-                    id="purpose" 
-                    placeholder="e.g. Bank loan application" 
-                    value={formData.purposeOfCertificate}
-                    onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
-                  />
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
+                <Input 
+                  id="purpose" 
+                  placeholder={formData.certificateType === "Certificate of Employment" ? "e.g. employment purposes only" : "e.g. Bank loan application"} 
+                  value={formData.purposeOfCertificate}
+                  onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
+                />
+              </div>
             </CardContent>
             <CardFooter className="pt-2">
               <Button 
@@ -470,15 +477,15 @@ export default function NewCertificatePage() {
                       {draftedNarrative.split('\n').map((line, i) => {
                         if (line.trim() === "") return <div key={i} className="h-4" />;
                         
-                        const isTitle = i === 0;
+                        const isTitle = line === "CERTIFICATION" || line === "CERTIFICATE OF EMPLOYMENT" || line === "CERTIFICATE OF TERMINATION" || line === "CERTIFICATE OF RECOGNITION" || line === "CLEARANCE CERTIFICATE" || line === "LETTER OF RECOMMENDATION";
                         const isIssuedLine = line.includes("Issued this");
                         
                         return (
                           <p 
                             key={i} 
                             className={cn(
-                              "text-lg leading-[1.8] font-medium font-body text-foreground",
-                              isTitle ? "text-center font-bold uppercase tracking-wider mb-12 text-2xl" : "text-justify",
+                              "text-sm leading-[1.6] font-medium font-body text-foreground",
+                              isTitle ? "text-center font-bold uppercase tracking-wider mb-8 text-2xl" : "text-justify",
                               isIssuedLine ? "mt-12 font-semibold italic" : ""
                             )}
                           >
@@ -489,9 +496,9 @@ export default function NewCertificatePage() {
 
                       {/* Signature Simulation */}
                       <div className="mt-16 pt-8">
-                        <div className="w-48 border-t border-muted-foreground/30 pt-2">
+                        <div className="w-64 border-t border-muted-foreground/30 pt-2">
                           <p className="font-bold text-lg">Orwill Jane M. Linaza</p>
-                          <p className="text-sm opacity-60">People Operations Support</p>
+                          <p className="text-sm opacity-60">People Operations Officer | HR & Administrator</p>
                         </div>
                       </div>
                     </div>
