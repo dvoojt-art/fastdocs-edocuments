@@ -59,7 +59,7 @@ export default function HomePage() {
           <div className="container mx-auto">
             <div className="flex flex-col items-center space-y-8 text-center">
               <div className="space-y-4 max-w-4xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#0f326e] px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm text-[#0f326e]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#0f326e] px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm text-[#0f326e] -mt-12 mb-4">
                   <Zap className="h-4 w-4 fill-current" />
                   INSTANT GENERATION
                 </div>
