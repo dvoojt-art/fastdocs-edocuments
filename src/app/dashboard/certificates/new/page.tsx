@@ -14,7 +14,7 @@ import { useFirestore } from "@/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
-import { jsPDF } from "jspdf"
+import { jsPDF } from "jsPDF"
 import { cn } from "@/lib/utils"
 
 export default function NewCertificatePage() {
@@ -60,7 +60,7 @@ export default function NewCertificatePage() {
       case "Certificate of Termination":
         return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}${roleString} was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${formattedStart} to ${formattedEnd}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
       case "Certificate of Employment":
-        return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName}${roleString} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
+        return `CERTIFICATE OF EMPLOYMENT\n\nTO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName}${roleString} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
       case "Certificate of Recognition":
         return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\nGiven this ${today}.`;
       case "Clearance Certificate":
@@ -148,22 +148,22 @@ export default function NewCertificatePage() {
 
     lines.forEach((line, index) => {
       if (line.trim() === "") {
-        currentY += 5 // 0.5 spacing equivalent in PDF units
+        currentY += 8 // Increased paragraph spacing (approx 0.5 space)
         return
       }
 
-      // Center the first non-empty line (usually the title)
       const isTitle = index === 0;
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 12
+        currentY += 15
         doc.setFont("helvetica", "normal")
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
+        // Using justify alignment for body text
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 6) + 4
+        currentY += (splitText.length * 7) + 2 // Added extra spacing between lines (1.8 spacing feel)
       }
     })
     
@@ -356,7 +356,7 @@ export default function NewCertificatePage() {
                 <div className="p-10 h-full overflow-y-auto">
                   <div className="max-w-2xl mx-auto space-y-6">
                     {draftedNarrative.split('\n').map((line, i) => {
-                      if (line.trim() === "") return <div key={i} className="h-2" />;
+                      if (line.trim() === "") return <div key={i} className="h-4" />;
                       
                       const isHeader = i === 0 || (line === line.toUpperCase() && line.length > 5 && i < 3);
                       
