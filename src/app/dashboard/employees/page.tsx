@@ -5,14 +5,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, UserPlus, MoreHorizontal, Loader2, Mail } from "lucide-react"
+import { Search, UserPlus, MoreHorizontal, Loader2, Mail, Copy, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy } from "firebase/firestore"
+import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore"
 import { useState } from "react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useToast } from "@/hooks/use-toast"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError } from "@/firebase/errors"
 
 export default function EmployeesPage() {
   const db = useFirestore()
+  const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState("")
 
   const employeesQuery = useMemoFirebase(() => {
@@ -37,6 +47,32 @@ export default function EmployeesPage() {
     } catch (e) {
       return dateStr;
     }
+  }
+
+  const handleCopyEmail = (email: string) => {
+    navigator.clipboard.writeText(email)
+    toast({
+      title: "Email Copied",
+      description: "Work email copied to clipboard.",
+    })
+  }
+
+  const handleDelete = (id: string, name: string) => {
+    if (!db) return
+    const docRef = doc(db, "employees", id)
+    deleteDoc(docRef)
+      .catch(async (err) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: "delete"
+        })
+        errorEmitter.emit("permission-error", permissionError)
+      })
+    
+    toast({
+      title: "Record Deleted",
+      description: `Employee ${name} has been removed from the hub.`,
+    })
   }
 
   return (
@@ -118,9 +154,24 @@ export default function EmployeesPage() {
                       {formatLongDate(emp.joinDate)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="hover:bg-black hover:text-background border border-transparent hover:border-foreground">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="hover:bg-black hover:text-background border border-transparent hover:border-foreground">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <DropdownMenuItem className="font-bold cursor-pointer">
+                            <Edit className="mr-2 h-4 w-4" /> Edit Profile
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleCopyEmail(emp.email)} className="font-bold cursor-pointer">
+                            <Copy className="mr-2 h-4 w-4" /> Copy Email
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDelete(emp.id, `${emp.firstName} ${emp.lastName}`)} className="font-bold cursor-pointer text-destructive focus:bg-destructive focus:text-destructive-foreground">
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete Record
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))

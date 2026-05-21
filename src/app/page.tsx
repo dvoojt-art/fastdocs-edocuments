@@ -12,21 +12,16 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden">
       {/* Floating Circles layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
-        {/* Original coins */}
         <div className="absolute top-[15%] left-[10%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0s' }}></div>
         <div className="absolute top-[25%] right-[15%] w-8 h-8 rounded-full bg-black animate-float" style={{ animationDelay: '1s' }}></div>
         <div className="absolute top-[50%] left-[5%] w-5 h-5 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute bottom-[20%] right-[10%] w-7 h-7 rounded-full bg-primary animate-float" style={{ animationDelay: '1.5s' }}></div>
         <div className="absolute bottom-[30%] left-[20%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0.5s' }}></div>
         <div className="absolute top-[40%] right-[25%] w-4 h-4 rounded-full bg-black animate-float" style={{ animationDelay: '2.5s' }}></div>
-        
-        {/* Bigger Gray Circles */}
         <div className="absolute top-[60%] right-[8%] w-12 h-12 rounded-full bg-slate-200/50 animate-float" style={{ animationDelay: '3s' }}></div>
         <div className="absolute bottom-[10%] left-[30%] w-20 h-20 rounded-full bg-slate-100/50 animate-float" style={{ animationDelay: '0.8s' }}></div>
         <div className="absolute top-[10%] left-[45%] w-16 h-16 rounded-full bg-slate-200/40 animate-float" style={{ animationDelay: '4s' }}></div>
         <div className="absolute top-[50%] right-[40%] w-24 h-24 rounded-full bg-slate-100/30 animate-float" style={{ animationDelay: '1.2s' }}></div>
-
-        {/* Even Bigger Yellow Circles */}
         <div className="absolute top-[75%] left-[60%] w-48 h-48 rounded-full bg-primary/20 animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-[35%] left-[75%] w-72 h-72 rounded-full bg-primary/10 animate-float" style={{ animationDelay: '3.5s' }}></div>
         <div className="absolute bottom-[5%] right-[25%] w-64 h-64 rounded-full bg-primary/15 animate-float" style={{ animationDelay: '1.8s' }}></div>
@@ -45,13 +40,12 @@ export default function HomePage() {
         </div>
         <nav className="ml-auto flex gap-6 items-center">
           <Button asChild size="lg" className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 border-none">
-            <Link href="/dashboard">Login</Link>
+            <Link href="#benefits">Learn More</Link>
           </Button>
         </nav>
       </header>
 
       <main className="flex-1 relative z-10">
-        {/* Hero Section */}
         <section className="w-full py-20 md:py-32 lg:py-40 px-6">
           <div className="container mx-auto">
             <div className="flex flex-col items-center space-y-8 text-center">
@@ -87,7 +81,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Simplified Benefits */}
         <section id="benefits" className="w-full py-20 border-t border-foreground/10 bg-background/80 backdrop-blur-sm">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
