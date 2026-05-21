@@ -15,6 +15,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { jsPDF } from "jspdf"
+import { cn } from "@/lib/utils"
 
 export default function NewCertificatePage() {
   const db = useFirestore()
@@ -53,7 +54,6 @@ export default function NewCertificatePage() {
     const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
     const purpose = purposeOfCertificate || 'whatever legal purpose it may serve';
     
-    // Updated role string to include "holding the position of"
     const roleString = position ? `, holding the position of ${position},` : "";
 
     switch (certificateType) {
@@ -119,7 +119,10 @@ export default function NewCertificatePage() {
     
     const doc = new jsPDF()
     const pageWidth = doc.internal.pageSize.getWidth()
+    const margin = 20
+    const contentWidth = pageWidth - (margin * 2)
     
+    // Header
     doc.setFillColor(15, 50, 110)
     doc.rect(0, 0, pageWidth, 40, 'F')
     
@@ -127,7 +130,7 @@ export default function NewCertificatePage() {
     doc.setFont("helvetica", "bold")
     
     doc.setFontSize(18)
-    doc.text(formData.certificateType.toUpperCase(), 15, 15)
+    doc.text(formData.certificateType.toUpperCase(), pageWidth / 2, 15, { align: "center" })
     
     doc.setFontSize(14)
     doc.text("Callbox", 15, 28)
@@ -135,12 +138,34 @@ export default function NewCertificatePage() {
     doc.setFontSize(10)
     doc.text("LEAD MANAGEMENT AND SALES SUPPORT", pageWidth - 15, 28, { align: "right" })
     
+    // Content
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(12)
+    doc.setFontSize(11)
     
-    const splitText = doc.splitTextToSize(draftedNarrative, 180)
-    doc.text(splitText, 15, 55)
+    const lines = draftedNarrative.split('\n')
+    let currentY = 55
+
+    lines.forEach((line, index) => {
+      if (line.trim() === "") {
+        currentY += 5 // 0.5 spacing equivalent in PDF units
+        return
+      }
+
+      // Center the first non-empty line (usually the title)
+      const isTitle = index === 0;
+      
+      if (isTitle) {
+        doc.setFont("helvetica", "bold")
+        doc.text(line, pageWidth / 2, currentY, { align: "center" })
+        currentY += 12
+        doc.setFont("helvetica", "normal")
+      } else {
+        const splitText = doc.splitTextToSize(line, contentWidth)
+        doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
+        currentY += (splitText.length * 6) + 4
+      }
+    })
     
     const filename = `${formData.employeeName.replace(/\s+/g, '_')}_${formData.certificateType.replace(/\s+/g, '_')}.pdf`
     doc.save(filename)
@@ -326,12 +351,28 @@ export default function NewCertificatePage() {
                 </div>
               )}
             </CardHeader>
-            <CardContent className="flex-1 p-0">
+            <CardContent className="flex-1 p-0 bg-white">
               {draftedNarrative ? (
-                <div className="p-10 h-full bg-white">
-                  <p className="text-xl leading-relaxed whitespace-pre-wrap font-medium font-body text-foreground">
-                    {draftedNarrative}
-                  </p>
+                <div className="p-10 h-full overflow-y-auto">
+                  <div className="max-w-2xl mx-auto space-y-6">
+                    {draftedNarrative.split('\n').map((line, i) => {
+                      if (line.trim() === "") return <div key={i} className="h-2" />;
+                      
+                      const isHeader = i === 0 || (line === line.toUpperCase() && line.length > 5 && i < 3);
+                      
+                      return (
+                        <p 
+                          key={i} 
+                          className={cn(
+                            "text-lg leading-[1.8] font-medium font-body text-foreground",
+                            isHeader ? "text-center font-bold uppercase tracking-wider mb-8" : "text-justify"
+                          )}
+                        >
+                          {line}
+                        </p>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : (
                 <div className="h-full min-h-[450px] flex flex-col items-center justify-center text-center p-12 opacity-30">
