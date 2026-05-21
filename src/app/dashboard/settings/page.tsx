@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
@@ -71,13 +72,13 @@ export default function SettingsPage() {
       })
   }, [db, settingsRef])
 
-  // Auto-save logic: 1 second debounce
+  // Auto-save logic: 2 second debounce for optimized performance
   useEffect(() => {
     if (!hasChanges || loadingSettings) return
 
     const timeoutId = setTimeout(() => {
       saveSettings(formData)
-    }, 1000)
+    }, 2000)
 
     return () => clearTimeout(timeoutId)
   }, [formData, hasChanges, loadingSettings, saveSettings])
@@ -128,30 +129,30 @@ export default function SettingsPage() {
           <nav className="flex flex-col gap-2">
             <Button 
               variant="outline" 
-              className="justify-start font-bold bg-primary text-primary-foreground border-transparent shadow-sm hover:bg-primary hover:text-primary-foreground"
+              className="justify-start font-bold bg-primary text-primary-foreground border-transparent shadow-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
             >
-              <Building2 className="mr-2 h-4 w-4" />
+              <Building2 className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
               Organization
             </Button>
             <Button 
               variant="ghost" 
-              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
             >
-              <UserCog className="mr-2 h-4 w-4" />
+              <UserCog className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
               Account
             </Button>
             <Button 
               variant="ghost" 
-              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
             >
-              <Bell className="mr-2 h-4 w-4" />
+              <Bell className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
               Notifications
             </Button>
             <Button 
               variant="ghost" 
-              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
             >
-              <Shield className="mr-2 h-4 w-4" />
+              <Shield className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
               Security
             </Button>
           </nav>
