@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { 
   LayoutDashboard, 
-  Users, 
   FileText, 
   Settings, 
   CheckSquare, 
@@ -47,11 +46,6 @@ const data = {
           title: "Dashboard",
           url: "/dashboard",
           icon: LayoutDashboard,
-        },
-        {
-          title: "Employees",
-          url: "/dashboard/employees",
-          icon: Users,
         },
         {
           title: "Documents",
