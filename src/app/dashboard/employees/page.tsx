@@ -82,7 +82,7 @@ export default function EmployeesPage() {
           <h2 className="text-4xl font-headline font-bold tracking-tight">Employee Insight Hub</h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Manage your centralized employee database</p>
         </div>
-        <Button asChild className="rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all h-12 font-bold">
+        <Button asChild className="rounded-none border-2 border-foreground active:translate-x-1 active:translate-y-1 transition-all h-12 font-bold shadow-none">
           <Link href="/dashboard/employees/new">
             <UserPlus className="mr-2 h-4 w-4" />
             Add Employee
@@ -90,14 +90,14 @@ export default function EmployeesPage() {
         </Button>
       </div>
 
-      <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card overflow-hidden">
+      <Card className="border-2 border-foreground bg-card overflow-hidden shadow-none">
         <CardHeader className="border-b border-foreground/10 pb-6 bg-black/5">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search employees by name, position or department..." 
-                className="pl-10 border-2 border-foreground/20 focus:border-foreground rounded-none h-12"
+                className="pl-10 border-2 border-foreground/20 focus:border-foreground rounded-none h-12 shadow-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -107,7 +107,7 @@ export default function EmployeesPage() {
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-black text-background">
-              <TableRow className="hover:bg-transparent">
+              <TableRow className="hover:bg-transparent border-none">
                 <TableHead className="font-bold text-background uppercase text-xs">Full Name</TableHead>
                 <TableHead className="font-bold text-background uppercase text-xs">Position</TableHead>
                 <TableHead className="font-bold text-background uppercase text-xs">Department</TableHead>
@@ -143,7 +143,7 @@ export default function EmployeesPage() {
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        className={`rounded-none border-2 border-foreground font-bold ${
+                        className={`rounded-none border-2 border-foreground font-bold shadow-none ${
                           emp.status === 'Active' ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'
                         }`}
                       >
@@ -160,7 +160,7 @@ export default function EmployeesPage() {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <DropdownMenuContent align="end" className="w-48 rounded-none border-2 border-foreground shadow-none">
                           <DropdownMenuItem className="font-bold cursor-pointer">
                             <Edit className="mr-2 h-4 w-4" /> Edit Profile
                           </DropdownMenuItem>

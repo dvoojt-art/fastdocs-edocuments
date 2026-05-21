@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -101,7 +100,7 @@ export default function DashboardPage() {
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Real-time HR Operations Overview</p>
         </div>
         <div className="flex gap-3">
-          <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground shadow-sm hover:shadow-md transition-all">
+          <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground transition-all shadow-none">
             <Link href="/dashboard/certificates/new">
               <Zap className="mr-2 h-4 w-4 fill-current" />
               Quick Draft
@@ -113,7 +112,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <Link key={i} href={stat.href} className="group">
-            <Card className="bg-card hover:bg-primary transition-all duration-300 cursor-pointer h-full shadow-sm hover:shadow-md border-border hover:border-primary">
+            <Card className="bg-card hover:bg-primary transition-all duration-300 cursor-pointer h-full border-border hover:border-primary shadow-none">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 group-hover:opacity-100 group-hover:text-primary-foreground">
                   {stat.title}
@@ -137,7 +136,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <Card className="shadow-sm">
+      <Card className="shadow-none">
         <CardHeader className="border-b bg-muted/30 pb-6">
           <div className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
@@ -159,7 +158,7 @@ export default function DashboardPage() {
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="hover:bg-primary hover:text-primary-foreground"
+                      className="hover:bg-primary hover:text-primary-foreground shadow-none"
                       onClick={() => setSelectedActivity(activity)}
                     >
                       <Eye className="h-4 w-4" />
@@ -180,7 +179,7 @@ export default function DashboardPage() {
       </Card>
 
       <Dialog open={!!selectedActivity} onOpenChange={() => setSelectedActivity(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto shadow-none">
           <DialogHeader className="border-b pb-4">
             <div className="flex items-center gap-2 text-primary">
               <FileText className="h-5 w-5" />
@@ -198,7 +197,7 @@ export default function DashboardPage() {
           <div className="flex justify-end pt-4">
             <Button 
               onClick={() => setSelectedActivity(null)}
-              className="font-bold"
+              className="font-bold shadow-none"
             >
               Close Preview
             </Button>

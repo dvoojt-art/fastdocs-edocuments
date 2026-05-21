@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -47,8 +46,6 @@ export default function NewEmployeePage() {
     setLoading(true)
     
     if (db) {
-      // Initiate background write immediately without awaiting.
-      // Firebase SDK handles offline persistence and background sync.
       addDoc(collection(db, "employees"), {
         ...formData,
         createdAt: serverTimestamp()
@@ -62,7 +59,6 @@ export default function NewEmployeePage() {
         errorEmitter.emit("permission-error", permissionError)
       })
 
-      // Provide immediate feedback and navigate
       toast({
         title: "Employee Registered",
         description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
@@ -74,7 +70,7 @@ export default function NewEmployeePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8 pb-20">
       <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon" className="border-2 border-foreground hover:bg-black hover:text-background rounded-none">
+        <Button asChild variant="ghost" size="icon" className="border-2 border-foreground hover:bg-black hover:text-background rounded-none shadow-none">
           <Link href="/dashboard/employees">
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -86,7 +82,7 @@ export default function NewEmployeePage() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <Card className="border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-card">
+        <Card className="border-2 border-foreground bg-card rounded-none shadow-none">
           <CardHeader className="bg-primary border-b border-foreground p-6">
             <CardTitle className="font-headline font-bold text-xl uppercase text-primary-foreground">Employee Profile Details</CardTitle>
           </CardHeader>
@@ -97,7 +93,7 @@ export default function NewEmployeePage() {
                 <Input 
                   id="firstName" 
                   placeholder="e.g. Juan" 
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0"
+                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                   required
@@ -108,7 +104,7 @@ export default function NewEmployeePage() {
                 <Input 
                   id="lastName" 
                   placeholder="e.g. Dela Cruz" 
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0"
+                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                   required
@@ -122,7 +118,7 @@ export default function NewEmployeePage() {
                 id="email" 
                 type="email"
                 placeholder="juan@callbox.com" 
-                className="border-2 border-foreground h-12 rounded-none focus:ring-0"
+                className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 required
@@ -135,7 +131,7 @@ export default function NewEmployeePage() {
                 <Input 
                   id="position" 
                   placeholder="e.g. Sales Specialist" 
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0"
+                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
                   value={formData.position}
                   onChange={(e) => setFormData({...formData, position: e.target.value})}
                   required
@@ -147,10 +143,10 @@ export default function NewEmployeePage() {
                   value={formData.department}
                   onValueChange={(v) => setFormData({...formData, department: v})}
                 >
-                  <SelectTrigger className="border-2 border-foreground h-12 rounded-none">
+                  <SelectTrigger className="border-2 border-foreground h-12 rounded-none shadow-none">
                     <SelectValue placeholder="Select dept" />
                   </SelectTrigger>
-                  <SelectContent className="border-2 border-foreground rounded-none bg-background">
+                  <SelectContent className="border-2 border-foreground rounded-none bg-background shadow-none">
                     <SelectItem value="Sales">Sales</SelectItem>
                     <SelectItem value="Operations">Operations</SelectItem>
                     <SelectItem value="Engineering">Engineering</SelectItem>
@@ -167,7 +163,7 @@ export default function NewEmployeePage() {
                 <Input 
                   id="joinDate" 
                   type="date"
-                  className="border-2 border-foreground h-12 rounded-none focus:ring-0"
+                  className="border-2 border-foreground h-12 rounded-none focus:ring-0 shadow-none"
                   value={formData.joinDate}
                   onChange={(e) => setFormData({...formData, joinDate: e.target.value})}
                 />
@@ -178,10 +174,10 @@ export default function NewEmployeePage() {
                   value={formData.status}
                   onValueChange={(v) => setFormData({...formData, status: v})}
                 >
-                  <SelectTrigger className="border-2 border-foreground h-12 rounded-none">
+                  <SelectTrigger className="border-2 border-foreground h-12 rounded-none shadow-none">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="border-2 border-foreground rounded-none bg-background">
+                  <SelectContent className="border-2 border-foreground rounded-none bg-background shadow-none">
                     <SelectItem value="Active">Active</SelectItem>
                     <SelectItem value="On Leave">On Leave</SelectItem>
                     <SelectItem value="Probationary">Probationary</SelectItem>
@@ -195,7 +191,7 @@ export default function NewEmployeePage() {
           <CardFooter className="bg-black/5 p-8 border-t border-foreground/10">
             <Button 
               type="submit"
-              className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all" 
+              className="w-full h-14 font-bold text-lg rounded-none border-2 border-foreground active:translate-x-1 active:translate-y-1 transition-all shadow-none" 
               disabled={loading}
             >
               {loading ? (
