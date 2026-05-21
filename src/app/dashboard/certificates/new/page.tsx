@@ -43,31 +43,49 @@ export default function NewCertificatePage() {
     }
   }
 
+  const getOrdinalSuffix = (day: number) => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1:  return "st";
+      case 2:  return "nd";
+      case 3:  return "rd";
+      default: return "th";
+    }
+  }
+
+  const getIssuedDateString = () => {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.toLocaleDateString('en-US', { month: 'long' });
+    const year = today.getFullYear();
+    return `Issued this ${day}${getOrdinalSuffix(day)} day of ${month} ${year}, at Davao City, Philippines.`;
+  }
+
   const generateStaticNarrative = (data: typeof formData) => {
     const { employeeName, position, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate, terminationReason } = data;
-    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     
     const formattedStart = formatDateString(startDate);
     const formattedEnd = formatDateString(endDate);
     
-    const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
+    const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart}, to ${formattedEnd}`;
     const purpose = purposeOfCertificate || 'whatever legal purpose it may serve';
     
     const roleString = position ? `, holding the position of ${position},` : "";
+    const issuedLine = getIssuedDateString();
 
     switch (certificateType) {
       case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}${roleString} was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${formattedStart} to ${formattedEnd}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}${roleString} was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
       case "Certificate of Employment":
-        return `CERTIFICATE OF EMPLOYMENT\n\nTO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName}${roleString} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
+        return `CERTIFICATE OF EMPLOYMENT\n\nTO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName}${roleString} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\n${issuedLine}`;
       case "Certificate of Recognition":
-        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\nGiven this ${today}.`;
+        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\n${issuedLine}`;
       case "Clearance Certificate":
-        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}${roleString} has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose}`;
+        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}${roleString} has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose}\n\n${issuedLine}`;
       case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure ${roleString} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\nDate: ${today}`;
+        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure ${roleString} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\n${issuedLine}`;
       default:
-        return `Document for ${employeeName}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}`;
+        return `Document for ${employeeName}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}\n\n${issuedLine}`;
     }
   }
 
@@ -118,52 +136,86 @@ export default function NewCertificatePage() {
     
     const doc = new jsPDF()
     const pageWidth = doc.internal.pageSize.getWidth()
-    const margin = 20
+    const margin = 25
     const contentWidth = pageWidth - (margin * 2)
     
-    // Header
-    doc.setFillColor(15, 50, 110)
-    doc.rect(0, 0, pageWidth, 40, 'F')
+    // Header - Top yellow decorative bars
+    doc.setFillColor(255, 210, 100)
+    doc.rect(margin, 10, contentWidth, 2, 'F')
+    doc.setFillColor(255, 180, 50)
+    doc.rect(margin, 13, contentWidth * 0.4, 1, 'F')
     
-    doc.setTextColor(255, 255, 255)
+    // Header Bar - Gray Angled Background
+    doc.setFillColor(240, 242, 245)
+    doc.rect(margin, 20, contentWidth, 25, 'F')
+    doc.setFillColor(100, 115, 130)
+    // Angled gray part
+    doc.triangle(margin + contentWidth * 0.6, 20, margin + contentWidth, 20, margin + contentWidth, 45, 'F')
+    doc.rect(margin + contentWidth * 0.6, 20, contentWidth * 0.4, 25, 'F')
+    
+    // Logo Text
+    doc.setTextColor(15, 50, 110)
     doc.setFont("helvetica", "bold")
+    doc.setFontSize(24)
+    doc.text("callbox", margin + 10, 35)
     
-    doc.setFontSize(18)
-    doc.text(formData.certificateType.toUpperCase(), pageWidth / 2, 15, { align: "center" })
-    
-    doc.setFontSize(14)
-    doc.text("Callbox", 15, 28)
-    
+    doc.setTextColor(120, 130, 140)
     doc.setFontSize(10)
-    doc.text("LEAD MANAGEMENT AND SALES SUPPORT", pageWidth - 15, 28, { align: "right" })
+    doc.text("ContactDB, Inc.", margin + 10, 42)
     
-    // Content
+    // Right Header Text
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(9)
+    doc.setFont("helvetica", "bold")
+    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 10, 32, { align: "right" })
+    doc.text("SALES SUPPORT", margin + contentWidth - 10, 37, { align: "right" })
+    
+    // Content Styling
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
     doc.setFontSize(11)
     
     const lines = draftedNarrative.split('\n')
-    let currentY = 55
+    let currentY = 70
 
     lines.forEach((line, index) => {
       if (line.trim() === "") {
-        currentY += 8 // Spacing between paragraphs
+        currentY += 6
         return
       }
 
       const isTitle = index === 0;
+      const isIssuedLine = line.includes("Issued this");
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
+        doc.setFontSize(16)
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 15
+        currentY += 20
         doc.setFont("helvetica", "normal")
+        doc.setFontSize(11)
+      } else if (isIssuedLine) {
+        currentY += 4
+        doc.text(line, margin, currentY)
+        currentY += 20
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 7) + 2 // Adjusted for line height
+        currentY += (splitText.length * 7) + 2
       }
     })
+
+    // Signature Block
+    const signatureY = currentY + 10
+    doc.setFont("helvetica", "bold")
+    doc.text("Orwill Jane M. Linaza", margin, signatureY)
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(10)
+    doc.text("People Operations Support", margin, signatureY + 6)
+    
+    // Decorative signature line (simulated)
+    doc.setDrawColor(200, 200, 200)
+    doc.line(margin, signatureY - 5, margin + 40, signatureY - 5)
     
     const filename = `${formData.employeeName.replace(/\s+/g, '_')}_${formData.certificateType.replace(/\s+/g, '_')}.pdf`
     doc.save(filename)
@@ -350,25 +402,46 @@ export default function NewCertificatePage() {
             </CardHeader>
             <CardContent className="flex-1 p-0 bg-white">
               {draftedNarrative ? (
-                <div className="p-10 h-full overflow-y-auto">
+                <div className="p-12 h-full overflow-y-auto">
                   <div className="max-w-2xl mx-auto space-y-6">
+                    {/* Header Simulation */}
+                    <div className="border-b-2 border-primary pb-4 mb-8 flex justify-between items-end">
+                      <div>
+                        <h3 className="text-2xl font-bold text-[#0f326e] italic">callbox</h3>
+                        <p className="text-[10px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
+                      </div>
+                    </div>
+
                     {draftedNarrative.split('\n').map((line, i) => {
                       if (line.trim() === "") return <div key={i} className="h-4" />;
                       
-                      const isHeader = i === 0 || (line === line.toUpperCase() && line.length > 5 && i < 3);
+                      const isTitle = i === 0;
+                      const isIssuedLine = line.includes("Issued this");
                       
                       return (
                         <p 
                           key={i} 
                           className={cn(
                             "text-lg leading-[1.8] font-medium font-body text-foreground",
-                            isHeader ? "text-center font-bold uppercase tracking-wider mb-8" : "text-justify"
+                            isTitle ? "text-center font-bold uppercase tracking-wider mb-10 text-2xl" : "text-justify",
+                            isIssuedLine ? "mt-8 font-semibold italic" : ""
                           )}
                         >
                           {line}
                         </p>
                       );
                     })}
+
+                    {/* Signature Simulation */}
+                    <div className="mt-16 pt-8">
+                      <div className="w-48 border-t border-muted-foreground/30 pt-2">
+                        <p className="font-bold text-lg">Orwill Jane M. Linaza</p>
+                        <p className="text-sm opacity-60">People Operations Support</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
