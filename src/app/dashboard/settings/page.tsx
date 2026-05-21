@@ -10,15 +10,21 @@ import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Save, Building2, Bell, Shield, UserCog, Loader2, CheckCircle2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useFirestore, useDoc } from "@/firebase"
+import { useFirestore, useDoc, useUser, useAuth } from "@/firebase"
 import { doc, setDoc } from "firebase/firestore"
+import { updateProfile } from "firebase/auth"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+
+type Tab = 'organization' | 'account' | 'notifications' | 'security'
 
 export default function SettingsPage() {
   const { toast } = useToast()
   const db = useFirestore()
+  const auth = useAuth()
+  const { user } = useUser()
   
+  const [activeTab, setActiveTab] = useState<Tab>('organization')
   const settingsRef = doc(db, "settings", "org-config")
   const { data: settings, loading: loadingSettings } = useDoc(settingsRef)
 
@@ -34,7 +40,12 @@ export default function SettingsPage() {
     auditTrail: true,
   })
 
-  // Sync initial data from Firestore
+  const [accountData, setAccountData] = useState({
+    displayName: "",
+    email: ""
+  })
+
+  // Sync initial data from Firestore for Organization
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -49,6 +60,16 @@ export default function SettingsPage() {
       setHasChanges(false)
     }
   }, [settings])
+
+  // Sync initial data for Account from Auth
+  useEffect(() => {
+    if (user) {
+      setAccountData({
+        displayName: user.displayName || "",
+        email: user.email || ""
+      })
+    }
+  }, [user])
 
   const saveSettings = useCallback((data: typeof formData) => {
     if (!db) return
@@ -72,20 +93,42 @@ export default function SettingsPage() {
       })
   }, [db, settingsRef])
 
-  // Optimized auto-save logic: 500ms debounce for lightning fast response
+  // Auto-save logic for Organization tab
   useEffect(() => {
-    if (!hasChanges || loadingSettings) return
+    if (!hasChanges || loadingSettings || activeTab !== 'organization') return
 
     const timeoutId = setTimeout(() => {
       saveSettings(formData)
     }, 500)
 
     return () => clearTimeout(timeoutId)
-  }, [formData, hasChanges, loadingSettings, saveSettings])
+  }, [formData, hasChanges, loadingSettings, saveSettings, activeTab])
 
   const handleChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setHasChanges(true)
+  }
+
+  const handleAccountSave = async () => {
+    if (!auth.currentUser) return
+    setSaving(true)
+    try {
+      await updateProfile(auth.currentUser, {
+        displayName: accountData.displayName
+      })
+      toast({
+        title: "Profile Updated",
+        description: "Your account details have been updated successfully.",
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: "Could not update profile information.",
+      })
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (loadingSettings) {
@@ -93,6 +136,24 @@ export default function SettingsPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin opacity-20" />
       </div>
+    )
+  }
+
+  const NavButton = ({ tab, icon: Icon, label }: { tab: Tab, icon: any, label: string }) => {
+    const isActive = activeTab === tab
+    return (
+      <Button 
+        variant={isActive ? "outline" : "ghost"} 
+        onClick={() => setActiveTab(tab)}
+        className={`justify-start font-bold transition-all duration-300 group h-12 w-full ${
+          isActive 
+            ? "bg-primary text-primary-foreground border-transparent shadow-sm" 
+            : "hover:bg-primary hover:text-primary-foreground"
+        }`}
+      >
+        <Icon className={`mr-2 h-4 w-4 transition-colors ${isActive ? 'text-primary-foreground' : 'group-hover:text-white'}`} />
+        {label}
+      </Button>
     )
   }
 
@@ -111,12 +172,12 @@ export default function SettingsPage() {
               <Loader2 className="h-3 w-3 animate-spin" />
               Saving...
             </div>
-          ) : !hasChanges && !loadingSettings && settings ? (
+          ) : !hasChanges && !loadingSettings && settings && activeTab === 'organization' ? (
             <div className="flex items-center gap-2 text-xs font-bold uppercase text-green-600">
               <CheckCircle2 className="h-3 w-3" />
               All changes saved
             </div>
-          ) : hasChanges ? (
+          ) : hasChanges && activeTab === 'organization' ? (
             <div className="text-xs font-bold uppercase opacity-50 italic">
               Changes pending...
             </div>
@@ -127,133 +188,156 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-4">
           <nav className="flex flex-col gap-2">
-            <Button 
-              variant="outline" 
-              className="justify-start font-bold bg-primary text-primary-foreground border-transparent shadow-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
-            >
-              <Building2 className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
-              Organization
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
-            >
-              <UserCog className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
-              Account
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
-            >
-              <Bell className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
-              Notifications
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-300 group"
-            >
-              <Shield className="mr-2 h-4 w-4 group-hover:text-white transition-colors" />
-              Security
-            </Button>
+            <NavButton tab="organization" icon={Building2} label="Organization" />
+            <NavButton tab="account" icon={UserCog} label="Account" />
+            <NavButton tab="notifications" icon={Bell} label="Notifications" />
+            <NavButton tab="security" icon={Shield} label="Security" />
           </nav>
         </div>
 
         <div className="md:col-span-2 space-y-6">
-          <Card className="shadow-sm border">
-            <CardHeader className="bg-primary/10 border-b p-6">
-              <CardTitle className="font-headline font-bold text-xl uppercase">Company Information</CardTitle>
-            </CardHeader>
-            <CardContent className="p-8 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="companyName" className="font-bold text-xs uppercase">Organization Name</Label>
-                <Input 
-                  id="companyName" 
-                  value={formData.companyName} 
-                  onChange={(e) => handleChange('companyName', e.target.value)}
-                  className="h-12" 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address" className="font-bold text-xs uppercase">Office Address</Label>
-                <Input 
-                  id="address" 
-                  value={formData.address} 
-                  onChange={(e) => handleChange('address', e.target.value)}
-                  className="h-12" 
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="hrLead" className="font-bold text-xs uppercase">HR Lead Name</Label>
-                  <Input 
-                    id="hrLead" 
-                    value={formData.hrLead} 
-                    onChange={(e) => handleChange('hrLead', e.target.value)}
-                    className="h-12" 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="font-bold text-xs uppercase">Support Email</Label>
-                  <Input 
-                    id="email" 
-                    value={formData.supportEmail} 
-                    onChange={(e) => handleChange('supportEmail', e.target.value)}
-                    className="h-12" 
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {activeTab === 'organization' ? (
+            <>
+              <Card className="shadow-sm border">
+                <CardHeader className="bg-primary/10 border-b p-6">
+                  <CardTitle className="font-headline font-bold text-xl uppercase">Company Information</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8 space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName" className="font-bold text-xs uppercase">Organization Name</Label>
+                    <Input 
+                      id="companyName" 
+                      value={formData.companyName} 
+                      onChange={(e) => handleChange('companyName', e.target.value)}
+                      className="h-12" 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address" className="font-bold text-xs uppercase">Office Address</Label>
+                    <Input 
+                      id="address" 
+                      value={formData.address} 
+                      onChange={(e) => handleChange('address', e.target.value)}
+                      className="h-12" 
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="hrLead" className="font-bold text-xs uppercase">HR Lead Name</Label>
+                      <Input 
+                        id="hrLead" 
+                        value={formData.hrLead} 
+                        onChange={(e) => handleChange('hrLead', e.target.value)}
+                        className="h-12" 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="font-bold text-xs uppercase">Support Email</Label>
+                      <Input 
+                        id="email" 
+                        value={formData.supportEmail} 
+                        onChange={(e) => handleChange('supportEmail', e.target.value)}
+                        className="h-12" 
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="shadow-sm border">
-            <CardHeader className="p-6">
-              <CardTitle className="font-headline font-bold text-xl uppercase">Preferences</CardTitle>
-            </CardHeader>
-            <CardContent className="p-8 space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="font-bold text-sm">Auto-Save Drafts</Label>
-                  <p className="text-xs opacity-60 font-medium">Automatically save generated narratives to your vault.</p>
+              <Card className="shadow-sm border">
+                <CardHeader className="p-6">
+                  <CardTitle className="font-headline font-bold text-xl uppercase">Preferences</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="font-bold text-sm">Auto-Save Drafts</Label>
+                      <p className="text-xs opacity-60 font-medium">Automatically save generated narratives to your vault.</p>
+                    </div>
+                    <Switch 
+                      checked={formData.autoSaveDrafts} 
+                      onCheckedChange={(checked) => handleChange('autoSaveDrafts', checked)}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="font-bold text-sm">Email Notifications</Label>
+                      <p className="text-xs opacity-60 font-medium">Send an email alert whenever a document is generated.</p>
+                    </div>
+                    <Switch 
+                      checked={formData.emailNotifications} 
+                      onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="font-bold text-sm">Audit Trail</Label>
+                      <p className="text-xs opacity-60 font-medium">Keep a detailed record of all document activities for compliance.</p>
+                    </div>
+                    <Switch 
+                      checked={formData.auditTrail} 
+                      onCheckedChange={(checked) => handleChange('auditTrail', checked)}
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="bg-muted/30 p-8 border-t">
+                  <Button 
+                    onClick={() => saveSettings(formData)}
+                    disabled={saving || !hasChanges}
+                    className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"
+                  >
+                    {saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                    {saving ? "Saving Changes..." : "Save Changes Now"}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </>
+          ) : activeTab === 'account' ? (
+            <Card className="shadow-sm border">
+              <CardHeader className="bg-primary/10 border-b p-6">
+                <CardTitle className="font-headline font-bold text-xl uppercase">Account Profile</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8 space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="displayName" className="font-bold text-xs uppercase">Full Name</Label>
+                  <Input 
+                    id="displayName" 
+                    value={accountData.displayName} 
+                    onChange={(e) => setAccountData(prev => ({...prev, displayName: e.target.value}))}
+                    className="h-12" 
+                  />
                 </div>
-                <Switch 
-                  checked={formData.autoSaveDrafts} 
-                  onCheckedChange={(checked) => handleChange('autoSaveDrafts', checked)}
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="font-bold text-sm">Email Notifications</Label>
-                  <p className="text-xs opacity-60 font-medium">Send an email alert whenever a document is generated.</p>
+                <div className="space-y-2">
+                  <Label htmlFor="accountEmail" className="font-bold text-xs uppercase">Email Address</Label>
+                  <Input 
+                    id="accountEmail" 
+                    value={accountData.email} 
+                    disabled
+                    className="h-12 opacity-70 bg-muted/30" 
+                  />
+                  <p className="text-[10px] font-bold opacity-50 uppercase">Email address is managed by the central identity provider.</p>
                 </div>
-                <Switch 
-                  checked={formData.emailNotifications} 
-                  onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="font-bold text-sm">Audit Trail</Label>
-                  <p className="text-xs opacity-60 font-medium">Keep a detailed record of all document activities for compliance.</p>
-                </div>
-                <Switch 
-                  checked={formData.auditTrail} 
-                  onCheckedChange={(checked) => handleChange('auditTrail', checked)}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="bg-muted/30 p-8 border-t">
-              <Button 
-                onClick={() => saveSettings(formData)}
-                disabled={saving || !hasChanges}
-                className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"
-              >
-                {saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-                {saving ? "Saving Changes..." : "Save Changes Now"}
-              </Button>
-            </CardFooter>
-          </Card>
+              </CardContent>
+              <CardFooter className="bg-muted/30 p-8 border-t">
+                <Button 
+                  onClick={handleAccountSave}
+                  disabled={saving}
+                  className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"
+                >
+                  {saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                  {saving ? "Updating Profile..." : "Update Profile"}
+                </Button>
+              </CardFooter>
+            </Card>
+          ) : (
+            <Card className="shadow-sm border">
+              <CardContent className="p-12 text-center opacity-40 italic font-medium">
+                The {activeTab} module is coming soon in a future update.
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
