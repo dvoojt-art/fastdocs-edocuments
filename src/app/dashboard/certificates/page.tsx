@@ -188,13 +188,13 @@ export default function CertificatesPage() {
         </div>
       </div>
 
-      <Card className="shadow-sm overflow-hidden border">
+      <Card className="shadow-none overflow-hidden border">
         <CardHeader className="border-b pb-6 bg-muted/20">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               placeholder="Search by employee name..." 
-              className="pl-10 h-12" 
+              className="pl-10 h-12 shadow-none" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -227,7 +227,7 @@ export default function CertificatesPage() {
                       {formatLongDate(cert.createdAt)}
                     </TableCell>
                     <TableCell>
-                      <Badge className={`font-bold ${getStatusColor(cert.status)}`}>
+                      <Badge className={`font-bold shadow-none ${getStatusColor(cert.status)}`}>
                         {cert.status || "Pending"}
                       </Badge>
                     </TableCell>
@@ -256,7 +256,7 @@ export default function CertificatesPage() {
       </Card>
 
       <Dialog open={!!selectedCert} onOpenChange={() => setSelectedCert(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 border shadow-none sm:rounded-lg">
           <DialogHeader className="p-6 border-b bg-muted/30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ export default function CertificatesPage() {
                 variant="outline" 
                 size="sm" 
                 onClick={() => handleDownloadPDF(selectedCert)}
-                className="font-bold h-10 border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
+                className="font-bold h-10 shadow-none"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Export PDF
@@ -327,7 +327,7 @@ export default function CertificatesPage() {
           <div className="p-4 border-t bg-muted/10 flex justify-end">
             <Button 
               onClick={() => setSelectedCert(null)}
-              className="font-bold px-8 rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
+              className="font-bold px-8 shadow-none"
             >
               Close Preview
             </Button>
