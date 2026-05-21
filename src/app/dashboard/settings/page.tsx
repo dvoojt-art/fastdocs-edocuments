@@ -72,13 +72,13 @@ export default function SettingsPage() {
       })
   }, [db, settingsRef])
 
-  // Auto-save logic: 2 second debounce for optimized performance
+  // Optimized auto-save logic: 500ms debounce for lightning fast response
   useEffect(() => {
     if (!hasChanges || loadingSettings) return
 
     const timeoutId = setTimeout(() => {
       saveSettings(formData)
-    }, 2000)
+    }, 500)
 
     return () => clearTimeout(timeoutId)
   }, [formData, hasChanges, loadingSettings, saveSettings])
