@@ -67,7 +67,7 @@ export default function ApprovalsPage() {
           <Table>
             <TableHeader className="bg-black/5">
               <TableRow>
-                <TableHead className="font-bold text-foreground uppercase text-xs">Employee Name</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-xs">NAME</TableHead>
                 <TableHead className="font-bold text-foreground uppercase text-xs">Document Type</TableHead>
                 <TableHead className="font-bold text-foreground uppercase text-xs">Request Date</TableHead>
                 <TableHead className="text-right font-bold text-foreground uppercase text-xs">Actions</TableHead>
