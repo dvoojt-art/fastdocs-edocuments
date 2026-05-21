@@ -241,6 +241,7 @@ export default function NewCertificatePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="On Leave">On Leave</SelectItem>
                     <SelectItem value="Resigned">Resigned</SelectItem>
                     <SelectItem value="Terminated">Terminated</SelectItem>
                   </SelectContent>
