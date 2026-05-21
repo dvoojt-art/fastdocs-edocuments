@@ -1,4 +1,3 @@
-
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { 
@@ -32,6 +31,8 @@ export default function HomePage() {
         <div className="absolute top-[35%] left-[75%] w-72 h-72 rounded-full bg-primary/10 animate-float" style={{ animationDelay: '3.5s' }}></div>
         <div className="absolute bottom-[5%] right-[25%] w-64 h-64 rounded-full bg-primary/15 animate-float" style={{ animationDelay: '1.8s' }}></div>
         <div className="absolute top-[80%] right-[10%] w-56 h-56 rounded-full bg-primary/25 animate-float" style={{ animationDelay: '0.2s' }}></div>
+        <div className="absolute top-[15%] right-[35%] w-64 h-64 rounded-full bg-primary/10 animate-float" style={{ animationDelay: '2.5s' }}></div>
+        <div className="absolute bottom-[40%] left-[40%] w-80 h-80 rounded-full bg-primary/5 animate-float" style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* Navigation */}
@@ -63,7 +64,14 @@ export default function HomePage() {
                   INSTANT GENERATION
                 </div>
                 <h1 className="text-5xl font-headline font-bold tracking-tighter sm:text-7xl md:text-8xl leading-none">
-                  Callbox Davao <br />
+                  Callb
+                  <span className="relative inline-block">
+                    o
+                    <span className="absolute -top-[0.3em] sm:-top-[0.35em] left-1/2 -translate-x-1/2 text-primary text-4xl sm:text-6xl md:text-7xl pointer-events-none">
+                      ^
+                    </span>
+                  </span>
+                  x Davao <br />
                   Online Documents
                 </h1>
                 <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80 mt-6">
