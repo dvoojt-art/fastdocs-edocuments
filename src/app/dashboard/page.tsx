@@ -94,7 +94,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">Performance Hub</h2>
+          <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">Performance <span className="text-primary">Hub</span></h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Real-time HR Operations Overview</p>
         </div>
         <div className="flex gap-3">
