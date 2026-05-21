@@ -126,19 +126,31 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-4">
           <nav className="flex flex-col gap-2">
-            <Button variant="outline" className="justify-start font-bold bg-primary text-primary-foreground border-transparent shadow-sm">
+            <Button 
+              variant="outline" 
+              className="justify-start font-bold bg-primary text-primary-foreground border-transparent shadow-sm hover:bg-primary hover:text-primary-foreground"
+            >
               <Building2 className="mr-2 h-4 w-4" />
               Organization
             </Button>
-            <Button variant="ghost" className="justify-start font-bold">
+            <Button 
+              variant="ghost" 
+              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+            >
               <UserCog className="mr-2 h-4 w-4" />
               Account
             </Button>
-            <Button variant="ghost" className="justify-start font-bold">
+            <Button 
+              variant="ghost" 
+              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+            >
               <Bell className="mr-2 h-4 w-4" />
               Notifications
             </Button>
-            <Button variant="ghost" className="justify-start font-bold">
+            <Button 
+              variant="ghost" 
+              className="justify-start font-bold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+            >
               <Shield className="mr-2 h-4 w-4" />
               Security
             </Button>
