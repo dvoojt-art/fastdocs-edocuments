@@ -55,6 +55,7 @@ export default function NewCertificatePage() {
   const [draftedNarrative, setDraftedNarrative] = useState("")
   const [copied, setCopied] = useState(false)
   const [formData, setFormData] = useState({
+    salutation: "Mr.",
     employeeName: "",
     position: "",
     certificateType: "Certificate of Employment",
@@ -96,10 +97,12 @@ export default function NewCertificatePage() {
   }
 
   const generateStaticNarrative = (data: typeof formData) => {
-    const { employeeName, position, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate, terminationReason } = data;
+    const { salutation, employeeName, position, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate, terminationReason } = data;
     
     const formattedStart = formatDateString(startDate);
     const formattedEnd = formatDateString(endDate);
+    const fullNameWithSalutation = `${salutation} ${employeeName}`;
+    const pronoun = salutation === "Mr." ? "he" : "she";
     
     const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
     const purpose = purposeOfCertificate || 'employment purposes only';
@@ -108,17 +111,17 @@ export default function NewCertificatePage() {
 
     switch (certificateType) {
       case "Certificate of Employment":
-        return `CERTIFICATION\n\nThis is to certify that ${employeeName} was an employee of Contact DB Inc. (Callbox Inc.) ${period} as a ${position}.\n\nThis is to further certify that he/she is cleared from all money and property accountabilities with the company.\n\nThis also serves notice that employee is bound by surviving confidentiality and non-competition provisions in his contract with Contact DB Incorporated, quoted as follows:\n\n"Confidentiality. During the Employment Period and for an indefinite period thereafter, an employee shall not use, divulge, communicate or disclose any protected intellectual property, confidential information, trade secrets, records relating to the business, affairs, products or services of Contact DB Incorporated or its affiliates, or any Person having dealings therewith, or permit or encourage the use of such confidential information by another."\n\n"Non-Competition. During the Employment Period and within One year from the termination thereof:\n\nEmployee shall not promote, participate, engage or have any other interest directly or indirectly, in any other business, undertaking or activity similar or substantially similar to the business operations or activities of Contact DB Incorporated or any of its affiliates, in any jurisdiction where the company is holding office. For this purpose, "directly or indirectly engage in any business similar to or substantially similar to that of Contact DB Incorporated" shall include, but is not limited to, engaging in the same business as owner, partner, agent, representative, consultant, officer, director or as an employee of any person, firm, or corporation or other entity;\n\nNeither shall employee directly or indirectly solicit, obtain, secure or render services to any prospective or present client which has been solicited or serviced by Contact DB Incorporated. Or any of its affiliates; nor shall an employee recruits any of the employees of the Company including those of its affiliates to engage in a business similar or the same to that of Contact DB Incorporated."\n\nThis certification is issued as requested by the above-named employee for ${purpose}.\n\n${issuedLine}`;
+        return `CERTIFICATION\n\nThis is to certify that ${fullNameWithSalutation} was an employee of Contact DB Inc. (Callbox Inc.) ${period} as a ${position}.\n\nThis is to further certify that ${pronoun} is cleared from all money and property accountabilities with the company.\n\nThis also serves notice that employee is bound by surviving confidentiality and non-competition provisions in his contract with Contact DB Incorporated, quoted as follows:\n\n"Confidentiality. During the Employment Period and for an indefinite period thereafter, an employee shall not use, divulge, communicate or disclose any protected intellectual property, confidential information, trade secrets, records relating to the business, affairs, products or services of Contact DB Incorporated or its affiliates, or any Person having dealings therewith, or permit or encourage the use of such confidential information by another."\n\n"Non-Competition. During the Employment Period and within One year from the termination thereof:\n\nEmployee shall not promote, participate, engage or have any other interest directly or indirectly, in any other business, undertaking or activity similar or substantially similar to the business operations or activities of Contact DB Incorporated or any of its affiliates, in any jurisdiction where the company is holding office. For this purpose, "directly or indirectly engage in any business similar to or substantially similar to that of Contact DB Incorporated" shall include, but is not limited to, engaging in the same business as owner, partner, agent, representative, consultant, officer, director or as an employee of any person, firm, or corporation or other entity;\n\nNeither shall employee directly or indirectly solicit, obtain, secure or render services to any prospective or present client which has been solicited or serviced by Contact DB Incorporated. Or any of its affiliates; nor shall an employee recruits any of the employees of the Company including those of its affiliates to engage in a business similar or the same to that of Contact DB Incorporated."\n\nThis certification is issued as requested by the above-named employee for ${purpose}.\n\n${issuedLine}`;
       case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, holding the position of ${position}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${fullNameWithSalutation}, holding the position of ${position}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
       case "Certificate of Recognition":
-        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${employeeName.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\n${issuedLine}`;
+        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${fullNameWithSalutation.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\n${issuedLine}`;
       case "Clearance Certificate":
-        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}, holding the position of ${position}, has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose || 'whatever legal purpose it may serve'}\n\n${issuedLine}`;
+        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${fullNameWithSalutation}, holding the position of ${position}, has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose || 'whatever legal purpose it may serve'}\n\n${issuedLine}`;
       case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure as ${position} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\n${issuedLine}`;
+        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${fullNameWithSalutation} for any professional opportunity. During their tenure as ${position} at Callbox Davao ${period}, ${fullNameWithSalutation} served as a valued member of our organization.\n\n${issuedLine}`;
       default:
-        return `Document for ${employeeName}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}\n\n${issuedLine}`;
+        return `Document for ${fullNameWithSalutation}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}\n\n${issuedLine}`;
     }
   }
 
@@ -170,50 +173,50 @@ export default function NewCertificatePage() {
     const doc = new jsPDF()
     const pageWidth = doc.internal.pageSize.getWidth()
     const pageHeight = doc.internal.pageSize.getHeight()
-    const margin = 20
+    const margin = 15
     const contentWidth = pageWidth - (margin * 2)
     
     // Header - Top yellow decorative bars
     doc.setFillColor(255, 210, 100)
-    doc.rect(margin, 5, contentWidth, 1.5, 'F')
+    doc.rect(margin, 5, contentWidth, 1.2, 'F')
     doc.setFillColor(255, 180, 50)
-    doc.rect(margin, 7.5, contentWidth * 0.4, 0.8, 'F')
+    doc.rect(margin, 7, contentWidth * 0.4, 0.6, 'F')
     
     // Header Bar - Gray Angled Background
     doc.setFillColor(240, 242, 245)
-    doc.rect(margin, 10, contentWidth, 20, 'F')
-    doc.setFillColor(100, 115, 130)
-    doc.triangle(margin + contentWidth * 0.65, 10, margin + contentWidth, 10, margin + contentWidth, 30, 'F')
-    doc.rect(margin + contentWidth * 0.65, 10, contentWidth * 0.35, 20, 'F')
+    doc.rect(margin, 9, contentWidth, 18, 'F')
+    doc.setFillColor(15, 50, 110)
+    doc.triangle(margin + contentWidth * 0.65, 9, margin + contentWidth, 9, margin + contentWidth, 27, 'F')
+    doc.rect(margin + contentWidth * 0.65, 9, contentWidth * 0.35, 18, 'F')
     
     // Logo Text
     doc.setTextColor(15, 50, 110)
     doc.setFont("helvetica", "bold")
-    doc.setFontSize(20)
-    doc.text("callbox", margin + 8, 22)
+    doc.setFontSize(18)
+    doc.text("callbox", margin + 6, 20)
     
     doc.setTextColor(120, 130, 140)
-    doc.setFontSize(8)
-    doc.text("ContactDB, Inc.", margin + 8, 27)
+    doc.setFontSize(7)
+    doc.text("ContactDB, Inc.", margin + 6, 24)
     
     // Right Header Text
     doc.setTextColor(255, 255, 255)
-    doc.setFontSize(8)
+    doc.setFontSize(7)
     doc.setFont("helvetica", "bold")
-    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 8, 18, { align: "right" })
-    doc.text("SALES SUPPORT", margin + contentWidth - 8, 22, { align: "right" })
+    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 6, 16, { align: "right" })
+    doc.text("SALES SUPPORT", margin + contentWidth - 6, 20, { align: "right" })
     
     // Content Styling
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(8.5) // Reduced font size to fit more content
+    doc.setFontSize(8.5) 
     
     const lines = draftedNarrative.split('\n')
-    let currentY = 40
+    let currentY = 35
 
     lines.forEach((line) => {
       if (line.trim() === "") {
-        currentY += 4 // Reduced empty line spacing
+        currentY += 3.5
         return
       }
 
@@ -222,38 +225,38 @@ export default function NewCertificatePage() {
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(14)
+        doc.setFontSize(13)
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 10
+        currentY += 8
         doc.setFont("helvetica", "normal")
         doc.setFontSize(8.5)
       } else if (isIssuedLine) {
         currentY += 4
         doc.text(line, margin, currentY)
-        currentY += 12
+        currentY += 10
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 4.2) + 1 // Tighter leading
+        currentY += (splitText.length * 4) + 1 
       }
     })
 
-    // Signature Block - Moved up
-    const signatureY = currentY + 5
+    // Signature Block 
+    const signatureY = currentY + 3
     doc.setFont("helvetica", "bold")
     doc.text("Orwill Jane M. Linaza", margin, signatureY)
     doc.setFont("helvetica", "normal")
     doc.setFontSize(8)
     doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 4)
     
-    // Footer Section - Positioned closer to bottom but safe
-    const footerY = pageHeight - 18
+    // Footer Section
+    const footerY = pageHeight - 15
     doc.setDrawColor(230, 230, 230)
-    doc.setLineWidth(0.3)
+    doc.setLineWidth(0.2)
     doc.line(margin, footerY, pageWidth - margin, footerY)
     
     const colWidth = contentWidth / 6
-    doc.setFontSize(5.5)
+    doc.setFontSize(5)
     doc.setTextColor(150, 150, 150)
     
     FOOTER_DATA.forEach((item, i) => {
@@ -261,10 +264,10 @@ export default function NewCertificatePage() {
       doc.setFont("helvetica", "bold")
       doc.text(item.city, x, footerY + 3)
       doc.setFont("helvetica", "normal")
-      const addrLines = doc.splitTextToSize(item.address, colWidth - 4)
-      doc.text(addrLines, x, footerY + 5.5)
+      const addrLines = doc.splitTextToSize(item.address, colWidth - 3)
+      doc.text(addrLines, x, footerY + 5)
       if (item.phone) {
-        doc.text(item.phone, x, footerY + 5.5 + (addrLines.length * 2.5))
+        doc.text(item.phone, x, footerY + 5 + (addrLines.length * 2.2))
       }
     })
 
@@ -293,14 +296,31 @@ export default function NewCertificatePage() {
               <CardTitle className="font-headline text-2xl font-bold uppercase">Employee Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="employeeName" className="font-bold">Full Name</Label>
-                <Input 
-                  id="employeeName" 
-                  placeholder="e.g. Juan Dela Cruz" 
-                  value={formData.employeeName}
-                  onChange={(e) => setFormData({...formData, employeeName: e.target.value})}
-                />
+              <div className="grid grid-cols-4 gap-3">
+                <div className="col-span-1 space-y-2">
+                  <Label htmlFor="salutation" className="font-bold">Title</Label>
+                  <Select 
+                    value={formData.salutation}
+                    onValueChange={(v) => setFormData({...formData, salutation: v})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Mr." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Mr.">Mr.</SelectItem>
+                      <SelectItem value="Ms.">Ms.</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-3 space-y-2">
+                  <Label htmlFor="employeeName" className="font-bold">Full Name</Label>
+                  <Input 
+                    id="employeeName" 
+                    placeholder="e.g. Juan Dela Cruz" 
+                    value={formData.employeeName}
+                    onChange={(e) => setFormData({...formData, employeeName: e.target.value})}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -351,31 +371,33 @@ export default function NewCertificatePage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="endDate" className="font-bold uppercase text-[10px]">End Date</Label>
-                  <Input 
-                    id="endDate" 
-                    type={formData.endDate === "Present" ? "text" : "date"}
-                    placeholder="or 'Present'"
-                    disabled={formData.endDate === "Present"}
-                    value={formData.endDate === "Present" ? "Currently Employed" : formData.endDate}
-                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                  />
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Checkbox 
-                      id="present" 
-                      checked={formData.endDate === "Present"}
-                      onCheckedChange={(checked) => {
-                        setFormData({
-                          ...formData, 
-                          endDate: checked ? "Present" : (formData.startDate || "")
-                        })
-                      }}
+                  <div className="space-y-2">
+                    <Input 
+                      id="endDate" 
+                      type={formData.endDate === "Present" ? "text" : "date"}
+                      placeholder="or 'Present'"
+                      disabled={formData.endDate === "Present"}
+                      value={formData.endDate === "Present" ? "Currently Employed" : formData.endDate}
+                      onChange={(e) => setFormData({...formData, endDate: e.target.value})}
                     />
-                    <label
-                      htmlFor="present"
-                      className="text-[10px] font-bold uppercase leading-none cursor-pointer"
-                    >
-                      Present (Current Employee)
-                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="present" 
+                        checked={formData.endDate === "Present"}
+                        onCheckedChange={(checked) => {
+                          setFormData({
+                            ...formData, 
+                            endDate: checked ? "Present" : (formData.startDate || "")
+                          })
+                        }}
+                      />
+                      <label
+                        htmlFor="present"
+                        className="text-[10px] font-bold uppercase leading-none cursor-pointer"
+                      >
+                        Present (Current Employee)
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
