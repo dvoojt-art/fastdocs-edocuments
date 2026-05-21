@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -94,7 +95,9 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">Performance <span className="text-primary">Hub</span></h2>
+          <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">
+            Performance <span className="text-primary">Hub</span>
+          </h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Real-time HR Operations Overview</p>
         </div>
         <div className="flex gap-3">
@@ -109,21 +112,23 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <Link key={i} href={stat.href}>
-            <Card className="bg-card hover:border-primary/50 transition-all cursor-pointer h-full shadow-sm hover:shadow-md">
+          <Link key={i} href={stat.href} className="group">
+            <Card className="bg-card hover:bg-primary transition-all duration-300 cursor-pointer h-full shadow-sm hover:shadow-md border-border hover:border-primary">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60">
+                <CardTitle className="text-xs font-bold uppercase tracking-widest opacity-60 group-hover:opacity-100 group-hover:text-primary-foreground">
                   {stat.title}
                 </CardTitle>
-                <stat.icon className="h-4 w-4 text-primary" />
+                <stat.icon className="h-4 w-4 text-primary group-hover:text-white transition-colors duration-300" />
               </CardHeader>
               <CardContent>
                 {stat.loading ? (
                   <div className="h-9 w-12 bg-foreground/10 animate-pulse rounded" />
                 ) : (
-                  <div className="text-4xl font-bold font-headline">{stat.value}</div>
+                  <div className="text-4xl font-bold font-headline group-hover:text-primary-foreground transition-colors duration-300">
+                    {stat.value}
+                  </div>
                 )}
-                <p className="text-[10px] font-bold uppercase mt-2 opacity-50">
+                <p className="text-[10px] font-bold uppercase mt-2 opacity-50 group-hover:opacity-80 group-hover:text-primary-foreground transition-colors duration-300">
                   {stat.change}
                 </p>
               </CardContent>
