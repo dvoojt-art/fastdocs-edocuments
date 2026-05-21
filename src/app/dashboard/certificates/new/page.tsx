@@ -52,7 +52,9 @@ export default function NewCertificatePage() {
     
     const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
     const purpose = purposeOfCertificate || 'whatever legal purpose it may serve';
-    const roleString = position ? `, ${position},` : "";
+    
+    // Updated role string to include "holding the position of"
+    const roleString = position ? `, holding the position of ${position},` : "";
 
     switch (certificateType) {
       case "Certificate of Termination":
@@ -64,7 +66,7 @@ export default function NewCertificatePage() {
       case "Clearance Certificate":
         return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${employeeName}${roleString} has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose}`;
       case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure as ${position || 'a valued team member'} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\nDate: ${today}`;
+        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${employeeName} for any professional opportunity. During their tenure ${roleString} at Callbox Davao ${period}, ${employeeName} served as a valued member of our organization.\n\nDate: ${today}`;
       default:
         return `Document for ${employeeName}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}`;
     }
