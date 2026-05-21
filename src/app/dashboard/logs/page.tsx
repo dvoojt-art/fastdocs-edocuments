@@ -47,7 +47,9 @@ export default function LogsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-4xl font-headline font-bold tracking-tight">System Activity</h2>
+        <h2 className="text-4xl font-headline font-bold tracking-tight">
+          System <span className="text-primary">Activity</span>
+        </h2>
         <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Audit trail and system logs</p>
       </div>
 
