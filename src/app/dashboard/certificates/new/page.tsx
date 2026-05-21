@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -14,7 +13,7 @@ import { useFirestore } from "@/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
-import { jsPDF } from "jsPDF"
+import { jsPDF } from "jspdf"
 import { cn } from "@/lib/utils"
 
 export default function NewCertificatePage() {
@@ -148,7 +147,7 @@ export default function NewCertificatePage() {
 
     lines.forEach((line, index) => {
       if (line.trim() === "") {
-        currentY += 8 // Increased paragraph spacing (approx 0.5 space)
+        currentY += 8 // Spacing between paragraphs
         return
       }
 
@@ -161,9 +160,8 @@ export default function NewCertificatePage() {
         doc.setFont("helvetica", "normal")
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
-        // Using justify alignment for body text
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 7) + 2 // Added extra spacing between lines (1.8 spacing feel)
+        currentY += (splitText.length * 7) + 2 // Adjusted for line height
       }
     })
     
@@ -243,7 +241,7 @@ export default function NewCertificatePage() {
                       setFormData(prev => ({
                         ...prev,
                         startDate: newStart,
-                        endDate: prev.endDate === "Present" ? "Present" : newStart
+                        endDate: prev.endDate === "Present" ? "Present" : (prev.endDate || newStart)
                       }))
                     }}
                   />
@@ -265,7 +263,7 @@ export default function NewCertificatePage() {
                       onCheckedChange={(checked) => {
                         setFormData({
                           ...formData, 
-                          endDate: checked ? "Present" : formData.startDate
+                          endDate: checked ? "Present" : (formData.startDate || "")
                         })
                       }}
                     />
@@ -306,7 +304,6 @@ export default function NewCertificatePage() {
                     value={formData.terminationReason}
                     onChange={(e) => setFormData({...formData, terminationReason: e.target.value})}
                   />
-                  <p className="text-[10px] opacity-60 font-medium italic">This reason will appear explicitly in the narrative.</p>
                 </div>
               )}
 
