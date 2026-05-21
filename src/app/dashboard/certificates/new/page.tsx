@@ -34,11 +34,11 @@ export default function NewCertificatePage() {
     const { employeeName, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate } = data;
     const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     const period = endDate.toLowerCase() === 'present' ? `since ${startDate}` : `from ${startDate} to ${endDate}`;
-    const purpose = purposeOfCertificate || 'general reference';
+    const purpose = purposeOfCertificate || 'whatever legal purpose it may serve';
 
     switch (certificateType) {
       case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${startDate} to ${endDate}.\n\nAs of ${endDate}, the employment of the above-named employee has been officially terminated due to company-wide retrenchment. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is issued upon the request of the employee for whatever legal purpose it may serve.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
+        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${employeeName}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, from ${startDate} to ${endDate}.\n\nAs of ${endDate}, the employment of the above-named employee has been officially terminated due to company-wide retrenchment. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is issued upon the request of the employee for ${purpose}.\n\nIssued this ${today}, at Davao City, Philippines.\n\n\nOrwill Jane M. Linaza\nPeople Operations Support`;
       case "Certificate of Employment":
         return `TO WHOM IT MAY CONCERN:\n\nThis is to certify that ${employeeName} is an employee of Callbox Davao, holding the status of ${employmentStatus} ${period}.\n\nThis certification is being issued upon the request of ${employeeName} for the purpose of ${purpose}.\n\nIssued this ${today} at Davao City, Philippines.`;
       case "Certificate of Recognition":
@@ -98,20 +98,35 @@ export default function NewCertificatePage() {
     if (!draftedNarrative) return
     
     const doc = new jsPDF()
-    const splitText = doc.splitTextToSize(draftedNarrative, 180)
+    const pageWidth = doc.internal.pageSize.getWidth()
     
-    // Add header
-    doc.setFontSize(22)
+    // Header Background (#0f326e)
+    doc.setFillColor(15, 50, 110)
+    doc.rect(0, 0, pageWidth, 40, 'F')
+    
+    // Header Text
+    doc.setTextColor(255, 255, 255)
+    doc.setFont("helvetica", "bold")
+    
+    // Name of Certificate (Left side)
+    doc.setFontSize(18)
+    doc.text(formData.certificateType.toUpperCase(), 15, 15)
+    
+    // Callbox (Below name)
+    doc.setFontSize(14)
+    doc.text("Callbox", 15, 28)
+    
+    // Lead Management and Sales Support (Right side)
+    doc.setFontSize(10)
+    doc.text("LEAD MANAGEMENT AND SALES SUPPORT", pageWidth - 15, 28, { align: "right" })
+    
+    // Reset for Body
     doc.setTextColor(0, 0, 0)
-    doc.text("CALLBOX DAVAO", 105, 20, { align: "center" })
-    
-    // Add horizontal line
-    doc.setLineWidth(0.5)
-    doc.line(20, 25, 190, 25)
-    
-    // Add narrative
+    doc.setFont("helvetica", "normal")
     doc.setFontSize(12)
-    doc.text(splitText, 15, 40)
+    
+    const splitText = doc.splitTextToSize(draftedNarrative, 180)
+    doc.text(splitText, 15, 55)
     
     // Save PDF
     const filename = `${formData.employeeName.replace(/\s+/g, '_')}_${formData.certificateType.replace(/\s+/g, '_')}.pdf`
