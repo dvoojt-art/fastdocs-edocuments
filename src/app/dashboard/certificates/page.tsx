@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -115,7 +116,7 @@ export default function CertificatesPage() {
         return
       }
 
-      const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
+      const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
       const isTitle = titles.includes(line.trim());
       const isIssuedLine = line.includes("Issued this");
       
@@ -295,7 +296,7 @@ export default function CertificatesPage() {
                 {selectedCert?.narrative?.split('\n').map((line: string, i: number) => {
                   if (line.trim() === "") return <div key={i} className="h-2" />;
                   
-                  const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
+                  const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
                   const isTitle = titles.includes(line.trim());
                   const isIssuedLine = line.includes("Issued this");
                   

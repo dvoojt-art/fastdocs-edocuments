@@ -116,6 +116,8 @@ export default function NewCertificatePage() {
         return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${fullNameWithSalutation}, holding the position of ${position}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
       case "Certificate of Recognition":
         return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${fullNameWithSalutation.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\n${issuedLine}`;
+      case "Certificate of Completion":
+        return `CERTIFICATE OF COMPLETION\n\nThis is to certify that ${fullNameWithSalutation} has successfully completed the required duties and responsibilities as ${position} at ContactDB Inc. (Callbox Inc.) ${period}.\n\nThis certificate is awarded in recognition of their commitment, professional conduct, and the successful attainment of all objectives set forth during their tenure.\n\nIssued upon request for whatever legal purpose it may serve.\n\n${issuedLine}`;
       case "Clearance Certificate":
         return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${fullNameWithSalutation}, holding the position of ${position}, has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose || 'whatever legal purpose it may serve'}\n\n${issuedLine}`;
       case "Recommendation Letter":
@@ -220,7 +222,8 @@ export default function NewCertificatePage() {
         return
       }
 
-      const isTitle = line === "CERTIFICATION" || line === "CERTIFICATE OF EMPLOYMENT" || line === "CERTIFICATE OF TERMINATION" || line === "CERTIFICATE OF RECOGNITION" || line === "CLEARANCE CERTIFICATE" || line === "LETTER OF RECOMMENDATION";
+      const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
+      const isTitle = titles.includes(line.trim());
       const isIssuedLine = line.includes("Issued this");
       
       if (isTitle) {
@@ -346,6 +349,7 @@ export default function NewCertificatePage() {
                     <SelectItem value="Certificate of Employment">Certificate of Employment</SelectItem>
                     <SelectItem value="Certificate of Termination">Certificate of Termination</SelectItem>
                     <SelectItem value="Certificate of Recognition">Certificate of Recognition</SelectItem>
+                    <SelectItem value="Certificate of Completion">Certificate of Completion</SelectItem>
                     <SelectItem value="Clearance Certificate">Clearance Certificate</SelectItem>
                     <SelectItem value="Recommendation Letter">Recommendation Letter</SelectItem>
                   </SelectContent>
@@ -492,7 +496,8 @@ export default function NewCertificatePage() {
                       {draftedNarrative.split('\n').map((line, i) => {
                         if (line.trim() === "") return <div key={i} className="h-2" />;
                         
-                        const isTitle = line === "CERTIFICATION" || line === "CERTIFICATE OF EMPLOYMENT" || line === "CERTIFICATE OF TERMINATION" || line === "CERTIFICATE OF RECOGNITION" || line === "CLEARANCE CERTIFICATE" || line === "LETTER OF RECOMMENDATION";
+                        const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
+                        const isTitle = titles.includes(line.trim());
                         const isIssuedLine = line.includes("Issued this");
                         
                         return (
