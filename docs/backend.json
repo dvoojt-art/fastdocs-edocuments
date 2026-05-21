@@ -32,6 +32,20 @@
         "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
         "createdAt": { "type": "string", "format": "date-time" }
       }
+    },
+    "SystemSettings": {
+      "title": "System Settings",
+      "description": "Configuration for the FastDocs system.",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string" },
+        "address": { "type": "string" },
+        "hrLead": { "type": "string" },
+        "supportEmail": { "type": "string" },
+        "autoSaveDrafts": { "type": "boolean" },
+        "emailNotifications": { "type": "boolean" },
+        "auditTrail": { "type": "boolean" }
+      }
     }
   },
   "auth": {
@@ -45,6 +59,10 @@
     "/certificates/{certificateId}": {
       "schema": "Certificate",
       "description": "Collection of generated certificates."
+    },
+    "/settings/{settingsId}": {
+      "schema": "SystemSettings",
+      "description": "Global system settings."
     }
   }
 }
