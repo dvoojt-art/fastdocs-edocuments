@@ -16,6 +16,39 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { jsPDF } from "jspdf"
 import { cn } from "@/lib/utils"
 
+const FOOTER_DATA = [
+  {
+    city: "California",
+    address: "4249 Balboa Blvd, #353, Encino CA 91316 USA",
+    phone: "+1 (888) 810-7464"
+  },
+  {
+    city: "Singapore",
+    address: "1 Scotts Road #24-10, Shaw Centre Singapore 228208",
+    phone: "+1 (888) 810-7464"
+  },
+  {
+    city: "Australia",
+    address: "Suite 33, 89-97 Jones St, Ultimo, NSW 2007 Australia",
+    phone: "+61 (02) 9037 2248"
+  },
+  {
+    city: "Iloilo",
+    address: "2nd and 3rd Flr, Avancena Bldg, M.H. Del Pilar St, Molo, 5000 Iloilo City, Philippines",
+    phone: "+63 33 337 6833"
+  },
+  {
+    city: "Davao",
+    address: "9th and 10th Flr, Landco Corp, Center, J.P. Laurel Ave, Bajada, 8000 Davao City, Philippines",
+    phone: "+63 82 224 2035"
+  },
+  {
+    city: "Siargao",
+    address: "Tourism Rd, Brgy. Catangnan, Gen. Luna, 8419, Surigao Del Norte, Philippines",
+    phone: ""
+  }
+]
+
 export default function NewCertificatePage() {
   const db = useFirestore()
   const [draftedNarrative, setDraftedNarrative] = useState("")
@@ -136,7 +169,8 @@ export default function NewCertificatePage() {
     
     const doc = new jsPDF()
     const pageWidth = doc.internal.pageSize.getWidth()
-    const margin = 25
+    const pageHeight = doc.internal.pageSize.getHeight()
+    const margin = 20
     const contentWidth = pageWidth - (margin * 2)
     
     // Header - Top yellow decorative bars
@@ -149,7 +183,6 @@ export default function NewCertificatePage() {
     doc.setFillColor(240, 242, 245)
     doc.rect(margin, 20, contentWidth, 25, 'F')
     doc.setFillColor(100, 115, 130)
-    // Angled gray part
     doc.triangle(margin + contentWidth * 0.6, 20, margin + contentWidth, 20, margin + contentWidth, 45, 'F')
     doc.rect(margin + contentWidth * 0.6, 20, contentWidth * 0.4, 25, 'F')
     
@@ -195,9 +228,9 @@ export default function NewCertificatePage() {
         doc.setFont("helvetica", "normal")
         doc.setFontSize(11)
       } else if (isIssuedLine) {
-        currentY += 4
+        currentY += 10
         doc.text(line, margin, currentY)
-        currentY += 20
+        currentY += 25
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
@@ -213,10 +246,28 @@ export default function NewCertificatePage() {
     doc.setFontSize(10)
     doc.text("People Operations Support", margin, signatureY + 6)
     
-    // Decorative signature line (simulated)
-    doc.setDrawColor(200, 200, 200)
-    doc.line(margin, signatureY - 5, margin + 40, signatureY - 5)
+    // Footer Section
+    const footerY = pageHeight - 30
+    doc.setDrawColor(230, 230, 230)
+    doc.setLineWidth(0.5)
+    doc.line(margin, footerY, pageWidth - margin, footerY)
     
+    const colWidth = contentWidth / 6
+    doc.setFontSize(6)
+    doc.setTextColor(150, 150, 150)
+    
+    FOOTER_DATA.forEach((item, i) => {
+      const x = margin + (i * colWidth)
+      doc.setFont("helvetica", "bold")
+      doc.text(item.city, x, footerY + 5)
+      doc.setFont("helvetica", "normal")
+      const addrLines = doc.splitTextToSize(item.address, colWidth - 5)
+      doc.text(addrLines, x, footerY + 8)
+      if (item.phone) {
+        doc.text(item.phone, x, footerY + 8 + (addrLines.length * 3))
+      }
+    })
+
     const filename = `${formData.employeeName.replace(/\s+/g, '_')}_${formData.certificateType.replace(/\s+/g, '_')}.pdf`
     doc.save(filename)
 
@@ -384,8 +435,8 @@ export default function NewCertificatePage() {
         </div>
 
         <div className="lg:col-span-7">
-          <Card className="shadow-sm border h-full flex flex-col overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between border-b pb-6">
+          <Card className="shadow-sm border min-h-[800px] flex flex-col overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between border-b pb-6 bg-muted/5">
               <CardTitle className="font-headline font-bold text-2xl">Output Preview</CardTitle>
               {draftedNarrative && (
                 <div className="flex gap-2">
@@ -400,52 +451,67 @@ export default function NewCertificatePage() {
                 </div>
               )}
             </CardHeader>
-            <CardContent className="flex-1 p-0 bg-white">
+            <CardContent className="flex-1 p-0 bg-white flex flex-col">
               {draftedNarrative ? (
-                <div className="p-12 h-full overflow-y-auto">
-                  <div className="max-w-2xl mx-auto space-y-6">
-                    {/* Header Simulation */}
-                    <div className="border-b-2 border-primary pb-4 mb-8 flex justify-between items-end">
-                      <div>
-                        <h3 className="text-2xl font-bold text-[#0f326e] italic">callbox</h3>
-                        <p className="text-[10px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
+                <div className="flex-1 flex flex-col">
+                  <div className="p-12 space-y-6 flex-1">
+                    <div className="max-w-2xl mx-auto space-y-8">
+                      {/* Header Simulation */}
+                      <div className="border-b-2 border-primary pb-4 mb-8 flex justify-between items-end">
+                        <div>
+                          <h3 className="text-2xl font-bold text-[#0f326e] italic">callbox</h3>
+                          <p className="text-[10px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
+
+                      {draftedNarrative.split('\n').map((line, i) => {
+                        if (line.trim() === "") return <div key={i} className="h-4" />;
+                        
+                        const isTitle = i === 0;
+                        const isIssuedLine = line.includes("Issued this");
+                        
+                        return (
+                          <p 
+                            key={i} 
+                            className={cn(
+                              "text-lg leading-[1.8] font-medium font-body text-foreground",
+                              isTitle ? "text-center font-bold uppercase tracking-wider mb-12 text-2xl" : "text-justify",
+                              isIssuedLine ? "mt-12 font-semibold italic" : ""
+                            )}
+                          >
+                            {line}
+                          </p>
+                        );
+                      })}
+
+                      {/* Signature Simulation */}
+                      <div className="mt-16 pt-8">
+                        <div className="w-48 border-t border-muted-foreground/30 pt-2">
+                          <p className="font-bold text-lg">Orwill Jane M. Linaza</p>
+                          <p className="text-sm opacity-60">People Operations Support</p>
+                        </div>
                       </div>
                     </div>
-
-                    {draftedNarrative.split('\n').map((line, i) => {
-                      if (line.trim() === "") return <div key={i} className="h-4" />;
-                      
-                      const isTitle = i === 0;
-                      const isIssuedLine = line.includes("Issued this");
-                      
-                      return (
-                        <p 
-                          key={i} 
-                          className={cn(
-                            "text-lg leading-[1.8] font-medium font-body text-foreground",
-                            isTitle ? "text-center font-bold uppercase tracking-wider mb-10 text-2xl" : "text-justify",
-                            isIssuedLine ? "mt-8 font-semibold italic" : ""
-                          )}
-                        >
-                          {line}
-                        </p>
-                      );
-                    })}
-
-                    {/* Signature Simulation */}
-                    <div className="mt-16 pt-8">
-                      <div className="w-48 border-t border-muted-foreground/30 pt-2">
-                        <p className="font-bold text-lg">Orwill Jane M. Linaza</p>
-                        <p className="text-sm opacity-60">People Operations Support</p>
-                      </div>
+                  </div>
+                  
+                  {/* Footer Simulation */}
+                  <div className="border-t border-muted-foreground/10 p-6 bg-muted/5">
+                    <div className="grid grid-cols-6 gap-2">
+                      {FOOTER_DATA.map((item, i) => (
+                        <div key={i} className="space-y-1">
+                          <p className="text-[8px] font-bold uppercase text-muted-foreground">{item.city}</p>
+                          <p className="text-[7px] leading-tight text-muted-foreground/70">{item.address}</p>
+                          {item.phone && <p className="text-[7px] font-medium text-muted-foreground/70">{item.phone}</p>}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="h-full min-h-[450px] flex flex-col items-center justify-center text-center p-12 opacity-30">
+                <div className="h-full min-h-[450px] flex-1 flex flex-col items-center justify-center text-center p-12 opacity-30">
                   <Zap className="h-20 w-20 mb-4" />
                   <p className="font-bold text-xl uppercase tracking-widest">Enter details to generate</p>
                 </div>
