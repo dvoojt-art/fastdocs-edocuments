@@ -12,7 +12,7 @@ import { Save, Building2, Bell, Shield, UserCog, Loader2, CheckCircle2 } from "l
 import { useToast } from "@/hooks/use-toast"
 import { useFirestore, useDoc, useUser, useAuth } from "@/firebase"
 import { doc, setDoc } from "firebase/firestore"
-import { updateProfile } from "firebase/auth"
+import { updateProfile, updateEmail } from "firebase/auth"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
@@ -113,18 +113,27 @@ export default function SettingsPage() {
     if (!auth.currentUser) return
     setSaving(true)
     try {
-      await updateProfile(auth.currentUser, {
-        displayName: accountData.displayName
-      })
+      // Update Display Name if changed
+      if (accountData.displayName !== auth.currentUser.displayName) {
+        await updateProfile(auth.currentUser, {
+          displayName: accountData.displayName
+        })
+      }
+
+      // Update Email if changed
+      if (accountData.email !== auth.currentUser.email) {
+        await updateEmail(auth.currentUser, accountData.email)
+      }
+
       toast({
         title: "Profile Updated",
         description: "Your account details have been updated successfully.",
       })
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Update Failed",
-        description: "Could not update profile information.",
+        description: error.message || "Could not update profile information. You may need to sign in again to change your email.",
       })
     } finally {
       setSaving(false)
@@ -153,7 +162,7 @@ export default function SettingsPage() {
       >
         <Icon className={`mr-2 h-4 w-4 transition-colors ${isActive ? 'text-primary-foreground' : 'group-hover:text-white'}`} />
         {label}
-      </Button>
+      </NavButton>
     )
   }
 
@@ -314,10 +323,10 @@ export default function SettingsPage() {
                   <Input 
                     id="accountEmail" 
                     value={accountData.email} 
-                    disabled
-                    className="h-12 opacity-70 bg-muted/30" 
+                    onChange={(e) => setAccountData(prev => ({...prev, email: e.target.value}))}
+                    className="h-12" 
                   />
-                  <p className="text-[10px] font-bold opacity-50 uppercase">Email address is managed by the central identity provider.</p>
+                  <p className="text-[10px] font-bold opacity-50 uppercase">Managed by HR Console. Update your administrative email address here.</p>
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/30 p-8 border-t">
