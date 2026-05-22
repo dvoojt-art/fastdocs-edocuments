@@ -17,14 +17,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
@@ -180,7 +172,7 @@ export default function EmployeesPage() {
           <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground transition-all shadow-none">
             <Link href="/dashboard/employees/new">
               <UserPlus className="mr-2 h-4 w-4" />
-              Add Employee
+              Add New Employee
             </Link>
           </Button>
         </div>
