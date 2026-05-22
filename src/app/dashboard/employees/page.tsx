@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,17 +6,25 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, UserPlus, MoreHorizontal, Loader2, Mail, Copy, Edit, Trash2, Users } from "lucide-react"
+import { Search, UserPlus, MoreHorizontal, Loader2, Mail, Copy, Edit, Trash2, Users, FileUp } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, doc, deleteDoc } from "firebase/firestore"
-import { useState } from "react"
+import { collection, query, orderBy, doc, deleteDoc, addDoc, serverTimestamp } from "firebase/firestore"
+import { useState, useRef } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
@@ -24,6 +33,8 @@ export default function EmployeesPage() {
   const db = useFirestore()
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState("")
+  const [isImporting, setIsImporting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const employeesQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -75,6 +86,67 @@ export default function EmployeesPage() {
     })
   }
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !db) return
+
+    setIsImporting(true)
+    const reader = new FileReader()
+
+    reader.onload = async (event) => {
+      try {
+        const csvText = event.target?.result as string
+        const lines = csvText.split(/\r?\n/)
+        if (lines.length < 2) throw new Error("File is empty or missing data.")
+
+        const headers = lines[0].split(',').map(h => h.trim())
+        const rows = lines.slice(1).filter(line => line.trim() !== "")
+
+        let successCount = 0
+        const importPromises = rows.map(async (row) => {
+          const values = row.split(',').map(v => v.trim())
+          const employee: any = {}
+          
+          headers.forEach((header, index) => {
+            if (values[index] !== undefined) {
+              employee[header] = values[index]
+            }
+          })
+
+          if (employee.firstName && employee.lastName && employee.email) {
+            await addDoc(collection(db, "employees"), {
+              ...employee,
+              createdAt: serverTimestamp()
+            })
+            successCount++
+          }
+        })
+
+        await Promise.all(importPromises)
+
+        toast({
+          title: "Import Successful",
+          description: `Successfully imported ${successCount} employee records.`,
+        })
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Import Failed",
+          description: error.message || "An error occurred while parsing the CSV file.",
+        })
+      } finally {
+        setIsImporting(false)
+        if (fileInputRef.current) fileInputRef.current.value = ""
+      }
+    }
+
+    reader.readAsText(file)
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -84,12 +156,34 @@ export default function EmployeesPage() {
           </h2>
           <p className="font-bold opacity-60 uppercase text-xs tracking-widest mt-1">Manage your centralized employee database</p>
         </div>
-        <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground transition-all shadow-none">
-          <Link href="/dashboard/employees/new">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Employee
-          </Link>
-        </Button>
+        <div className="flex gap-3">
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            accept=".csv" 
+            className="hidden" 
+          />
+          <Button 
+            variant="outline" 
+            className="h-12 font-bold px-6 shadow-none"
+            onClick={handleImportClick}
+            disabled={isImporting}
+          >
+            {isImporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FileUp className="mr-2 h-4 w-4" />
+            )}
+            Import CSV
+          </Button>
+          <Button asChild className="h-12 font-bold px-6 bg-primary text-primary-foreground transition-all shadow-none">
+            <Link href="/dashboard/employees/new">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Employee
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card className="shadow-none border overflow-hidden">
@@ -104,6 +198,9 @@ export default function EmployeesPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+            </div>
+            <div className="ml-auto text-[10px] font-bold opacity-40 uppercase">
+              CSV Headers: firstName, lastName, email, position, department, status, joinDate
             </div>
           </div>
         </CardHeader>
