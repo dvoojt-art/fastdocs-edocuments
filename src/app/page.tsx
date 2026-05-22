@@ -66,7 +66,7 @@ export default function HomePage() {
                   e-Documents
                 </h1>
                 <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80 mt-6">
-                  The centralized hub for Callbox Davao employees to request and access official HR documents and certificates instantly.
+                  The centralized hub to request and access official HR documents and certificates instantly without typing!
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
