@@ -133,7 +133,7 @@ export default function SettingsPage() {
       toast({
         variant: "destructive",
         title: "Update Failed",
-        description: error.message || "Could not update profile information. You may need to sign in again to change your email.",
+        description: error.message || "Could not update profile information.",
       })
     } finally {
       setSaving(false)
@@ -162,7 +162,7 @@ export default function SettingsPage() {
       >
         <Icon className={`mr-2 h-4 w-4 transition-colors ${isActive ? 'text-primary-foreground' : 'group-hover:text-white'}`} />
         {label}
-      </NavButton>
+      </Button>
     )
   }
 
@@ -326,7 +326,6 @@ export default function SettingsPage() {
                     onChange={(e) => setAccountData(prev => ({...prev, email: e.target.value}))}
                     className="h-12" 
                   />
-                  <p className="text-[10px] font-bold opacity-50 uppercase">Managed by HR Console. Update your administrative email address here.</p>
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/30 p-8 border-t">
