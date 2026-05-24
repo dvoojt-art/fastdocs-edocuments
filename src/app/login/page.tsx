@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/firebase';
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  createUserWithEmailAndPassword
 } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Loader2, LogIn, UserPlus } from 'lucide-react';
+import { Loader2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -42,6 +41,7 @@ export default function LoginPage() {
   // LOGIN
   const handleLogin = () => {
     alert("Button clicked");
+    router.push("/dashboard");
   };
 
   return (
@@ -95,15 +95,12 @@ export default function LoginPage() {
               </div>
               
               <div className="grid grid-cols-2 gap-4 pt-4">
-                <Button 
-                  type="button" 
+                <button 
                   onClick={handleLogin}
-                  className="h-14 font-bold text-lg shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]" 
-                  disabled={loading}
+                  className="h-14 bg-primary text-primary-foreground font-bold text-lg rounded-md transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
                   Login
-                </Button>
+                </button>
                 <Button 
                   type="button" 
                   onClick={handleRegister}
