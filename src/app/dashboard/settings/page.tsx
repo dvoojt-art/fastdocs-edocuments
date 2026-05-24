@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
@@ -93,13 +92,13 @@ export default function SettingsPage() {
       })
   }, [db, settingsRef])
 
-  // Auto-save logic for Organization tab
+  // Auto-save logic for Organization tab - faster response time (300ms)
   useEffect(() => {
     if (!hasChanges || loadingSettings || activeTab !== 'organization') return
 
     const timeoutId = setTimeout(() => {
       saveSettings(formData)
-    }, 500)
+    }, 300)
 
     return () => clearTimeout(timeoutId)
   }, [formData, hasChanges, loadingSettings, saveSettings, activeTab])

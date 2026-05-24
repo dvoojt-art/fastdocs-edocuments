@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, UserPlus, MoreHorizontal, Loader2, Mail, Copy, Edit, Trash2, Users, FileUp } from "lucide-react"
 import Link from "next/link"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, doc, deleteDoc, addDoc, serverTimestamp } from "firebase/firestore"
+import { collection, query, orderBy, doc, deleteDoc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useState, useRef } from "react"
 import {
   DropdownMenu,
@@ -98,8 +97,10 @@ export default function EmployeesPage() {
         const headers = lines[0].split(',').map(h => h.trim())
         const rows = lines.slice(1).filter(line => line.trim() !== "")
 
+        const batch = writeBatch(db)
         let successCount = 0
-        const importPromises = rows.map(async (row) => {
+
+        rows.forEach((row) => {
           const values = row.split(',').map(v => v.trim())
           const employee: any = {}
           
@@ -110,7 +111,8 @@ export default function EmployeesPage() {
           })
 
           if (employee.firstName && employee.lastName && employee.email) {
-            await addDoc(collection(db, "employees"), {
+            const docRef = doc(collection(db, "employees"))
+            batch.set(docRef, {
               ...employee,
               createdAt: serverTimestamp()
             })
@@ -118,7 +120,7 @@ export default function EmployeesPage() {
           }
         })
 
-        await Promise.all(importPromises)
+        await batch.commit()
 
         toast({
           title: "Import Successful",

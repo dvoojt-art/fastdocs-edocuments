@@ -35,7 +35,7 @@ export type DraftCertificateNarrativeOutput = z.infer<
 
 const draftNarrativePrompt = ai.definePrompt({
   name: 'draftNarrativePrompt',
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-2.0-flash',
   input: {schema: DraftCertificateNarrativeInputSchema},
   output: {schema: DraftCertificateNarrativeOutputSchema},
   prompt: `You are an expert HR professional assistant. Your task is to draft professional and contextually relevant wording for HR certificate narratives based on the provided employee history and certificate purpose. 
