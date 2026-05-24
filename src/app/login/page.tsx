@@ -40,21 +40,8 @@ export default function LoginPage() {
   };
 
   // LOGIN
-  const handleLogin = async () => {
-    setLoading(true);
-    try {
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      alert('Login successful');
-      router.push("/dashboard");
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleLogin = () => {
+    alert("Button clicked");
   };
 
   return (
