@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,30 +17,41 @@ import Link from 'next/link';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const auth = useAuth();
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // REGISTER
+  const handleRegister = async () => {
     setLoading(true);
-
     try {
-      if (isRegistering) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("Registered:", userCredential.user);
-        alert("Registration Success");
-        router.push("/dashboard");
-      } else {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        console.log("Logged in:", userCredential.user);
-        alert("Login Success");
-        router.push("/dashboard");
-      }
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      alert('Account created');
+      router.push("/dashboard");
     } catch (error: any) {
-      console.log(error);
-      alert(error.code + " : " + error.message);
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // LOGIN
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      alert('Login successful');
+      router.push("/dashboard");
+    } catch (error: any) {
+      alert(error.message);
     } finally {
       setLoading(false);
     }
@@ -45,7 +59,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-6">
-      {/* Background decorations matching the landing page */}
+      {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0 opacity-20">
         <div className="absolute top-[10%] left-[10%] w-64 h-64 rounded-full bg-primary/20 blur-3xl"></div>
         <div className="absolute bottom-[10%] right-[10%] w-96 h-96 rounded-full bg-[#0f326e]/10 blur-3xl"></div>
@@ -61,17 +75,13 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Card className="border-none shadow-2xl">
-          <CardHeader className="space-y-1 pb-6 text-center">
-            <CardTitle className="text-3xl font-headline font-bold uppercase tracking-tight">
-              {isRegistering ? 'Create Account' : 'Portal Access'}
-            </CardTitle>
-            <CardDescription className="font-bold opacity-60 uppercase text-[10px] tracking-widest">
-              {isRegistering ? 'Register your HR administrator profile' : 'Sign in to the HR management console'}
-            </CardDescription>
+        <Card className="border-none shadow-2xl overflow-hidden">
+          <CardHeader className="space-y-1 pb-6 text-center bg-muted/20">
+            <CardTitle className="text-3xl font-headline font-bold uppercase tracking-tight">Portal Access</CardTitle>
+            <CardDescription className="font-bold opacity-60 uppercase text-[10px] tracking-widest">Sign in or register your HR account</CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
+          <CardContent className="pt-6">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="font-bold text-[10px] uppercase">Email Address</Label>
                 <Input 
@@ -80,7 +90,7 @@ export default function LoginPage() {
                   placeholder="admin@callbox.com" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 shadow-none"
+                  className="h-12 shadow-none border-2 focus-visible:ring-primary"
                   required 
                 />
               </div>
@@ -89,41 +99,38 @@ export default function LoginPage() {
                 <Input 
                   id="password" 
                   type="password" 
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 shadow-none"
+                  className="h-12 shadow-none border-2 focus-visible:ring-primary"
                   required 
                 />
               </div>
-              <Button 
-                type="submit" 
-                className="w-full h-14 font-bold text-lg shadow-none mt-4 transition-all" 
-                disabled={loading}
-              >
-                {loading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : isRegistering ? (
-                  <>
-                    <UserPlus className="mr-2 h-5 w-5" />
-                    Register Account
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-5 w-5" />
-                    Sign In to Console
-                  </>
-                )}
-              </Button>
-            </form>
+              
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                <Button 
+                  type="button" 
+                  onClick={handleLogin}
+                  className="h-14 font-bold text-lg shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
+                  Login
+                </Button>
+                <Button 
+                  type="button" 
+                  onClick={handleRegister}
+                  variant="outline"
+                  className="h-14 font-bold text-lg shadow-none transition-all hover:scale-[1.02] active:scale-[0.98] border-2 border-primary text-primary hover:bg-primary/5" 
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="mr-2 h-5 w-5" />}
+                  Register
+                </Button>
+              </div>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 p-6">
-            <Button 
-              variant="ghost" 
-              className="w-full font-bold opacity-60 hover:opacity-100 h-10 shadow-none"
-              onClick={() => setIsRegistering(!isRegistering)}
-            >
-              {isRegistering ? 'Already have an account? Sign in' : 'Need an account? Register here'}
-            </Button>
             <Link href="/" className="text-[10px] font-bold uppercase opacity-40 hover:opacity-100 transition-opacity text-center w-full">
               Back to landing page
             </Link>
