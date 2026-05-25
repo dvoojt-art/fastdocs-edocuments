@@ -54,12 +54,15 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md relative z-10">
         {/* Upper Center Blue Logo Section */}
-        <div className="bg-[#0f326e] py-10 rounded-t-3xl flex justify-center shadow-xl border-b border-white/10">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="bg-primary h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl shadow-lg group-hover:scale-110 transition-transform">
-              F
+        <div className="bg-[#0f326e] py-10 rounded-t-3xl flex flex-col items-center justify-center shadow-xl border-b border-white/10">
+          <Link href="/" className="flex flex-col items-center group">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl shadow-lg group-hover:scale-110 transition-transform">
+                F
+              </div>
+              <span className="font-headline font-bold text-3xl tracking-tight text-white">FastDocs</span>
             </div>
-            <span className="font-headline font-bold text-3xl tracking-tight text-white">FastDocs</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 mt-2">Callbox Inc. Davao</span>
           </Link>
         </div>
 

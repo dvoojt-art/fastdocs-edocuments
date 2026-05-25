@@ -20,11 +20,14 @@ export default function HomePage() {
 
       {/* Navigation */}
       <header className="px-6 h-20 flex items-center border-b border-white/10 relative z-10 bg-[#0f326e] text-white">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl">
-            F
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl">
+              F
+            </div>
+            <span className="font-headline font-bold text-2xl tracking-tight">FastDocs</span>
           </div>
-          <span className="font-headline font-bold text-2xl tracking-tight">FastDocs</span>
+          <span className="text-[9px] font-bold uppercase tracking-[0.3em] opacity-60 ml-12 -mt-1">Callbox Inc. Davao</span>
         </div>
         <nav className="ml-auto flex gap-6 items-center">
           <Button asChild variant="ghost" className="rounded-full font-bold text-white hover:bg-white/10">

@@ -109,13 +109,18 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-foreground/10">
-      <SidebarHeader className="h-16 flex items-center px-4 border-b border-foreground/10">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="bg-primary h-8 w-8 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xl">
-            F
+      <SidebarHeader className="h-20 flex flex-col justify-center px-4 border-b border-foreground/10">
+        <Link href="/dashboard" className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary h-8 w-8 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xl">
+              F
+            </div>
+            <span className="font-headline font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">
+              FastDocs
+            </span>
           </div>
-          <span className="font-headline font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">
-            FastDocs
+          <span className="text-[8px] font-bold uppercase tracking-[0.2em] opacity-60 ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">
+            Callbox Inc. Davao
           </span>
         </Link>
       </SidebarHeader>
