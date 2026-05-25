@@ -49,7 +49,7 @@ export default function SettingsPage() {
     if (settings) {
       setFormData({
         companyName: settings.companyName || "Callbox Davao",
-        address: settings.address || "SM Lanang Premier, Davao City, Philippines",
+        address: settings.address || "9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City",
         hrLead: settings.hrLead || "Orwill Jane Linaza",
         supportEmail: settings.supportEmail || "hr@callboxinc.com",
         autoSaveDrafts: settings.autoSaveDrafts ?? true,
@@ -57,6 +57,17 @@ export default function SettingsPage() {
         auditTrail: settings.auditTrail ?? true,
       })
       setHasChanges(false)
+    } else {
+      // Set defaults even if settings doc doesn't exist yet
+      setFormData({
+        companyName: "Callbox Davao",
+        address: "9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City",
+        hrLead: "Orwill Jane Linaza",
+        supportEmail: "hr@callboxinc.com",
+        autoSaveDrafts: true,
+        emailNotifications: false,
+        auditTrail: true,
+      })
     }
   }, [settings])
 
