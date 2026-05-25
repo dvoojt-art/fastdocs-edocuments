@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -178,47 +177,60 @@ export default function NewCertificatePage() {
     const margin = 15
     const contentWidth = pageWidth - (margin * 2)
     
-    // Header - Top yellow decorative bars (Matches Image)
-    doc.setFillColor(255, 210, 100) // Lighter yellow
-    doc.rect(margin, 5, contentWidth, 1, 'F')
-    doc.setFillColor(255, 180, 50) // Darker yellow
-    doc.rect(margin, 6.2, contentWidth * 0.45, 0.8, 'F')
+    // Exact Header Colors
+    const colorYellowLighter = [255, 212, 0] // CMYK Yellow match
+    const colorYellowDarker = [255, 171, 0] // CMYK Orange match
+    const colorBlue = [15, 50, 110]
+    const colorGray = [240, 242, 245]
     
-    // Header Bar - Gray Angled Background
-    doc.setFillColor(240, 242, 245)
-    doc.rect(margin, 8, contentWidth, 18, 'F')
+    // 1. Top Yellow Decorative Bars
+    doc.setFillColor(colorYellowLighter[0], colorYellowLighter[1], colorYellowLighter[2])
+    doc.rect(margin, 5, contentWidth, 0.8, 'F')
+    doc.setFillColor(colorYellowDarker[0], colorYellowDarker[1], colorYellowDarker[2])
+    doc.rect(margin, 5.8, contentWidth * 0.4, 0.6, 'F')
     
-    // Blue Angled Section
-    doc.setFillColor(15, 50, 110)
-    const splitX = margin + contentWidth * 0.62
-    doc.triangle(splitX, 8, margin + contentWidth, 8, margin + contentWidth, 26, 'F')
-    doc.rect(splitX, 8, margin + contentWidth - splitX, 18, 'F')
+    // 2. Main Header Container
+    doc.setFillColor(colorGray[0], colorGray[1], colorGray[2])
+    doc.rect(margin, 7.5, contentWidth, 18, 'F')
     
-    // Logo Text (Blue on Gray)
-    doc.setTextColor(15, 50, 110)
+    // 3. Angled Blue Branding (Polygon)
+    doc.setFillColor(colorBlue[0], colorBlue[1], colorBlue[2])
+    const splitStart = margin + (contentWidth * 0.58)
+    const splitEnd = margin + (contentWidth * 0.68)
+    doc.setDrawColor(colorBlue[0], colorBlue[1], colorBlue[2])
+    doc.triangle(splitStart, 7.5, splitEnd, 7.5, splitEnd, 25.5, 'F')
+    doc.rect(splitEnd, 7.5, margin + contentWidth - splitEnd, 18, 'F')
+    
+    // 4. Logo & Text in Header
+    doc.setTextColor(colorBlue[0], colorBlue[1], colorBlue[2])
     doc.setFont("helvetica", "bolditalic")
-    doc.setFontSize(20)
-    doc.text("callbox", margin + 6, 18)
+    doc.setFontSize(22)
+    doc.text("callbox", margin + 6, 17)
+    
+    // Draw the caret above 'o'
+    doc.setLineWidth(0.4)
+    const oX = margin + 6 + 18.5 // Estimated 'o' position
+    doc.line(oX - 1.5, 10, oX, 8.5)
+    doc.line(oX, 8.5, oX + 1.5, 10)
     
     doc.setTextColor(120, 130, 140)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(7)
-    doc.text("ContactDB, Inc.", margin + 6, 22)
+    doc.setFontSize(7.5)
+    doc.text("ContactDB, Inc.", margin + 6, 21)
     
-    // Right Header Text (White on Blue)
     doc.setTextColor(255, 255, 255)
     doc.setFontSize(7.5)
     doc.setFont("helvetica", "bold")
     doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 6, 16, { align: "right" })
     doc.text("SALES SUPPORT", margin + contentWidth - 6, 20, { align: "right" })
     
-    // Content Styling
+    // Content Layout
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(9) 
+    doc.setFontSize(10)
     
     const lines = draftedNarrative.split('\n')
-    let currentY = 38
+    let currentY = 40
 
     lines.forEach((line) => {
       if (line.trim() === "") {
@@ -227,55 +239,55 @@ export default function NewCertificatePage() {
       }
 
       const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
-      const isTitle = titles.includes(line.trim());
+      const isTitle = titles.includes(line.trim().toUpperCase()) || titles.includes(line.trim());
       const isIssuedLine = line.includes("Issued this");
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
         doc.setFontSize(14)
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 10
+        currentY += 12
         doc.setFont("helvetica", "normal")
-        doc.setFontSize(9)
+        doc.setFontSize(10)
       } else if (isIssuedLine) {
-        currentY += 6
+        currentY += 8
         doc.text(line, margin, currentY)
-        currentY += 15
+        currentY += 20
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 4.5) + 1.5
+        currentY += (splitText.length * 5) + 2
       }
     })
 
-    // Signature Block (Matches Image)
-    const signatureY = currentY + 10
+    // Signature Block (Exact Title from Image)
+    const signatureY = currentY + 15
     doc.setFont("helvetica", "bold")
-    doc.setFontSize(10)
+    doc.setFontSize(11)
     doc.text("Orwill Jane M. Linaza", margin, signatureY)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(9)
-    doc.text("People Operations Support", margin, signatureY + 5)
+    doc.setFontSize(10)
+    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 6)
     
-    // Footer Section (Matches Image columns and layout)
-    const footerY = pageHeight - 18
-    doc.setDrawColor(220, 220, 220)
-    doc.setLineWidth(0.3)
+    // Footer Section (Exact Match)
+    const footerY = pageHeight - 25
+    doc.setDrawColor(230, 230, 230)
+    doc.setLineWidth(0.4)
     doc.line(margin, footerY, pageWidth - margin, footerY)
     
     const colWidth = contentWidth / 6
-    doc.setFontSize(5.5)
-    doc.setTextColor(140, 140, 140)
+    doc.setFontSize(6)
+    doc.setTextColor(150, 150, 150)
     
     FOOTER_DATA.forEach((item, i) => {
       const x = margin + (i * colWidth)
       doc.setFont("helvetica", "bold")
-      doc.text(item.city, x, footerY + 4)
+      doc.text(item.city, x, footerY + 5)
       doc.setFont("helvetica", "normal")
       const addrLines = doc.splitTextToSize(item.address, colWidth - 4)
-      doc.text(addrLines, x, footerY + 6.5)
+      doc.text(addrLines, x, footerY + 8)
       if (item.phone) {
-        doc.text(item.phone, x, footerY + 6.5 + (addrLines.length * 2.5))
+        doc.text(item.phone, x, footerY + 8 + (addrLines.length * 3))
       }
     })
 
@@ -503,7 +515,7 @@ export default function NewCertificatePage() {
                         if (line.trim() === "") return <div key={i} className="h-2" />;
                         
                         const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
-                        const isTitle = titles.includes(line.trim());
+                        const isTitle = titles.includes(line.trim().toUpperCase()) || titles.includes(line.trim());
                         const isIssuedLine = line.includes("Issued this");
                         
                         return (
@@ -524,7 +536,7 @@ export default function NewCertificatePage() {
                       <div className="mt-8 pt-4">
                         <div className="w-56 border-t border-muted-foreground/30 pt-1">
                           <p className="font-bold text-base">Orwill Jane M. Linaza</p>
-                          <p className="text-[9px] opacity-60">People Operations Support</p>
+                          <p className="text-[9px] opacity-60">People Operations Officer | HR & Administrator</p>
                         </div>
                       </div>
                     </div>
