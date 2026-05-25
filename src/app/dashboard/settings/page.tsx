@@ -35,7 +35,7 @@ export default function SettingsPage() {
     hrLead: "",
     supportEmail: "",
     autoSaveDrafts: true,
-    emailNotifications: false,
+    emailNotifications: true,
     auditTrail: true,
   })
 
@@ -53,7 +53,7 @@ export default function SettingsPage() {
         hrLead: settings.hrLead || "Orwill Jane Linaza",
         supportEmail: settings.supportEmail || "hr@callboxinc.com",
         autoSaveDrafts: settings.autoSaveDrafts ?? true,
-        emailNotifications: settings.emailNotifications ?? false,
+        emailNotifications: settings.emailNotifications ?? true,
         auditTrail: settings.auditTrail ?? true,
       })
       setHasChanges(false)
@@ -65,7 +65,7 @@ export default function SettingsPage() {
         hrLead: "Orwill Jane Linaza",
         supportEmail: "hr@callboxinc.com",
         autoSaveDrafts: true,
-        emailNotifications: false,
+        emailNotifications: true,
         auditTrail: true,
       })
     }
