@@ -69,7 +69,7 @@ const data = {
           icon: Zap,
         },
         {
-          title: "Approvals",
+          title: "HR Approval Desk",
           url: "/dashboard/approvals",
           icon: CheckSquare,
         },
