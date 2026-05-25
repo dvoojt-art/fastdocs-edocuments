@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -93,7 +94,7 @@ export default function NewEmployeePage() {
           <CardContent className="p-8 space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="font-bold text-[10px] uppercase">First Name*</Label>
+                <Label htmlFor="firstName" className="font-bold">First Name*</Label>
                 <Input 
                   id="firstName" 
                   placeholder="e.g. Juan" 
@@ -104,7 +105,7 @@ export default function NewEmployeePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="font-bold text-[10px] uppercase">Last Name*</Label>
+                <Label htmlFor="lastName" className="font-bold">Last Name*</Label>
                 <Input 
                   id="lastName" 
                   placeholder="e.g. Dela Cruz" 
@@ -117,7 +118,7 @@ export default function NewEmployeePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-bold text-[10px] uppercase">Work Email*</Label>
+              <Label htmlFor="email" className="font-bold">Work Email*</Label>
               <Input 
                 id="email" 
                 type="email"
@@ -131,7 +132,7 @@ export default function NewEmployeePage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="position" className="font-bold text-[10px] uppercase">Position*</Label>
+                <Label htmlFor="position" className="font-bold">Position*</Label>
                 <Input 
                   id="position" 
                   placeholder="e.g. Sales Specialist" 
@@ -142,7 +143,7 @@ export default function NewEmployeePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dept" className="font-bold text-[10px] uppercase">Department</Label>
+                <Label htmlFor="dept" className="font-bold">Department</Label>
                 <Select 
                   value={formData.department}
                   onValueChange={(v) => setFormData({...formData, department: v})}
@@ -163,7 +164,7 @@ export default function NewEmployeePage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="joinDate" className="font-bold text-[10px] uppercase">Join Date</Label>
+                <Label htmlFor="joinDate" className="font-bold">Join Date</Label>
                 <Input 
                   id="joinDate" 
                   type="date"
@@ -173,7 +174,7 @@ export default function NewEmployeePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status" className="font-bold text-[10px] uppercase">Employment Status</Label>
+                <Label htmlFor="status" className="font-bold">Employment Status</Label>
                 <Select 
                   value={formData.status}
                   onValueChange={(v) => setFormData({...formData, status: v})}

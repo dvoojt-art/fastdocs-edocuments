@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -177,9 +178,9 @@ export default function NewCertificatePage() {
     const margin = 15
     const contentWidth = pageWidth - (margin * 2)
     
-    // Exact Header Colors
-    const colorYellowLighter = [255, 212, 0] // CMYK Yellow match
-    const colorYellowDarker = [255, 171, 0] // CMYK Orange match
+    // Header Colors
+    const colorYellowLighter = [255, 212, 0] 
+    const colorYellowDarker = [255, 171, 0]
     const colorBlue = [15, 50, 110]
     const colorGray = [240, 242, 245]
     
@@ -209,7 +210,7 @@ export default function NewCertificatePage() {
     
     // Draw the caret above 'o'
     doc.setLineWidth(0.4)
-    const oX = margin + 6 + 18.5 // Estimated 'o' position
+    const oX = margin + 6 + 18.5
     doc.line(oX - 1.5, 10, oX, 8.5)
     doc.line(oX, 8.5, oX + 1.5, 10)
     
@@ -254,22 +255,46 @@ export default function NewCertificatePage() {
         doc.text(line, margin, currentY)
         currentY += 20
       } else {
-        const splitText = doc.splitTextToSize(line, contentWidth)
+        // Apply Bolding for specific terms
+        const boldTerms = [
+          formData.salutation, 
+          formData.employeeName,
+          formatDateString(formData.startDate),
+          formatDateString(formData.endDate),
+          "Confidentiality.",
+          "Contact DB Incorporated",
+          "Non-Competition.",
+          "Contact DB Incorporated."
+        ];
+
+        let processedLine = line;
+        // Since jsPDF text() doesn't support complex inline bolding easily without plugins,
+        // we'll bold the entire line if it contains key legal sections or employee identifiers
+        const shouldBoldEntireLine = boldTerms.some(term => line.includes(term)) && (line.includes("Confidentiality") || line.includes("Non-Competition") || line.includes(formData.employeeName));
+
+        if (shouldBoldEntireLine) {
+          doc.setFont("helvetica", "bold");
+        } else {
+          doc.setFont("helvetica", "normal");
+        }
+
+        const splitText = doc.splitTextToSize(processedLine, contentWidth)
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
         currentY += (splitText.length * 5) + 2
+        doc.setFont("helvetica", "normal");
       }
     })
 
-    // Signature Block (Exact Title from Image)
+    // Signature Block (Bold Title)
     const signatureY = currentY + 15
     doc.setFont("helvetica", "bold")
     doc.setFontSize(11)
     doc.text("Orwill Jane M. Linaza", margin, signatureY)
-    doc.setFont("helvetica", "normal")
+    doc.setFont("helvetica", "bold") // BOLD as requested
     doc.setFontSize(10)
     doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 6)
     
-    // Footer Section (Exact Match)
+    // Footer Section
     const footerY = pageHeight - 25
     doc.setDrawColor(230, 230, 230)
     doc.setLineWidth(0.4)
@@ -375,7 +400,7 @@ export default function NewCertificatePage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="startDate" className="font-bold uppercase text-[10px]">Start Date</Label>
+                  <Label htmlFor="startDate" className="font-bold">Start Date</Label>
                   <Input 
                     id="startDate" 
                     type="date"
@@ -391,7 +416,7 @@ export default function NewCertificatePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="endDate" className="font-bold uppercase text-[10px]">End Date</Label>
+                  <Label htmlFor="endDate" className="font-bold">End Date</Label>
                   <div className="space-y-2">
                     <Input 
                       id="endDate" 
@@ -424,7 +449,7 @@ export default function NewCertificatePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="status" className="font-bold uppercase text-[10px]">Employment Status</Label>
+                <Label htmlFor="status" className="font-bold">Employment Status</Label>
                 <Select 
                   value={formData.employmentStatus}
                   onValueChange={(v) => setFormData({...formData, employmentStatus: v})}
@@ -536,7 +561,7 @@ export default function NewCertificatePage() {
                       <div className="mt-8 pt-4">
                         <div className="w-56 border-t border-muted-foreground/30 pt-1">
                           <p className="font-bold text-base">Orwill Jane M. Linaza</p>
-                          <p className="text-[9px] opacity-60">People Operations Officer | HR & Administrator</p>
+                          <p className="text-[9px] font-bold">People Operations Officer | HR & Administrator</p>
                         </div>
                       </div>
                     </div>
