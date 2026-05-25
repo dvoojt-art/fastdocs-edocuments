@@ -53,16 +53,17 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="flex justify-center mb-8">
-          <Link href="/" className="flex items-center gap-2 group">
+        {/* Upper Center Blue Logo Section */}
+        <div className="bg-[#0f326e] py-10 rounded-t-3xl flex justify-center shadow-xl border-b border-white/10">
+          <Link href="/" className="flex items-center gap-3 group">
             <div className="bg-primary h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl shadow-lg group-hover:scale-110 transition-transform">
               F
             </div>
-            <span className="font-headline font-bold text-3xl tracking-tight text-[#0f326e]">FastDocs</span>
+            <span className="font-headline font-bold text-3xl tracking-tight text-white">FastDocs</span>
           </Link>
         </div>
 
-        <Card className="border-none shadow-2xl overflow-hidden">
+        <Card className="border-none shadow-2xl overflow-hidden rounded-t-none">
           <CardHeader className="space-y-1 pb-6 text-center bg-muted/20">
             <CardTitle className="text-3xl font-headline font-bold uppercase tracking-tight">Portal Access</CardTitle>
             <CardDescription className="font-bold opacity-60 uppercase text-[10px] tracking-widest">Sign in or register your HR account</CardDescription>
