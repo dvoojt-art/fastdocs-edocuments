@@ -121,7 +121,7 @@ export default function NewEmployeePage() {
               <Input 
                 id="email" 
                 type="email"
-                placeholder="juan@callbox.com" 
+                placeholder="juan@callboxinc.com" 
                 className="h-12"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}

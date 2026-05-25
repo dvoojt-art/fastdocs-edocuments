@@ -74,7 +74,7 @@ export default function LoginPage() {
                 <Input 
                   id="email" 
                   type="email" 
-                  placeholder="admin@callbox.com" 
+                  placeholder="admin@callboxinc.com" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="h-12 shadow-none border-2 focus-visible:ring-primary"

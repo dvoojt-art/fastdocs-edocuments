@@ -51,7 +51,7 @@ export default function SettingsPage() {
         companyName: settings.companyName || "Callbox Davao",
         address: settings.address || "SM Lanang Premier, Davao City, Philippines",
         hrLead: settings.hrLead || "Jane Doe",
-        supportEmail: settings.supportEmail || "hr@callbox.com",
+        supportEmail: settings.supportEmail || "hr@callboxinc.com",
         autoSaveDrafts: settings.autoSaveDrafts ?? true,
         emailNotifications: settings.emailNotifications ?? false,
         auditTrail: settings.auditTrail ?? true,
