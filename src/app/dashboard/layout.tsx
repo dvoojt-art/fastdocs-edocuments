@@ -15,7 +15,9 @@ export default function DashboardLayout({
           <SidebarTrigger className="-ml-1 hover:bg-white/10 hover:text-white" />
           <Separator orientation="vertical" className="mr-2 h-4 bg-white/20" />
           <div className="flex-1">
-             <h1 className="font-headline font-bold text-lg uppercase tracking-tight">FastDocs Console</h1>
+             <h1 className="font-headline font-bold text-lg uppercase tracking-tight">
+               FastDocs <span className="text-primary">Console</span>
+             </h1>
           </div>
         </header>
         <main className="p-6 bg-background min-h-screen">
