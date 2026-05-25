@@ -178,32 +178,36 @@ export default function NewCertificatePage() {
     const margin = 15
     const contentWidth = pageWidth - (margin * 2)
     
-    // Header - Top yellow decorative bars
-    doc.setFillColor(255, 210, 100)
-    doc.rect(margin, 5, contentWidth, 1.2, 'F')
-    doc.setFillColor(255, 180, 50)
-    doc.rect(margin, 7, contentWidth * 0.4, 0.6, 'F')
+    // Header - Top yellow decorative bars (Matches Image)
+    doc.setFillColor(255, 210, 100) // Lighter yellow
+    doc.rect(margin, 5, contentWidth, 1, 'F')
+    doc.setFillColor(255, 180, 50) // Darker yellow
+    doc.rect(margin, 6.2, contentWidth * 0.45, 0.8, 'F')
     
     // Header Bar - Gray Angled Background
     doc.setFillColor(240, 242, 245)
-    doc.rect(margin, 9, contentWidth, 18, 'F')
-    doc.setFillColor(15, 50, 110)
-    doc.triangle(margin + contentWidth * 0.65, 9, margin + contentWidth, 9, margin + contentWidth, 27, 'F')
-    doc.rect(margin + contentWidth * 0.65, 9, contentWidth * 0.35, 18, 'F')
+    doc.rect(margin, 8, contentWidth, 18, 'F')
     
-    // Logo Text
+    // Blue Angled Section
+    doc.setFillColor(15, 50, 110)
+    const splitX = margin + contentWidth * 0.62
+    doc.triangle(splitX, 8, margin + contentWidth, 8, margin + contentWidth, 26, 'F')
+    doc.rect(splitX, 8, margin + contentWidth - splitX, 18, 'F')
+    
+    // Logo Text (Blue on Gray)
     doc.setTextColor(15, 50, 110)
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(18)
-    doc.text("callbox", margin + 6, 20)
+    doc.setFont("helvetica", "bolditalic")
+    doc.setFontSize(20)
+    doc.text("callbox", margin + 6, 18)
     
     doc.setTextColor(120, 130, 140)
+    doc.setFont("helvetica", "normal")
     doc.setFontSize(7)
-    doc.text("ContactDB, Inc.", margin + 6, 24)
+    doc.text("ContactDB, Inc.", margin + 6, 22)
     
-    // Right Header Text
+    // Right Header Text (White on Blue)
     doc.setTextColor(255, 255, 255)
-    doc.setFontSize(7)
+    doc.setFontSize(7.5)
     doc.setFont("helvetica", "bold")
     doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 6, 16, { align: "right" })
     doc.text("SALES SUPPORT", margin + contentWidth - 6, 20, { align: "right" })
@@ -211,14 +215,14 @@ export default function NewCertificatePage() {
     // Content Styling
     doc.setTextColor(0, 0, 0)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(8.5) 
+    doc.setFontSize(9) 
     
     const lines = draftedNarrative.split('\n')
-    let currentY = 35
+    let currentY = 38
 
     lines.forEach((line) => {
       if (line.trim() === "") {
-        currentY += 3.5
+        currentY += 4
         return
       }
 
@@ -228,49 +232,50 @@ export default function NewCertificatePage() {
       
       if (isTitle) {
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(13)
+        doc.setFontSize(14)
         doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 8
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(8.5)
-      } else if (isIssuedLine) {
-        currentY += 4
-        doc.text(line, margin, currentY)
         currentY += 10
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(9)
+      } else if (isIssuedLine) {
+        currentY += 6
+        doc.text(line, margin, currentY)
+        currentY += 15
       } else {
         const splitText = doc.splitTextToSize(line, contentWidth)
         doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 4) + 1 
+        currentY += (splitText.length * 4.5) + 1.5
       }
     })
 
-    // Signature Block 
-    const signatureY = currentY + 3
+    // Signature Block (Matches Image)
+    const signatureY = currentY + 10
     doc.setFont("helvetica", "bold")
+    doc.setFontSize(10)
     doc.text("Orwill Jane M. Linaza", margin, signatureY)
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(8)
-    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 4)
+    doc.setFontSize(9)
+    doc.text("People Operations Support", margin, signatureY + 5)
     
-    // Footer Section
-    const footerY = pageHeight - 15
-    doc.setDrawColor(230, 230, 230)
-    doc.setLineWidth(0.2)
+    // Footer Section (Matches Image columns and layout)
+    const footerY = pageHeight - 18
+    doc.setDrawColor(220, 220, 220)
+    doc.setLineWidth(0.3)
     doc.line(margin, footerY, pageWidth - margin, footerY)
     
     const colWidth = contentWidth / 6
-    doc.setFontSize(5)
-    doc.setTextColor(150, 150, 150)
+    doc.setFontSize(5.5)
+    doc.setTextColor(140, 140, 140)
     
     FOOTER_DATA.forEach((item, i) => {
       const x = margin + (i * colWidth)
       doc.setFont("helvetica", "bold")
-      doc.text(item.city, x, footerY + 3)
+      doc.text(item.city, x, footerY + 4)
       doc.setFont("helvetica", "normal")
-      const addrLines = doc.splitTextToSize(item.address, colWidth - 3)
-      doc.text(addrLines, x, footerY + 5)
+      const addrLines = doc.splitTextToSize(item.address, colWidth - 4)
+      doc.text(addrLines, x, footerY + 6.5)
       if (item.phone) {
-        doc.text(item.phone, x, footerY + 5 + (addrLines.length * 2.2))
+        doc.text(item.phone, x, footerY + 6.5 + (addrLines.length * 2.5))
       }
     })
 
@@ -484,7 +489,7 @@ export default function NewCertificatePage() {
                   <div className="p-8 space-y-4 flex-1">
                     <div className="max-w-2xl mx-auto space-y-4">
                       {/* Header Simulation */}
-                      <div className="border-b-2 border-primary pb-3 mb-4 flex justify-between items-end">
+                      <div className="border-b-2 border-[#0f326e] pb-3 mb-4 flex justify-between items-end">
                         <div>
                           <h3 className="text-xl font-bold text-[#0f326e] italic">callbox</h3>
                           <p className="text-[8px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
@@ -519,7 +524,7 @@ export default function NewCertificatePage() {
                       <div className="mt-8 pt-4">
                         <div className="w-56 border-t border-muted-foreground/30 pt-1">
                           <p className="font-bold text-base">Orwill Jane M. Linaza</p>
-                          <p className="text-[9px] opacity-60">People Operations Officer | HR & Administrator</p>
+                          <p className="text-[9px] opacity-60">People Operations Support</p>
                         </div>
                       </div>
                     </div>
