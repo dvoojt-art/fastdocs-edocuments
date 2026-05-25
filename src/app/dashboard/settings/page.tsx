@@ -50,7 +50,7 @@ export default function SettingsPage() {
       setFormData({
         companyName: settings.companyName || "Callbox Davao",
         address: settings.address || "SM Lanang Premier, Davao City, Philippines",
-        hrLead: settings.hrLead || "Jane Doe",
+        hrLead: settings.hrLead || "Orwill Jane Linaza",
         supportEmail: settings.supportEmail || "hr@callboxinc.com",
         autoSaveDrafts: settings.autoSaveDrafts ?? true,
         emailNotifications: settings.emailNotifications ?? false,
@@ -64,7 +64,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user) {
       setAccountData({
-        displayName: user.displayName || "",
+        displayName: user.displayName || "Orwill Jane Linaza",
         email: user.email || ""
       })
     }
