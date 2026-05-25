@@ -48,7 +48,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (settings) {
       setFormData({
-        companyName: settings.companyName || "Callbox Davao",
+        companyName: settings.companyName || "Callbox Inc. Davao",
         address: settings.address || "9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City",
         hrLead: settings.hrLead || "Orwill Jane Linaza",
         supportEmail: settings.supportEmail || "hr@callboxinc.com",
@@ -60,7 +60,7 @@ export default function SettingsPage() {
     } else {
       // Set defaults even if settings doc doesn't exist yet
       setFormData({
-        companyName: "Callbox Davao",
+        companyName: "Callbox Inc. Davao",
         address: "9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City",
         hrLead: "Orwill Jane Linaza",
         supportEmail: "hr@callboxinc.com",
