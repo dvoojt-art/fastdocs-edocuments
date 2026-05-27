@@ -61,7 +61,8 @@ export default function LoginPage() {
 
   // LOGIN
   const handleLogin = async (e?: FormEvent) => {
-    e?.preventDefault();
+    if (e) e.preventDefault();
+    
     if (!email || !password) {
       toast({
         title: "Credentials Required",
@@ -74,11 +75,15 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back! Redirecting...",
+      });
       router.push("/dashboard");
     } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password. Please check your credentials.",
+        description: error.message || "Invalid email or password. Please check your credentials.",
         variant: "destructive",
       });
     } finally {
