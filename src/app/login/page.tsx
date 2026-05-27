@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Loader2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from "@/firebase";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,25 +18,42 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const auth = useAuth();
+  const { toast } = useToast();
 
   // REGISTER
-  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleRegister = async () => {
+    if (!email || !password) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both email and password to register.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!email.toLowerCase().endsWith('@callboxinc.com')) {
+      toast({
+        title: "Unauthorized Domain",
+        description: "Registration is restricted to @callboxinc.com email addresses.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      if (!email.toLowerCase().endsWith('@callboxinc.com')) {
-        alert('Registration is only allowed with a @callboxinc.com email address.');
-        setLoading(false);
-        return;
-      }
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      alert('Account created');
+      await createUserWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Success",
+        description: "Your account has been created. Redirecting to your dashboard...",
+      });
       router.push("/dashboard");
     } catch (error: any) {
-      alert(error.message);
+      toast({
+        title: "Registration Error",
+        description: error.message || "Unable to create account. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -43,16 +61,26 @@ export default function LoginPage() {
 
   // LOGIN
   const handleLogin = async (e?: FormEvent) => {
+    e?.preventDefault();
+    if (!email || !password) {
+      toast({
+        title: "Credentials Required",
+        description: "Please enter your email and password to sign in.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-    router.push("/dashboard");
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
     } catch (error: any) {
-      alert(error.message);
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password. Please check your credentials.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -86,7 +114,7 @@ export default function LoginPage() {
             <CardDescription className="font-bold opacity-60 uppercase text-[15px] tracking-widest">Sign in or register your account</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <form onSubmit={(e: FormEvent) => { e.preventDefault(); handleLogin(e); }}>
+            <form onSubmit={handleLogin}>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="font-bold text-[12px] uppercase">Email Address</Label>
