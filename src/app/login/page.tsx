@@ -1,17 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/firebase';
-import {
-  createUserWithEmailAndPassword
-} from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Loader2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from "@/firebase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -21,9 +19,14 @@ export default function LoginPage() {
   const auth = useAuth();
 
   // REGISTER
-  const handleRegister = async () => {
+  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     try {
+      if (!email.toLowerCase().endsWith('@callboxinc.com')) {
+        alert('Registration is only allowed with a @callboxinc.com email address.');
+        setLoading(false);
+        return;
+      }
       await createUserWithEmailAndPassword(
         auth,
         email,
@@ -39,9 +42,20 @@ export default function LoginPage() {
   };
 
   // LOGIN
-  const handleLogin = () => {
-    alert("Button clicked");
+  const handleLogin = async (e?: FormEvent) => {
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
     router.push("/dashboard");
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,58 +83,61 @@ export default function LoginPage() {
         <Card className="border-none shadow-2xl overflow-hidden rounded-t-none">
           <CardHeader className="space-y-1 pb-6 text-center bg-muted/20">
             <CardTitle className="text-3xl font-headline font-bold uppercase tracking-tight">Portal Access</CardTitle>
-            <CardDescription className="font-bold opacity-60 uppercase text-[10px] tracking-widest">Sign in or register your HR account</CardDescription>
+            <CardDescription className="font-bold opacity-60 uppercase text-[15px] tracking-widest">Sign in or register your account</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="font-bold text-[10px] uppercase">Email Address</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="admin@callboxinc.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 shadow-none border-2 focus-visible:ring-primary"
-                  required 
-                />
+            <form onSubmit={(e: FormEvent) => { e.preventDefault(); handleLogin(e); }}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="font-bold text-[12px] uppercase">Email Address</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="admin@callboxinc.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 shadow-none border-2 focus-visible:ring-primary"
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="font-bold text-[12px] uppercase">Password</Label>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 shadow-none border-2 focus-visible:ring-primary"
+                    required 
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="h-14 bg-primary text-primary-foreground font-bold text-lg rounded-md transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center"
+                  >
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Login'}
+                  </button>
+                  <Button 
+                    type="button" 
+                    onClick={handleRegister}
+                    variant="outline"
+                    className="h-14 font-bold text-lg shadow-none transition-all hover:scale-[1.02] active:scale-[0.98] border-2 border-primary text-primary hover:bg-primary/5" 
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="mr-2 h-5 w-5" />}
+                    Register
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password" className="font-bold text-[10px] uppercase">Password</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 shadow-none border-2 focus-visible:ring-primary"
-                  required 
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 pt-4">
-                <button 
-                  onClick={handleLogin}
-                  className="h-14 bg-primary text-primary-foreground font-bold text-lg rounded-md transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Login
-                </button>
-                <Button 
-                  type="button" 
-                  onClick={handleRegister}
-                  variant="outline"
-                  className="h-14 font-bold text-lg shadow-none transition-all hover:scale-[1.02] active:scale-[0.98] border-2 border-primary text-primary hover:bg-primary/5" 
-                  disabled={loading}
-                >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus className="mr-2 h-5 w-5" />}
-                  Register
-                </Button>
-              </div>
-            </div>
+            </form>
           </CardContent>
           <CardFooter className="flex flex-col gap-4 border-t bg-muted/30 p-6">
-            <Link href="/" className="text-[10px] font-bold uppercase opacity-40 hover:opacity-100 transition-opacity text-center w-full">
-              Back to landing page
+            <Link href="/" className="text-[15px] font-bold uppercase opacity-40 hover:opacity-100 transition-opacity text-center w-full">
+              Back to Home page
             </Link>
           </CardFooter>
         </Card>
