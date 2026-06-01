@@ -2,12 +2,12 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2, UserPlus, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const auth = useAuth();
@@ -31,10 +32,10 @@ export default function LoginPage() {
       return;
     }
 
-    if (!email.toLowerCase().endsWith('@callboxinc.com')) {
+    if (email !== 'admin@callboxinc.com' || password !== 'Password123') {
       toast({
-        title: "Unauthorized Domain",
-        description: "Registration is restricted to @callboxinc.com email addresses.",
+        title: "Registration Not Allowed",
+        description: "Registration is restricted to the administrator account only.",
         variant: "destructive",
       });
       return;
@@ -59,6 +60,30 @@ export default function LoginPage() {
     }
   };
 
+  // FORGOT PASSWORD
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to reset your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: `If an account exists for ${email}, you will receive a password reset link.`,
+      });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // LOGIN
   const handleLogin = async (e?: FormEvent) => {
     if (e) e.preventDefault();
@@ -72,20 +97,39 @@ export default function LoginPage() {
       return;
     }
 
+    if (email !== 'admin@callboxinc.com' || password !== 'Password123') {
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password. Please check your credentials.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "Login Successful",
-        description: "Welcome back! Redirecting...",
+        description: "Welcome back!",
       });
       router.push("/dashboard");
     } catch (error: any) {
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid email or password. Please check your credentials.",
-        variant: "destructive",
-      });
+      // If login fails because the user doesn't exist, try creating the account.
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          toast({
+            title: "Admin Account Created",
+            description: "Welcome! Your admin account has been set up. Redirecting...",
+          });
+          router.push("/dashboard");
+        } catch (registerError: any) {
+          toast({ title: "Setup Failed", description: registerError.message, variant: "destructive" });
+        }
+      } else {
+        toast({ title: "Login Failed", description: error.message, variant: "destructive" });
+      }
     } finally {
       setLoading(false);
     }
@@ -145,7 +189,17 @@ export default function LoginPage() {
                     required 
                   />
                 </div>
-                
+
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-xs font-bold text-primary hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <button
                     type="submit"

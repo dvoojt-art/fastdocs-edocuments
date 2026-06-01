@@ -34,8 +34,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/firebase"
+} from "@/components/ui/dropdown-menu";
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query, where } from "firebase/firestore";
 import { signOut } from "firebase/auth"
 
 const data = {
@@ -97,6 +98,28 @@ export function DashboardSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const auth = useAuth()
+  const db = useFirestore()
+
+  // Get employee count
+  const employeesQuery = useMemoFirebase(() => db ? collection(db, "employees") : null, [db])
+  const { data: employees } = useCollection(employeesQuery)
+  const employeeCount = employees?.length ?? 0
+
+  // Get total documents count
+  const documentsQuery = useMemoFirebase(() => db ? collection(db, "certificates") : null, [db])
+  const { data: documents } = useCollection(documentsQuery)
+  const documentCount = documents?.length ?? 0
+
+  // Get pending approvals count
+  const pendingQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return query(
+      collection(db, "certificates"),
+      where("status", "==", "Pending")
+    )
+  }, [db])
+  const { data: pendingCerts } = useCollection(pendingQuery)
+  const pendingCount = pendingCerts?.length ?? 0
 
   const handleLogout = async () => {
     try {
@@ -141,6 +164,20 @@ export function DashboardSidebar() {
                       <Link href={item.url}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
+                        {item.title === "Employees" && (
+                          <span className="ml-auto text-xs font-bold opacity-50">({employeeCount})</span>
+                        )}
+                        {item.title === "Documents" && (
+                          <span className="ml-auto text-xs font-bold opacity-50">({documentCount})</span>
+                        )}
+                        {item.title === "HR Approval Desk" && pendingCount > 0 && (
+                          <span 
+                            className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
+                            aria-label={`${pendingCount} pending approvals`}
+                          >
+                            {pendingCount}
+                          </span>
+                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

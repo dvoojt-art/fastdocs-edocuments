@@ -57,140 +57,203 @@ export default function CertificatesPage() {
   }
 
   const formatLongDate = (date: any) => {
-    if (!date) return "N/A";
-    const d = date.toDate ? date.toDate() : new Date(date);
-    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    if (!date || typeof date.toDate !== 'function') {
+      return "N/A";
+    }
+    return date.toDate().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
-  const handleDownloadPDF = (cert: any) => {
+  const handleDownloadPDF = async (cert: any) => {
     if (!cert?.narrative) return
-    
-    const doc = new jsPDF()
-    const pageWidth = doc.internal.pageSize.getWidth()
-    const pageHeight = doc.internal.pageSize.getHeight()
-    const margin = 15
-    const contentWidth = pageWidth - (margin * 2)
-    
-    // Exact Header Colors from Image
-    const colorYellowLighter = [255, 212, 0]
-    const colorYellowDarker = [255, 171, 0]
-    const colorBlue = [15, 50, 110]
-    const colorGray = [240, 242, 245]
-    
-    // 1. Top Yellow Decorative Bars
-    doc.setFillColor(colorYellowLighter[0], colorYellowLighter[1], colorYellowLighter[2])
-    doc.rect(margin, 5, contentWidth, 0.8, 'F')
-    doc.setFillColor(colorYellowDarker[0], colorYellowDarker[1], colorYellowDarker[2])
-    doc.rect(margin, 5.8, contentWidth * 0.4, 0.6, 'F')
-    
-    // 2. Main Header Bar Background
-    doc.setFillColor(colorGray[0], colorGray[1], colorGray[2])
-    doc.rect(margin, 7.5, contentWidth, 18, 'F')
-    
-    // 3. Angled Blue Branding (Exact Match)
-    doc.setFillColor(colorBlue[0], colorBlue[1], colorBlue[2])
-    const splitStart = margin + (contentWidth * 0.58)
-    const splitEnd = margin + (contentWidth * 0.68)
-    doc.triangle(splitStart, 7.5, splitEnd, 7.5, splitEnd, 25.5, 'F')
-    doc.rect(splitEnd, 7.5, margin + contentWidth - splitEnd, 18, 'F')
-    
-    // 4. Logo & Header Text
-    doc.setTextColor(colorBlue[0], colorBlue[1], colorBlue[2])
-    doc.setFont("helvetica", "bolditalic")
-    doc.setFontSize(22)
-    doc.text("callbox", margin + 6, 17)
-    
-    // Caret Symbol ^ above 'o'
-    doc.setLineWidth(0.4)
-    const oX = margin + 6 + 18.5
-    doc.line(oX - 1.5, 10, oX, 8.5)
-    doc.line(oX, 8.5, oX + 1.5, 10)
-    
-    doc.setTextColor(120, 130, 140)
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(7.5)
-    doc.text("ContactDB, Inc.", margin + 6, 21)
-    
-    doc.setTextColor(255, 255, 255)
-    doc.setFontSize(7.5)
-    doc.setFont("helvetica", "bold")
-    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 6, 16, { align: "right" })
-    doc.text("SALES SUPPORT", margin + contentWidth - 6, 20, { align: "right" })
-    
-    // Content Styling
-    doc.setTextColor(0, 0, 0)
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(10) 
-    
-    const lines = cert.narrative.split('\n')
-    let currentY = 40
-
-    lines.forEach((line: string) => {
-      if (line.trim() === "") {
-        currentY += 4
-        return
+  
+    try {
+      const doc = new jsPDF("p", "mm", "a4")
+  
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+  
+      const margin = 25
+      const contentWidth = pageWidth - margin * 2
+  
+      // =========================
+      // CONVERT IMAGE TO BASE64
+      // =========================
+  
+      const getBase64Image = async (url: string) => {
+        const response = await fetch(url)
+        const blob = await response.blob()
+  
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader()
+  
+          reader.onloadend = () => {
+            resolve(reader.result as string)
+          }
+  
+          reader.readAsDataURL(blob)
+        })
       }
+  
+      // =========================
+      // LOAD IMAGES
+      // =========================
+  
+      const headerBase64 = await getBase64Image("/header.jpg")
+      const footerBase64 = await getBase64Image("/footer.jpg")
+      const signBase64 = await getBase64Image("/sign.png")
+  
+      // =========================
+      // ADD HEADER
+      // =========================
+  
+      doc.addImage(
+        headerBase64,
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        35
+      )
+  
+      // =========================
+      // CONTENT
+      // =========================
+  
+      const lines = cert.narrative.split("\n")
+      let currentY = 50;
 
-      const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
-      const isTitle = titles.includes(line.trim().toUpperCase()) || titles.includes(line.trim());
-      const isIssuedLine = line.includes("Issued this");
+      lines.forEach((line: string) => {
+        if (line.trim() === "") {
+          currentY += 5
+          return;
+        }
+  
+        const titles = [
+          "CERTIFICATION",
+          "CERTIFICATE OF EMPLOYMENT",
+          "CERTIFICATE OF EMPLOYMENT (COE WITH COMPENSATION)",
+          "CERTIFICATE OF TERMINATION",
+          "CERTIFICATE OF RECOGNITION",
+          "CERTIFICATE OF COMPLETION",
+          "CLEARANCE CERTIFICATE",
+          "LETTER OF RECOMMENDATION"
+        ]
+  
+        const isTitle =
+          titles.includes(line.trim().toUpperCase()) ||
+          titles.includes(line.trim())
+  
+        const isIssuedLine = line.includes("Issued this");
+
+        const isIndentedParagraph = 
+          line.startsWith('"Confidentiality.') || 
+          line.startsWith('"Non-Competition.') || 
+          line.startsWith('Employee shall not') || 
+          line.startsWith('Neither shall employee');
+        
+        const currentMargin = isIndentedParagraph ? margin + 9 : margin;
+        const currentContentWidth = isIndentedParagraph ? contentWidth - 18 : contentWidth;
+  
+        // NORMAL FIXED FONT SIZE
+        if (isTitle) {
+          doc.setFontSize(18);
+        } else if (isIndentedParagraph) {
+          doc.setFontSize(9);
+        } else {
+          doc.setFontSize(9);
+        }
+  
+        const splitText = doc.splitTextToSize(line, currentContentWidth)
+  
+        // AUTO PAGE BREAK
+        if (currentY + splitText.length * 7 > pageHeight - 45) {
+          doc.addPage()
+  
+          doc.addImage(
+            headerBase64,
+            "JPEG",
+            0,
+            0,
+            pageWidth,
+            35
+          )
+  
+          currentY = 50
+        }
+  
+        if (isTitle) {
+          doc.setFont("times", "bold")
+  
+          doc.text(line, pageWidth / 2, currentY, {
+            align: "center",
+          })
+  
+          currentY += 14
+        } else {
+          doc.setFont("times", "normal")
+  
+          doc.text(splitText, currentMargin, currentY, {
+            align: "justify",
+            maxWidth: currentContentWidth,
+          })
+  
+          currentY += splitText.length * 7
+        }
+  
+        if (isIssuedLine) {
+          currentY += 10
+        }
+      })
+  
+      // =========================
+      // SIGNATURE
+      // =========================
+  
+      let signatureY = currentY + 20;
+      if (signatureY > pageHeight - 65) { // If signature would overlap footer
+        doc.addPage();
+        doc.addImage(headerBase64, "JPEG", 0, 0, pageWidth, 35);
+        signatureY = 50;
+      }
+  
+      // --- E-Signature (Image) ---
+      const signatureWidth = 40;
+      const signatureHeight = 15; // Adjust as needed for aspect ratio
+      doc.addImage(signBase64, "PNG", margin, signatureY - 5, signatureWidth, signatureHeight);
       
-      if (isTitle) {
-        doc.setFont("helvetica", "bold")
-        doc.setFontSize(14)
-        doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 12
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(10)
-      } else if (isIssuedLine) {
-        currentY += 8
-        doc.text(line, margin, currentY)
-        currentY += 20
-      } else {
-        const splitText = doc.splitTextToSize(line, contentWidth)
-        doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 5) + 2
-      }
-    })
-
-    // Signature Block (Exact Match)
-    const signatureY = currentY + 15
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(11)
-    doc.text("Orwill Jane M. Linaza", margin, signatureY)
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(10)
-    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 6)
-    
-    // Footer Section (Exact Match)
-    const footerY = pageHeight - 25
-    doc.setDrawColor(230, 230, 230)
-    doc.setLineWidth(0.4)
-    doc.line(margin, footerY, pageWidth - margin, footerY)
-    
-    const colWidth = contentWidth / 6
-    doc.setFontSize(6)
-    doc.setTextColor(150, 150, 150)
-    
-    FOOTER_DATA.forEach((item, i) => {
-      const x = margin + (i * colWidth)
-      doc.setFont("helvetica", "bold")
-      doc.text(item.city, x, footerY + 5)
-      doc.setFont("helvetica", "normal")
-      const addrLines = doc.splitTextToSize(item.address, colWidth - 4)
-      doc.text(addrLines, x, footerY + 8)
-      if (item.phone) {
-        doc.text(item.phone, x, footerY + 8 + (addrLines.length * 3))
-      }
-    })
-
-    const filename = `${cert.employeeName.replace(/\s+/g, '_')}_${cert.certificateType.replace(/\s+/g, '_')}.pdf`
-    doc.save(filename)
-
-    toast({
-      title: "PDF Exported",
-      description: "Your document is ready for download.",
-    })
+      // Printed name and title below the signature
+      const textY = signatureY + signatureHeight;
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+      doc.text("Orwill Jane M. Linaza", margin, textY);
+      doc.text("People Operations Officer", margin, textY + 5);
+      // =========================
+      // ADD FOOTER
+      // =========================
+  
+      doc.addImage(footerBase64, "JPEG", 0, pageHeight - 35, pageWidth, 35);
+  
+      // =========================
+      // SAVE
+      // =========================
+  
+      const filename = `${cert.employeeName.replace(/\s+/g, "_")}_${cert.certificateType.replace(/\s+/g, "_")}.pdf`
+  
+      doc.save(filename)
+  
+      toast({
+        title: "PDF Exported",
+        description: "Your document is ready for download.",
+      })
+    } catch (error) {
+      console.error(error)
+  
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate PDF.",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
@@ -239,7 +302,7 @@ export default function CertificatesPage() {
                   <TableRow key={cert.id} className="hover:bg-muted/30">
                     <TableCell className="font-bold">{cert.employeeName}</TableCell>
                     <TableCell className="font-medium">{cert.certificateType}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground font-medium">
                       {formatLongDate(cert.createdAt)}
                     </TableCell>
                     <TableCell>
@@ -284,45 +347,27 @@ export default function CertificatesPage() {
                   </DialogDescription>
                 </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => handleDownloadPDF(selectedCert)}
-                className="font-bold h-10 shadow-none"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Export PDF
-              </Button>
             </div>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-8 bg-white">
-            <div className="max-w-2xl mx-auto border p-8 shadow-sm">
-              {/* Header Simulation */}
-              <div className="border-b-2 border-[#0f326e] pb-3 mb-6 flex justify-between items-end">
-                <div>
-                  <h3 className="text-2xl font-bold text-[#0f326e] italic">callbox</h3>
-                  <p className="text-[10px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
-                </div>
-              </div>
-
+            <div className="max-w-2xl mx-auto">
+              <img src="/header.jpg" alt="Document Header" className="w-full mb-8" />
               <div className="space-y-4">
                 {selectedCert?.narrative?.split('\n').map((line: string, i: number) => {
                   if (line.trim() === "") return <div key={i} className="h-2" />;
                   
-                  const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
+                  const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF EMPLOYMENT (COE WITH COMPENSATION)", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION", "CERTIFICATE OF EMPLOYMENT (STANDARD COE)"]
                   const isTitle = titles.includes(line.trim().toUpperCase()) || titles.includes(line.trim());
                   const isIssuedLine = line.includes("Issued this");
+                  const isFirstParagraph = line.startsWith("This is to certify that");
                   
                   return (
                     <p 
                       key={i} 
                       className={cn(
                         "text-[12px] leading-[1.6] font-medium font-body text-foreground",
-                        isTitle ? "text-center font-bold uppercase tracking-wider my-6 text-xl" : "text-justify",
-                        isIssuedLine ? "mt-8 font-semibold italic" : ""
+                        isTitle ? "text-center font-bold uppercase tracking-wider my-6 text-xl" : (isFirstParagraph ? "" : "text-justify"),
+                        isIssuedLine ? "mt-8 font-semibold" : ""
                       )}
                     >
                       {line}
@@ -334,10 +379,11 @@ export default function CertificatesPage() {
                 <div className="mt-12 pt-6">
                   <div className="w-64 border-t border-muted-foreground/30 pt-2">
                     <p className="font-bold text-lg">Orwill Jane M. Linaza</p>
-                    <p className="text-[10px] opacity-60">People Operations Officer | HR & Administrator</p>
+                    <p className="text-[10px] opacity-80">People Operations Officer</p>
                   </div>
                 </div>
               </div>
+              <img src="/footer.jpg" alt="Document Footer" className="w-full mt-12" />
             </div>
           </div>
           <div className="p-4 border-t bg-muted/10 flex justify-end">

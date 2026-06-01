@@ -2,20 +2,25 @@
 "use client"
 
 import { useState } from "react"
+import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Header, Footer, PageSize, PageOrientation } from "docx"
+import * as XLSX from "xlsx"
+import { saveAs } from "file-saver"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { FileText, Download, Copy, Check, Zap } from "lucide-react"
+import { FileText, Download, Copy, Check, Zap, File, FileSpreadsheet, Database, FileSignature, Sheet } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useFirestore } from "@/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { jsPDF } from "jspdf"
+import { generateStaticNarrative } from "./narrative-generator"
 import { cn } from "@/lib/utils"
+
 
 const FOOTER_DATA = [
   {
@@ -53,79 +58,24 @@ const FOOTER_DATA = [
 export default function NewCertificatePage() {
   const db = useFirestore()
   const [draftedNarrative, setDraftedNarrative] = useState("")
+  const [isDrafted, setIsDrafted] = useState(false)
   const [copied, setCopied] = useState(false)
   const [formData, setFormData] = useState({
     salutation: "Mr.",
     employeeName: "",
     position: "",
-    certificateType: "Certificate of Employment",
+    department: "",
+    employeeAddress: "",
+    certificateType: "",
     startDate: "",
     endDate: "",
-    employmentStatus: "Active",
+    employmentStatus: "",
     purposeOfCertificate: "",
-    terminationReason: "company-wide retrenchment"
+    terminationReason: "company-wide retrenchment",
+    basicRate: "",
+    allowance: ""
   })
   const { toast } = useToast()
-
-  const formatDateString = (dateStr: string) => {
-    if (!dateStr || dateStr.toLowerCase() === 'present') return dateStr;
-    try {
-      const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return dateStr;
-      return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    } catch (e) {
-      return dateStr;
-    }
-  }
-
-  const getOrdinalSuffix = (day: number) => {
-    if (day > 3 && day < 21) return 'th';
-    switch (day % 10) {
-      case 1:  return "st";
-      case 2:  return "nd";
-      case 3:  return "rd";
-      default: return "th";
-    }
-  }
-
-  const getIssuedDateString = () => {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleDateString('en-US', { month: 'long' });
-    const year = today.getFullYear();
-    return `Issued this ${day}${getOrdinalSuffix(day)} day of ${month} ${year}, at Davao City, Philippines.`;
-  }
-
-  const generateStaticNarrative = (data: typeof formData) => {
-    const { salutation, employeeName, position, certificateType, startDate, endDate, employmentStatus, purposeOfCertificate, terminationReason } = data;
-    
-    const formattedStart = formatDateString(startDate);
-    const formattedEnd = formatDateString(endDate);
-    const fullNameWithSalutation = `${salutation} ${employeeName}`;
-    const pronoun = salutation === "Mr." ? "he" : "she";
-    
-    const period = endDate.toLowerCase() === 'present' ? `since ${formattedStart}` : `from ${formattedStart} to ${formattedEnd}`;
-    const purpose = purposeOfCertificate || 'employment purposes only';
-    
-    const issuedLine = getIssuedDateString();
-
-    switch (certificateType) {
-      case "Certificate of Employment":
-        return `CERTIFICATION\n\nThis is to certify that ${fullNameWithSalutation} was an employee of Contact DB Inc. (Callbox Inc.) ${period} as a ${position}.\n\nThis is to further certify that ${pronoun} is cleared from all money and property accountabilities with the company.\n\nThis also serves notice that employee is bound by surviving confidentiality and non-competition provisions in his contract with Contact DB Incorporated, quoted as follows:\n\n"Confidentiality. During the Employment Period and for an indefinite period thereafter, an employee shall not use, divulge, communicate or disclose any protected intellectual property, confidential information, trade secrets, records relating to the business, affairs, products or services of Contact DB Incorporated or its affiliates, or any Person having dealings therewith, or permit or encourage the use of such confidential information by another."\n\n"Non-Competition. During the Employment Period and within One year from the termination thereof:\n\nEmployee shall not promote, participate, engage or have any other interest directly or indirectly, in any other business, undertaking or activity similar or substantially similar to the business operations or activities of Contact DB Incorporated or any of its affiliates, in any jurisdiction where the company is holding office. For this purpose, "directly or indirectly engage in any business similar to or substantially similar to that of Contact DB Incorporated" shall include, but is not limited to, engaging in the same business as owner, partner, agent, representative, consultant, officer, director or as an employee of any person, firm, or corporation or other entity;\n\nNeither shall employee directly or indirectly solicit, obtain, secure or render services to any prospective or present client which has been solicited or serviced by Contact DB Incorporated. Or any of its affiliates; nor shall an employee recruits any of the employees of the Company including those of its affiliates to engage in a business similar or the same to that of Contact DB Incorporated."\n\nThis certification is issued as requested by the above-named employee for ${purpose}.\n\n${issuedLine}`;
-      case "Certificate of Termination":
-        return `CERTIFICATE OF TERMINATION\n\nThis is to certify that ${fullNameWithSalutation}, holding the position of ${position}, was employed with ContactDB Inc., located on the 9th floor, Landco Bldg. JP Laurel Ave., Bajada, Davao City, ${period}.\n\nAs of ${formattedEnd}, the employment of the above-named employee has been officially terminated due to ${terminationReason || 'company-wide retrenchment'}. The termination was carried out in accordance with company policies and applicable labor laws. All company property has been returned, and any final pay and benefits due have been or will be processed accordingly.\n\nThis certification is being issued upon the request of the employee for whatever legal purpose it may serve.\n\n${issuedLine}`;
-      case "Certificate of Recognition":
-        return `CERTIFICATE OF RECOGNITION\n\nThis certificate is proudly presented to\n\n${fullNameWithSalutation.toUpperCase()}\n\n${position.toUpperCase()}\n\nIn recognition of their dedicated service and exemplary performance during their tenure ${period}.\n\n${issuedLine}`;
-      case "Certificate of Completion":
-        return `CERTIFICATE OF COMPLETION\n\nThis is to certify that ${fullNameWithSalutation} has successfully completed the required duties and responsibilities as ${position} at ContactDB Inc. (Callbox Inc.) ${period}.\n\nThis certificate is awarded in recognition of their commitment, professional conduct, and the successful attainment of all objectives set forth during their tenure.\n\nIssued upon request for whatever legal purpose it may serve.\n\n${issuedLine}`;
-      case "Clearance Certificate":
-        return `CLEARANCE CERTIFICATE\n\nThis is to certify that ${fullNameWithSalutation}, holding the position of ${position}, has been officially cleared of all accountabilities with Callbox Davao as of ${formattedEnd}.\n\nIssued for: ${purpose || 'whatever legal purpose it may serve'}\n\n${issuedLine}`;
-      case "Recommendation Letter":
-        return `LETTER OF RECOMMENDATION\n\nTo Whom It May Concern,\n\nIt is my pleasure to recommend ${fullNameWithSalutation} for any professional opportunity. During their tenure as ${position} at Callbox Davao ${period}, ${fullNameWithSalutation} served as a valued member of our organization.\n\n${issuedLine}`;
-      default:
-        return `Document for ${fullNameWithSalutation}\nPosition: ${position}\nStatus: ${employmentStatus}\nPurpose: ${purpose}\n\n${issuedLine}`;
-    }
-  }
 
   const handleDraft = () => {
     if (!formData.employeeName || !formData.position || !formData.startDate || !formData.endDate) {
@@ -139,11 +89,14 @@ export default function NewCertificatePage() {
 
     const result = generateStaticNarrative(formData)
     setDraftedNarrative(result)
+    setIsDrafted(true)
     
     if (db) {
       addDoc(collection(db, "certificates"), {
         ...formData,
         narrative: result,
+        headerImageUrl: "/header.jpg",
+        footerImageUrl: "/footer.jpg",
         status: "Pending",
         createdAt: serverTimestamp()
       }).catch(async (err) => {
@@ -169,161 +122,520 @@ export default function NewCertificatePage() {
     setTimeout(() => setCopied(false), 1500)
   }
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!draftedNarrative) return
-    
-    const doc = new jsPDF()
-    const pageWidth = doc.internal.pageSize.getWidth()
-    const pageHeight = doc.internal.pageSize.getHeight()
-    const margin = 15
-    const contentWidth = pageWidth - (margin * 2)
-    
-    // Header Colors
-    const colorYellowLighter = [255, 212, 0] 
-    const colorYellowDarker = [255, 171, 0]
-    const colorBlue = [15, 50, 110]
-    const colorGray = [240, 242, 245]
-    
-    // 1. Top Yellow Decorative Bars
-    doc.setFillColor(colorYellowLighter[0], colorYellowLighter[1], colorYellowLighter[2])
-    doc.rect(margin, 5, contentWidth, 0.8, 'F')
-    doc.setFillColor(colorYellowDarker[0], colorYellowDarker[1], colorYellowDarker[2])
-    doc.rect(margin, 5.8, contentWidth * 0.4, 0.6, 'F')
-    
-    // 2. Main Header Container
-    doc.setFillColor(colorGray[0], colorGray[1], colorGray[2])
-    doc.rect(margin, 7.5, contentWidth, 18, 'F')
-    
-    // 3. Angled Blue Branding (Polygon)
-    doc.setFillColor(colorBlue[0], colorBlue[1], colorBlue[2])
-    const splitStart = margin + (contentWidth * 0.58)
-    const splitEnd = margin + (contentWidth * 0.68)
-    doc.setDrawColor(colorBlue[0], colorBlue[1], colorBlue[2])
-    doc.triangle(splitStart, 7.5, splitEnd, 7.5, splitEnd, 25.5, 'F')
-    doc.rect(splitEnd, 7.5, margin + contentWidth - splitEnd, 18, 'F')
-    
-    // 4. Logo & Text in Header
-    doc.setTextColor(colorBlue[0], colorBlue[1], colorBlue[2])
-    doc.setFont("helvetica", "bolditalic")
-    doc.setFontSize(22)
-    doc.text("callbox", margin + 6, 17)
-    
-    // Draw the caret above 'o'
-    doc.setLineWidth(0.4)
-    const oX = margin + 6 + 18.5
-    doc.line(oX - 1.5, 10, oX, 8.5)
-    doc.line(oX, 8.5, oX + 1.5, 10)
-    
-    doc.setTextColor(120, 130, 140)
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(7.5)
-    doc.text("ContactDB, Inc.", margin + 6, 21)
-    
-    doc.setTextColor(255, 255, 255)
-    doc.setFontSize(7.5)
-    doc.setFont("helvetica", "bold")
-    doc.text("LEAD MANAGEMENT AND", margin + contentWidth - 6, 16, { align: "right" })
-    doc.text("SALES SUPPORT", margin + contentWidth - 6, 20, { align: "right" })
-    
-    // Content Layout
-    doc.setTextColor(0, 0, 0)
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(10)
-    
-    const lines = draftedNarrative.split('\n')
-    let currentY = 40
 
-    lines.forEach((line) => {
-      if (line.trim() === "") {
-        currentY += 4
-        return
+    try {
+      const doc = new jsPDF("p", "mm", "a4")
+  
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+  
+      const margin = 25
+      const contentWidth = pageWidth - margin * 2
+  
+      // =========================
+      // CONVERT IMAGE TO BASE64
+      // =========================
+  
+      const getBase64Image = async (url: string) => {
+        const response = await fetch(url)
+        const blob = await response.blob()
+  
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader()
+  
+          reader.onloadend = () => {
+            resolve(reader.result as string)
+          }
+  
+          reader.readAsDataURL(blob)
+        })
       }
+  
+      // =========================
+      // LOAD IMAGES
+      // =========================
+  
+      const headerBase64 = await getBase64Image("/header.jpg")
+      const footerBase64 = await getBase64Image("/footer.jpg")
+      const signBase64 = await getBase64Image("/sign.png")
+  
+      // =========================
+      // ADD HEADER
+      // =========================
+  
+      doc.addImage(
+        headerBase64,
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        35
+      )
+  
+      // =========================
+      // CONTENT
+      // =========================
+  
+      const lines = draftedNarrative.split("\n")
+      let currentY = 50;
 
-      const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
-      const isTitle = titles.includes(line.trim().toUpperCase()) || titles.includes(line.trim());
-      const isIssuedLine = line.includes("Issued this");
-      
-      if (isTitle) {
-        doc.setFont("helvetica", "bold")
-        doc.setFontSize(14)
-        doc.text(line, pageWidth / 2, currentY, { align: "center" })
-        currentY += 12
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(10)
-      } else if (isIssuedLine) {
-        currentY += 8
-        doc.text(line, margin, currentY)
-        currentY += 20
-      } else {
-        // Apply Bolding for specific terms
-        const boldTerms = [
-          formData.salutation, 
-          formData.employeeName,
-          formatDateString(formData.startDate),
-          formatDateString(formData.endDate),
-          "Confidentiality.",
-          "Contact DB Incorporated",
-          "Non-Competition.",
-          "Contact DB Incorporated."
-        ];
+      lines.forEach((line: string) => {
+        if (line.trim() === "") {
+          currentY += 5
+          return;
+        }
+  
+        const titles = [
+          "CERTIFICATION",
+          "CERTIFICATE OF EMPLOYMENT",
+          "CERTIFICATE OF EMPLOYMENT (COE WITH COMPENSATION)",
+          "CERTIFICATE OF TERMINATION",
+          "CERTIFICATE OF RECOGNITION",
+          "CERTIFICATE OF COMPLETION",
+          "CLEARANCE CERTIFICATE",
+          "LETTER OF RECOMMENDATION"
+        ]
+  
+        const isTitle =
+          titles.includes(line.trim().toUpperCase()) ||
+          titles.includes(line.trim())
 
-        let processedLine = line;
-        // Since jsPDF text() doesn't support complex inline bolding easily without plugins,
-        // we'll bold the entire line if it contains key legal sections or employee identifiers
-        const shouldBoldEntireLine = boldTerms.some(term => line.includes(term)) && (line.includes("Confidentiality") || line.includes("Non-Competition") || line.includes(formData.employeeName));
+        const isIssuedLine = line.includes("Issued this");
 
-        if (shouldBoldEntireLine) {
-          doc.setFont("helvetica", "bold");
+        const isIndentedParagraph =
+          line.startsWith('"Confidentiality.') ||
+          line.startsWith('"Non-Competition.') ||
+          line.startsWith("Employee shall not") ||
+          line.startsWith("Neither shall employee")
+
+        const isRecognitionNameLine = formData.certificateType === "Certificate of Recognition" && line.trim() === `${formData.salutation} ${formData.employeeName}`.toUpperCase();
+        const isRecognitionPositionLine = formData.certificateType === "Certificate of Recognition" && line.trim() === formData.position.toUpperCase();
+        
+        const possessivePronoun = formData.salutation === "Mr." ? "his" : "her";
+        const compensationIntroLine = `${possessivePronoun.charAt(0).toUpperCase() + possessivePronoun.slice(1)} monthly compensation is as follows:`;
+        const isCompensationIntro = line.trim() === compensationIntroLine;
+        const currentMargin = isIndentedParagraph ? margin + 9 : margin;
+        const currentContentWidth = isIndentedParagraph ? contentWidth - 18 : contentWidth;
+  
+        // NORMAL FIXED FONT SIZE
+        if (isTitle) {
+          doc.setFontSize(18);
+        } else if (isIndentedParagraph) {
+          doc.setFontSize(9);
+        } else if (formData.certificateType === "Certificate of Employment (COE with Compensation)") {
+          doc.setFontSize(12);
+        } else if (isRecognitionNameLine || isRecognitionPositionLine) {
+          doc.setFontSize(9);
         } else {
-          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+        }
+  
+        const splitText = doc.splitTextToSize(line, currentContentWidth)
+  
+        // AUTO PAGE BREAK
+        if (currentY + splitText.length * 5 > pageHeight - 45) {
+          doc.addPage()
+  
+          doc.addImage(
+            headerBase64,
+            "JPEG",
+            0,
+            0,
+            pageWidth,
+            35
+          )
+  
+          currentY = 50
+        }
+  
+        if (isTitle) {
+          doc.setFont("times", "bold")
+  
+          const textToRender = line.trim().toUpperCase() === "CERTIFICATION"
+            ? "C E R T I F I C A T I O N"
+            : line;
+
+          doc.text(textToRender, pageWidth / 2, currentY, {
+            align: "center",
+          })
+
+          currentY += 14
+        } else if (isRecognitionNameLine) {
+          doc.setFont("times", "bold");
+          doc.setFontSize(22);
+          doc.text(line, pageWidth / 2, currentY, { align: "center" });
+          currentY += 10;
+        } else if (isRecognitionPositionLine) {
+          doc.setFont("times", "normal");
+          doc.setFontSize(14);
+          doc.text(line, pageWidth / 2, currentY, { align: "center" });
+          currentY += 10;
+        } else if (isCompensationIntro) {
+          doc.setFont("times", "bolditalic");
+          doc.text(line, currentMargin, currentY);
+          currentY += 7;
+          currentY += 10;
+        } else {
+          doc.setFont("times", "normal")
+
+          const { salutation, employeeName } = formData;
+          const fullNameWithSalutation = `${salutation} ${employeeName}`;
+          const companyNames = [
+            "Contact DB Incorporated",
+            "Confidentiality.",
+            "Non-Competition."
+          ];
+          const legalTerms = ['"Confidentiality."', '"Non-Competition."'];
+          const highlights = [fullNameWithSalutation, ...companyNames, ...legalTerms];
+
+          const renderJustifiedLineWithHighlights = (text: string, y: number) => {
+            const textLines = doc.splitTextToSize(text, currentContentWidth);
+
+            textLines.forEach((lineText: string, lineIndex: number) => {
+              const isLastLine = lineIndex === textLines.length - 1;
+              let currentX = currentMargin;
+              const words = lineText.split(' ');
+              const totalWordsWidth = doc.getTextWidth(lineText.replace(/\s/g, ''));
+              const spaceWidth = (words.length > 1 && !isLastLine)
+                ? (currentContentWidth - totalWordsWidth) / (words.length - 1)
+                : doc.getTextWidth(' ');
+
+              // Create a regex that finds any of the highlight terms
+              const highlightRegex = new RegExp(`(${highlights.map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+              const parts = lineText.split(highlightRegex).filter(Boolean);
+
+              parts.forEach(part => {
+                const isHighlight = highlights.includes(part);
+                doc.setFont("times", isHighlight ? "bold" : "normal");
+
+                const wordsInPart = part.split(' ');
+                wordsInPart.forEach((word, wordIndex) => {
+                  doc.text(word, currentX, y);
+                  currentX += doc.getTextWidth(word);
+                  if (wordIndex < wordsInPart.length - 1) {
+                    currentX += doc.getTextWidth(' ');
+                  }
+                });
+
+                // This logic is tricky with mixed highlights and justification.
+                // The original justification logic assumed uniform spacing, which is broken by bold text.
+                // A simple space is added here as a compromise to maintain readability without complex calculations.
+                if (parts.length > 1) {
+                   currentX += doc.getTextWidth(' ');
+                }
+              });
+
+              // Fallback for justification spacing if not the last line
+              if (!isLastLine && parts.length === 1) {
+                 // This part is complex. For now, we'll use standard text rendering which will be left-aligned.
+                 // True justification with mixed styles requires word-by-word position calculation.
+              }
+
+              y += 5; // Move to the next line
+            });
+            return y;
+          };
+
+          currentY = renderJustifiedLineWithHighlights(line, currentY);
+        }
+  
+        if (isIssuedLine) {
+          currentY += 10
+        }
+      })
+  
+      // =========================
+      // SIGNATURE
+      // =========================
+  
+      let signatureY = currentY + 5;
+      if (signatureY > pageHeight - 65) { // If signature would overlap footer
+        doc.addPage();
+        doc.addImage(headerBase64, "JPEG", 0, 0, pageWidth, 35);
+        signatureY = 50;
+      }
+  
+      // --- E-Signature (Image) ---
+      const signatureWidth = 50;
+      const signatureHeight = 15; // Adjust as needed for aspect ratio
+      doc.addImage(signBase64, "PNG", margin - 5, signatureY, signatureWidth, signatureHeight);
+      
+      // Printed name and title below the signature
+      const textY = signatureY + signatureHeight;
+      doc.setFont("times", "normal");
+      doc.setFontSize(12);
+      doc.text("Orwill Jane M. Linaza", margin, textY);
+      doc.text("People Operations Officer", margin, textY + 5);
+      // =========================
+      // ADD FOOTER
+      // =========================
+  
+      doc.addImage(footerBase64, "JPEG", 0, pageHeight - 30, pageWidth, 23);
+  
+      // =========================
+      // SAVE
+      // =========================
+  
+      const filename = `${formData.employeeName.replace(/\s+/g, "_")}_${formData.certificateType.replace(/\s+/g, "_")}.pdf`
+  
+      doc.save(filename)
+  
+      toast({
+        title: "PDF Exported",
+        description: "Your document is ready for download.",
+      })
+    } catch (error) {
+      console.error(error)
+  
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate PDF.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleDownloadWord = async () => {
+    if (!draftedNarrative) return;
+
+    const getImageBuffer = async (url: string) => {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+      });
+    };
+
+    try {
+      // 1. Fetch all images
+      const headerBuffer = await getImageBuffer("/header.jpg");
+      const footerBuffer = await getImageBuffer("/footer.jpg");
+      const signBuffer = await getImageBuffer("/sign.png");
+
+      // 2. Parse the narrative and create styled paragraphs
+      const contentParagraphs = draftedNarrative.split('\n').flatMap(line => {
+        if (line.trim() === "") {
+          return new Paragraph({ children: [new TextRun("")] });
         }
 
-        const splitText = doc.splitTextToSize(processedLine, contentWidth)
-        doc.text(splitText, margin, currentY, { align: "justify", maxWidth: contentWidth })
-        currentY += (splitText.length * 5) + 2
-        doc.setFont("helvetica", "normal");
-      }
-    })
+        const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION", "CERTIFICATE OF EMPLOYMENT (STANDARD COE)", "CERTIFICATE OF EMPLOYMENT (COE WITH COMPENSATION)"];
+        const isTitle = titles.includes(line.trim().toUpperCase());
+        const isIndentedParagraph = line.startsWith('"Confidentiality.') || line.startsWith('"Non-Competition.') || line.startsWith("Employee shall not") || line.startsWith("Neither shall employee");
+        const isRecognitionNameLine = formData.certificateType === "Certificate of Recognition" && line.trim() === `${formData.salutation} ${formData.employeeName}`.toUpperCase();
+        const isRecognitionPositionLine = formData.certificateType === "Certificate of Recognition" && line.trim() === formData.position.toUpperCase();
 
-    // Signature Block (Bold Title)
-    const signatureY = currentY + 15
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(11)
-    doc.text("Orwill Jane M. Linaza", margin, signatureY)
-    doc.setFont("helvetica", "bold") // BOLD as requested
-    doc.setFontSize(10)
-    doc.text("People Operations Officer | HR & Administrator", margin, signatureY + 6)
-    
-    // Footer Section
-    const footerY = pageHeight - 25
-    doc.setDrawColor(230, 230, 230)
-    doc.setLineWidth(0.4)
-    doc.line(margin, footerY, pageWidth - margin, footerY)
-    
-    const colWidth = contentWidth / 6
-    doc.setFontSize(6)
-    doc.setTextColor(150, 150, 150)
-    
-    FOOTER_DATA.forEach((item, i) => {
-      const x = margin + (i * colWidth)
-      doc.setFont("helvetica", "bold")
-      doc.text(item.city, x, footerY + 5)
-      doc.setFont("helvetica", "normal")
-      const addrLines = doc.splitTextToSize(item.address, colWidth - 4)
-      doc.text(addrLines, x, footerY + 8)
-      if (item.phone) {
-        doc.text(item.phone, x, footerY + 8 + (addrLines.length * 3))
-      }
-    })
+        const possessivePronoun = formData.salutation === "Mr." ? "his" : "her";
+        const compensationIntroLine = `${possessivePronoun.charAt(0).toUpperCase() + possessivePronoun.slice(1)} monthly compensation is as follows:`;
+        const isCompensationIntro = line.trim() === compensationIntroLine;
+        if (isTitle) {
+          return new Paragraph({
+            children: [new TextRun({ 
+              text: line.trim().toUpperCase() === "CERTIFICATION" ? "C E R T I F I C A T I O N" : line, 
+              bold: true, 
+              size: 32 
+            })], // 16pt
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 280 }, // 14pt
+          });
+        }
 
-    const filename = `${formData.employeeName.replace(/\s+/g, '_')}_${formData.certificateType.replace(/\s+/g, '_')}.pdf`
-    doc.save(filename)
+        if (isRecognitionNameLine) {
+          return new Paragraph({
+            children: [new TextRun({ text: line, bold: true, size: 44 })], // 22pt
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+          });
+        }
 
-    toast({
-      title: "PDF Exported",
-      description: "Your document is ready for download.",
-    })
-  }
+        if (isRecognitionPositionLine) {
+          return new Paragraph({
+            children: [new TextRun({ text: line, size: 28 })], // 14pt
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+          });
+        }
+
+        if (isCompensationIntro) {
+          return new Paragraph({
+            children: [new TextRun({ text: line, bold: true, italics: true, size: 24 })], // 12pt
+            alignment: AlignmentType.JUSTIFIED,
+            spacing: { after: 100 },
+          });
+        }
+
+        const { salutation, employeeName } = formData;
+        const fullNameWithSalutation = `${salutation} ${employeeName}`;
+        const companyNames = ["Contact DB Incorporated", "Confidentiality.", "Non-Competition."];
+        const legalTerms = ['"Confidentiality."', '"Non-Competition."'];
+        const highlights = [fullNameWithSalutation, ...companyNames, ...legalTerms];
+        const highlightRegex = new RegExp(`(${highlights.map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+        const parts = line.split(highlightRegex).filter(Boolean);
+
+        return new Paragraph({
+          children: parts.map(part => new TextRun({
+            text: part,
+            bold: highlights.includes(part),
+            size:
+              formData.certificateType === "Certificate of Employment (COE with Compensation)" ||
+              formData.certificateType === "Certificate of Termination"
+                ? 24 // 12pt
+                : isIndentedParagraph
+                ? 18
+                : 22, // 9pt or 11pt
+          })),
+          alignment: AlignmentType.JUSTIFIED,
+          indent: isIndentedParagraph ? { left: 720 } : undefined, // 0.5 inch indent
+          spacing: { after: formData.certificateType === "Certificate of Termination" ? 140 : 100 },
+        });
+      });
+
+      // 3. Add signature and name below it
+      const signatureParagraphs = [
+        new Paragraph({
+          children: [
+            new ImageRun({
+              data: signBuffer,
+              transformation: {
+                width: 190,
+                height: 55,
+              },
+            }),
+          ],
+          indent: { left: -288 }, // Approx -0.2 inches to match PDF's margin - 5
+          spacing: { before: 400 },
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "Orwill Jane M. Linaza", bold: true, size: 24 })], // 12pt
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: "People Operations Officer", bold: true, size: 24 })], // 12pt
+        }),
+      ];
+
+      // 4. Create the document with headers and footers
+      const doc = new Document({
+        sections: [
+          {
+            properties: {
+              pageSize: {
+                ...PageSize.A4,
+              },
+              page: { // Corresponds to page margins
+                margin: {
+                  top: 2880, // 1 inch
+                  right: 1440, // 1 inch
+                  bottom: 1000,
+                  left: 1440, // 1 inch
+                },
+              },
+            },
+            headers: {
+              default: new Header({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new ImageRun({
+                        data: headerBuffer,
+                        transformation: {
+                          width: 835, // A4 width in pixels at ~96 DPI
+                          height: 135,
+                        },
+                        floating: {
+                          verticalPosition: {
+                            offset: 0, // Position from the top of the page
+                          },
+                          horizontalPosition: {
+                            offset: 0, // Position from the left of the page
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            },
+            footers: {
+              default: new Footer({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new ImageRun({
+                        data: footerBuffer,
+                        transformation: {
+                          width: 800,
+                          height: 85,
+                        },
+                        floating: {
+                          verticalPosition: {
+                            // A large value to push it to the bottom of the page
+                            offset: 9705525, 
+                          },
+                          horizontalPosition: {
+                            offset: 0, // Position from the left of the page
+                          },
+                        },
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            },
+            children: [...contentParagraphs, ...signatureParagraphs],
+          },
+        ],
+      });
+
+      // 5. Generate and save the file
+      const blob = await Packer.toBlob(doc);
+      const filename = `${formData.employeeName.replace(/\s+/g, "_")}_${formData.certificateType.replace(/\s+/g, "_")}.docx`;
+      saveAs(blob, filename);
+
+      toast({
+        title: "Word Document Exported",
+        description: "The .docx file has been generated successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate .docx file.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    try {
+      const data = [
+        ["Title", "Full Name", "Position", "Department", "Address", "Document Type", "Start Date", "End Date", "Employment Status", "Purpose", "Basic Rate", "Allowance"],
+        [formData.salutation, formData.employeeName, formData.position, formData.department, formData.employeeAddress, formData.certificateType, formData.startDate, formData.endDate, formData.employmentStatus, formData.purposeOfCertificate, formData.basicRate, formData.allowance]
+      ];
+
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Employee Data");
+
+      const filename = `${formData.employeeName.replace(/\s+/g, "_")}_data.xlsx`;
+      XLSX.writeFile(workbook, filename);
+
+      toast({
+        title: "Excel Sheet Exported",
+        description: "Employee data sheet is ready for download.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate .xlsx file.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
@@ -361,7 +673,7 @@ export default function NewCertificatePage() {
                   <Label htmlFor="employeeName" className="font-bold">Full Name</Label>
                   <Input 
                     id="employeeName" 
-                    placeholder="e.g. Juan Dela Cruz" 
+                    placeholder="e.g. Daryl Cortes" 
                     value={formData.employeeName}
                     onChange={(e) => setFormData({...formData, employeeName: e.target.value})}
                   />
@@ -370,25 +682,64 @@ export default function NewCertificatePage() {
 
               <div className="space-y-2">
                 <Label htmlFor="position" className="font-bold">Position</Label>
-                <Input 
-                  id="position" 
-                  placeholder="e.g. Sales Specialist" 
+                <Select
                   value={formData.position}
-                  onChange={(e) => setFormData({...formData, position: e.target.value})}
+                  onValueChange={(v) => setFormData({ ...formData, position: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Sales Development Representative">Sales Development Representative</SelectItem>
+                    <SelectItem value="Client Service Manager">Client Service Manager</SelectItem>
+                    <SelectItem value="IT Tech Support">IT Tech Support</SelectItem>
+                    <SelectItem value="OJT">On-the-Job-Training</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="department" className="font-bold">Department</Label>
+                <Select
+                  value={formData.department}
+                  onValueChange={(v) => setFormData({ ...formData, department: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="North America (NAM)">North America (NAM)</SelectItem>
+                    <SelectItem value="Asia Pacific (APAC)">Asia Pacific (APAC)</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="HR">Human Resources (HR)</SelectItem>
+                    <SelectItem value="General Services (GenServ)">General Services (GenServ)</SelectItem>
+                    <SelectItem value="IT Dept.">IT</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="employeeAddress" className="font-bold">Address</Label>
+                <Input 
+                  id="employeeAddress" 
+                  placeholder="e.g. 123 Main St., Davao City" 
+                  value={formData.employeeAddress}
+                  onChange={(e) => setFormData({...formData, employeeAddress: e.target.value})}
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="type" className="font-bold">Certificate Type</Label>
+                <Label htmlFor="type" className="font-bold">Document Type</Label>
                 <Select 
                   value={formData.certificateType}
                   onValueChange={(v) => setFormData({...formData, certificateType: v})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder="Select Document Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Certificate of Employment">Certificate of Employment</SelectItem>
+                    <SelectItem value="Certificate of Employment (Standard COE)">Certificate of Employment (Standard COE)</SelectItem>
+                    <SelectItem value="Certificate of Employment (COE with Compensation)">Certificate of Employment (COE with Compensation)</SelectItem>
                     <SelectItem value="Certificate of Termination">Certificate of Termination</SelectItem>
                     <SelectItem value="Certificate of Recognition">Certificate of Recognition</SelectItem>
                     <SelectItem value="Certificate of Completion">Certificate of Completion</SelectItem>
@@ -397,6 +748,25 @@ export default function NewCertificatePage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {formData.certificateType === "Certificate of Employment (COE with Compensation)" && (
+                <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-2">
+                    <Label htmlFor="basicRate" className="font-bold">Basic Rate</Label>
+                    <Input 
+                      id="basicRate" 
+                      type="number"
+                      placeholder="e.g. 20,000"
+                      value={formData.basicRate}
+                      onChange={(e) => setFormData({...formData, basicRate: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="allowance" className="font-bold">Allowance</Label>
+                    <Input id="allowance" type="number" placeholder="e.g. 7,000" value={formData.allowance} onChange={(e) => setFormData({...formData, allowance: e.target.value})} />
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -455,7 +825,7 @@ export default function NewCertificatePage() {
                   onValueChange={(v) => setFormData({...formData, employmentStatus: v})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder="Select Employment Status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
@@ -484,7 +854,7 @@ export default function NewCertificatePage() {
                   <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
                   <Input 
                     id="purpose" 
-                    placeholder={formData.certificateType === "Certificate of Employment" ? "e.g. employment purposes only" : "e.g. Bank loan application"} 
+                    placeholder={"e.g. Bank loan application"} 
                     value={formData.purposeOfCertificate}
                     onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
                   />
@@ -499,6 +869,7 @@ export default function NewCertificatePage() {
                 <FileText className="mr-2 h-5 w-5" />
                 Generate & Queue
               </Button>
+              
             </CardFooter>
           </Card>
         </div>
@@ -507,8 +878,20 @@ export default function NewCertificatePage() {
           <Card className="shadow-sm border min-h-[800px] flex flex-col overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between border-b pb-6 bg-muted/5">
               <CardTitle className="font-headline font-bold text-2xl">Output Preview</CardTitle>
-              {draftedNarrative && (
+              {isDrafted && (
+                <div className="mt-6 text-center animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  
+                </div>
+              )}{draftedNarrative && (
                 <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleDownloadWord} className="font-bold">
+                    <Download className="h-4 w-4 mr-2" />
+                    DOCX
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleDownloadExcel} className="font-bold">
+                    <Download className="h-4 w-4 mr-2" />
+                    XLSX
+                  </Button>
                   <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="font-bold">
                     <Download className="h-4 w-4 mr-2" />
                     PDF
@@ -523,62 +906,50 @@ export default function NewCertificatePage() {
             <CardContent className="flex-1 p-0 bg-white flex flex-col">
               {draftedNarrative ? (
                 <div className="flex-1 flex flex-col">
-                  <div className="p-8 space-y-4 flex-1">
-                    <div className="max-w-2xl mx-auto space-y-4">
-                      {/* Header Simulation */}
-                      <div className="border-b-2 border-[#0f326e] pb-3 mb-4 flex justify-between items-end">
-                        <div>
-                          <h3 className="text-xl font-bold text-[#0f326e] italic">callbox</h3>
-                          <p className="text-[8px] font-bold opacity-50 uppercase">ContactDB, Inc.</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[8px] font-bold uppercase tracking-widest text-[#0f326e]">Lead Management & Sales Support</p>
-                        </div>
-                      </div>
+                  <div className="p-4 space-y-4 flex-1">
+                    <div className="max-w-2xl mx-auto">
+                      <img src="/header.jpg" alt="Document Header" className="w-full mb-8" />
 
                       {draftedNarrative.split('\n').map((line, i) => {
                         if (line.trim() === "") return <div key={i} className="h-2" />;
                         
-                        const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION"]
+                        // NOTE: The logic for titles and special lines remains for text formatting within the narrative.
+                        const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION", "CERTIFICATE OF EMPLOYMENT (STANDARD COE)", "CERTIFICATE OF EMPLOYMENT (COE WITH COMPENSATION)"]
                         const isTitle = titles.includes(line.trim().toUpperCase()) || titles.includes(line.trim());
                         const isIssuedLine = line.includes("Issued this");
+                        const isFirstParagraph = line.startsWith("This is to certify that");
+                        const possessivePronoun = formData.salutation === "Mr." ? "his" : "her";
+                        const compensationIntroLine = `${possessivePronoun.charAt(0).toUpperCase() + possessivePronoun.slice(1)} monthly compensation is as follows:`;
+                        const isCompensationIntro = line.trim() === compensationIntroLine;
                         
                         return (
                           <p 
                             key={i} 
                             className={cn(
-                              "text-[10px] leading-[1.4] font-medium font-body text-foreground",
-                              isTitle ? "text-center font-bold uppercase tracking-wider mb-4 text-lg" : "text-justify",
-                              isIssuedLine ? "mt-6 font-semibold italic" : ""
+                              "text-[11px] leading-[1.4] font-medium font-body text-foreground",
+                              isTitle ? "text-center font-bold uppercase tracking-wider mb-6 text-lg" : (isFirstParagraph ? "" : "text-justify"),
+                              isIssuedLine ? "mt-3 font-semibold" : "",
+                              isCompensationIntro ? "font-bold italic" : ""
                             )}
-                          >
-                            {line}
+                          > 
+                            {line.trim().toUpperCase() === "CERTIFICATION" ? "C E R T I F I C A T I O N" : line}
                           </p>
                         );
                       })}
 
                       {/* Signature Simulation */}
-                      <div className="mt-8 pt-4">
-                        <div className="w-56 border-t border-muted-foreground/30 pt-1">
-                          <p className="font-bold text-base">Orwill Jane M. Linaza</p>
-                          <p className="text-[9px] font-bold">People Operations Officer | HR & Administrator</p>
+                      <div className="mt-12 pt-10">
+                        <img src="/sign.png" alt="Signature" className="h-10"/>
+                        <div className="w-56 pt-1">
+                          <p className="font-bold text-sm">Orwill Jane M. Linaza</p>
+                          <p className="text-[12px] font-bold">People Operations Officer</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Footer Simulation */}
-                  <div className="border-t border-muted-foreground/10 p-4 bg-muted/5">
-                    <div className="grid grid-cols-6 gap-1">
-                      {FOOTER_DATA.map((item, i) => (
-                        <div key={i} className="space-y-0.5">
-                          <p className="text-[7px] font-bold uppercase text-muted-foreground">{item.city}</p>
-                          <p className="text-[6px] leading-tight text-muted-foreground/70">{item.address}</p>
-                          {item.phone && <p className="text-[6px] font-medium text-muted-foreground/70">{item.phone}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <img src="/footer.jpg" alt="Document Footer" className="w-full mt-auto" />
                 </div>
               ) : (
                 <div className="h-full min-h-[450px] flex-1 flex flex-col items-center justify-center text-center p-12 opacity-30">

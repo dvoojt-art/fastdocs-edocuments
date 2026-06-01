@@ -55,7 +55,7 @@ export default function HomePage() {
                 </span>
               </span>
               x Davao <br />
-              e-Documents
+              e-Documents Portal
             </h1>
             <p className="mx-auto max-w-[600px] text-lg md:text-xl font-medium leading-relaxed opacity-80 mb-10">
               The centralized hub to request and access official HR documents and certificates instantly without manual typing!

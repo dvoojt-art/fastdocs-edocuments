@@ -70,6 +70,8 @@ export default function NewEmployeePage() {
     }
   }
 
+  
+
   return (
     <div className="max-w-2xl mx-auto space-y-8 pb-20">
       <div className="flex items-center gap-4">
@@ -97,7 +99,7 @@ export default function NewEmployeePage() {
                 <Label htmlFor="firstName" className="font-bold">First Name*</Label>
                 <Input 
                   id="firstName" 
-                  placeholder="e.g. Juan" 
+                  placeholder="e.g. Daryl" 
                   className="h-12"
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
@@ -108,7 +110,7 @@ export default function NewEmployeePage() {
                 <Label htmlFor="lastName" className="font-bold">Last Name*</Label>
                 <Input 
                   id="lastName" 
-                  placeholder="e.g. Dela Cruz" 
+                  placeholder="e.g. Cortes" 
                   className="h-12"
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
@@ -122,7 +124,7 @@ export default function NewEmployeePage() {
               <Input 
                 id="email" 
                 type="email"
-                placeholder="juan@callboxinc.com" 
+                placeholder="daryl@callboxinc.com" 
                 className="h-12"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
