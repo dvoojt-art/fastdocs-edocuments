@@ -1,12 +1,125 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { DashboardSidebar } from "@/components/layout/dashboard-sidebar"
-import { Separator } from "@/components/ui/separator"
+'use client';
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
+import { Separator } from "@/components/ui/separator";
+import { useUser, useFirestore, useAuth } from "@/firebase";
+import { Loader2, ShieldAlert, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { signOut } from "firebase/auth";
+
+const SUPER_ADMIN_EMAIL = "admin@callboxinc.com";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { user, loading: authLoading } = useUser();
+  const db = useFirestore();
+  const auth = useAuth();
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    async function checkAuthorization() {
+      if (authLoading) return;
+      
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const cleanEmail = user.email?.trim().toLowerCase();
+      if (!cleanEmail) {
+        setAuthorized(false);
+        return;
+      }
+
+      // Hardcoded Super Admin bypass (case-insensitive)
+      if (cleanEmail === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        setAuthorized(true);
+        sessionStorage.setItem(`fd_auth_${cleanEmail}`, "true");
+        return;
+      }
+
+      // Check session cache first for near-instant verification
+      const cacheKey = `fd_auth_${cleanEmail}`;
+      const cachedStatus = sessionStorage.getItem(cacheKey);
+      
+      if (cachedStatus === "true") {
+        setAuthorized(true);
+        // We still run the background check to be sure, but we don't block the UI
+      }
+
+      try {
+        const adminQuery = query(collection(db, "adminUsers"), where("email", "==", cleanEmail), limit(1));
+        const adminSnap = await getDocs(adminQuery);
+        
+        const isAuth = !adminSnap.empty;
+        setAuthorized(isAuth);
+        
+        // Update cache
+        sessionStorage.setItem(cacheKey, isAuth.toString());
+        
+        if (!isAuth) {
+          // If revoked, clear cache
+          sessionStorage.removeItem(cacheKey);
+        }
+      } catch (error) {
+        console.error("Authorization check failed", error);
+        // If we have a cached success, trust it for this render if network fails
+        if (cachedStatus !== "true") {
+          setAuthorized(false);
+        }
+      }
+    }
+
+    checkAuthorization();
+  }, [user, authLoading, db, router]);
+
+  const handleSignOut = async () => {
+    if (user) {
+      sessionStorage.removeItem(`fd_auth_${user.email?.trim().toLowerCase()}`);
+    }
+    await signOut(auth);
+    router.push("/login");
+  };
+
+  if (authLoading || (authorized === null)) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center gap-4 bg-background">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <p className="font-bold uppercase text-[10px] tracking-[0.3em] opacity-40">Verifying Security Clearance...</p>
+      </div>
+    );
+  }
+
+  if (authorized === false) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-[#0f326e] p-6">
+        <div className="max-w-md w-full bg-background rounded-3xl p-10 text-center shadow-none space-y-6">
+          <div className="mx-auto bg-destructive h-20 w-20 rounded-full flex items-center justify-center text-destructive-foreground">
+            <ShieldAlert className="h-10 w-10" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-headline font-bold uppercase tracking-tight">Access Denied</h2>
+            <p className="font-bold opacity-60 uppercase text-[10px] tracking-widest">Unauthorized User</p>
+          </div>
+          <p className="text-sm font-medium leading-relaxed opacity-80">
+            Your account ({user?.email}) has not been authorized to access the FastDocs Console. Please contact a Super Admin to whitelist your email address.
+          </p>
+          <Button onClick={handleSignOut} className="w-full h-12 font-bold uppercase shadow-none">
+            <LogOut className="mr-2 h-4 w-4" /> Sign Out
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <DashboardSidebar />

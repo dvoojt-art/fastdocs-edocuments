@@ -12,10 +12,12 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden">
       {/* Floating Circles layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
-        <div className="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-primary/10 blur-3xl animate-float" style={{ animationDelay: '0s' }}></div>
-        <div className="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-[#0f326e]/5 blur-3xl animate-float" style={{ animationDelay: '1.5s' }}></div>
-        <div className="absolute top-[50%] left-[5%] w-5 h-5 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-[30%] left-[20%] w-6 h-6 rounded-full bg-primary animate-float" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute top-[50%] left-[90%] w-5 h-5 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[45%] left-[5%] w-7 h-7 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[25%] right-[15%] w-16 h-16 rounded-full bg-gray-400/50 animate-float" style={{ animationDelay: '2.5s' }}></div>
+        <div className="absolute bottom-[40%] left-[30%] w-8 h-8 rounded-full bg-gray-400/50 animate-float" style={{ animationDelay: '3.5s' }}></div>
+        <div className="absolute top-[60%] right-[25%] w-12 h-12 rounded-full bg-yellow-500/50 animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-[80%] left-[10%] w-20 h-20 rounded-full bg-yellow-500/50 animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
       {/* Navigation */}
@@ -30,9 +32,6 @@ export default function HomePage() {
           <span className="text-[9px] font-bold uppercase tracking-[0.3em] opacity-60 ml-12 -mt-1">Callbox Inc. Davao</span>
         </div>
         <nav className="ml-auto flex gap-6 items-center">
-          <Button asChild variant="ghost" className="rounded-full font-bold text-white hover:bg-white/10">
-            <Link href="/login">Login</Link>
-          </Button>
           <Button asChild size="lg" className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-none">
             <Link href="#benefits">Learn More</Link>
           </Button>
@@ -100,20 +99,20 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="w-full border-t border-foreground/10 py-10 px-6 relative z-10 bg-background">
+      <footer className="w-full border-t border-white/10 py-10 px-6 relative z-10 bg-[#0f326e] text-white">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="bg-primary h-6 w-6 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xs">
               F
             </div>
-            <span className="font-headline font-bold text-lg text-[#0f326e]">FastDocs</span>
+            <span className="font-headline font-bold text-lg">FastDocs</span>
           </div>
-          <p className="text-sm font-medium opacity-60 italic">
+          <p className="text-sm font-medium text-white/60 italic">
             Empowering the Davao workforce through digital transformation.
           </p>
           <nav className="flex gap-8">
-            <Link className="text-sm font-bold hover:underline underline-offset-4" href="#">Terms</Link>
-            <Link className="text-sm font-bold hover:underline underline-offset-4" href="#">Privacy</Link>
+            <Link className="text-sm font-bold hover:underline underline-offset-4 text-white/80 hover:text-white" href="#">Terms</Link>
+            <Link className="text-sm font-bold hover:underline underline-offset-4 text-white/80 hover:text-white" href="#">Privacy</Link>
           </nav>
         </div>
       </footer>

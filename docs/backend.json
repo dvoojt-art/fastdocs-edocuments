@@ -47,6 +47,18 @@
         "emailNotifications": { "type": "boolean" },
         "auditTrail": { "type": "boolean" }
       }
+    },
+    "AdminUser": {
+      "title": "Admin User",
+      "description": "An administrative user of the FastDocs platform.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Super Admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
     }
   },
   "auth": {
@@ -64,6 +76,10 @@
     "/settings/{settingsId}": {
       "schema": "SystemSettings",
       "description": "Global system settings."
+    },
+    "/adminUsers/{userId}": {
+      "schema": "AdminUser",
+      "description": "Collection of platform administrators."
     }
   }
 }

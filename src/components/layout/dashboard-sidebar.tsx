@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -12,7 +13,8 @@ import {
   Activity,
   LogOut,
   ChevronUp,
-  Users
+  Users,
+  ShieldAlert
 } from "lucide-react"
 
 import {
@@ -34,10 +36,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
+} from "@/components/ui/dropdown-menu"
+import { useAuth, useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { signOut } from "firebase/auth"
+import { collection, query, where } from "firebase/firestore"
 
 const data = {
   navMain: [
@@ -80,6 +82,11 @@ const data = {
       title: "System",
       items: [
         {
+          title: "User Management",
+          url: "/dashboard/users",
+          icon: ShieldAlert,
+        },
+        {
           title: "Activity",
           url: "/dashboard/logs",
           icon: Activity,
@@ -98,28 +105,17 @@ export function DashboardSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const auth = useAuth()
+  const { user } = useUser()
   const db = useFirestore()
 
-  // Get employee count
-  const employeesQuery = useMemoFirebase(() => db ? collection(db, "employees") : null, [db])
-  const { data: employees } = useCollection(employeesQuery)
-  const employeeCount = employees?.length ?? 0
+  // Fetch admin role from Firestore
+  const adminQuery = useMemoFirebase(() => {
+    if (!db || !user?.email) return null
+    return query(collection(db, "adminUsers"), where("email", "==", user.email))
+  }, [db, user?.email])
 
-  // Get total documents count
-  const documentsQuery = useMemoFirebase(() => db ? collection(db, "certificates") : null, [db])
-  const { data: documents } = useCollection(documentsQuery)
-  const documentCount = documents?.length ?? 0
-
-  // Get pending approvals count
-  const pendingQuery = useMemoFirebase(() => {
-    if (!db) return null
-    return query(
-      collection(db, "certificates"),
-      where("status", "==", "Pending")
-    )
-  }, [db])
-  const { data: pendingCerts } = useCollection(pendingQuery)
-  const pendingCount = pendingCerts?.length ?? 0
+  const { data: adminData } = useCollection(adminQuery)
+  const userRole = adminData?.[0]?.role || "HR Administrator"
 
   const handleLogout = async () => {
     try {
@@ -129,6 +125,15 @@ export function DashboardSidebar() {
       console.error("Logout failed:", error)
     }
   }
+
+  const userName = user?.displayName || user?.email?.split('@')[0] || "Admin User"
+  const userInitials = userName
+    .split(' ')
+    .filter(Boolean)
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2)
 
   return (
     <Sidebar collapsible="icon" className="border-r border-foreground/10">
@@ -164,20 +169,6 @@ export function DashboardSidebar() {
                       <Link href={item.url}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
-                        {item.title === "Employees" && (
-                          <span className="ml-auto text-xs font-bold opacity-50">({employeeCount})</span>
-                        )}
-                        {item.title === "Documents" && (
-                          <span className="ml-auto text-xs font-bold opacity-50">({documentCount})</span>
-                        )}
-                        {item.title === "HR Approval Desk" && pendingCount > 0 && (
-                          <span 
-                            className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
-                            aria-label={`${pendingCount} pending approvals`}
-                          >
-                            {pendingCount}
-                          </span>
-                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -197,11 +188,11 @@ export function DashboardSidebar() {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-                    OL
+                    {userInitials}
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Orwill Jane Linaza</span>
-                    <span className="truncate text-xs">HR Administrator</span>
+                    <span className="truncate font-semibold">{userName}</span>
+                    <span className="truncate text-xs opacity-60">{userRole}</span>
                   </div>
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
