@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { jsPDF } from "jspdf"
 import { useToast } from "@/hooks/use-toast"
 
+
 const FOOTER_DATA = [
   { city: "California", address: "4249 Balboa Blvd, #353, Encino CA 91316 USA", phone: "+1 (888) 810-7464" },
   { city: "Singapore", address: "1 Scotts Road #24-10, Shaw Centre Singapore 228208", phone: "+1 (888) 810-7464" },

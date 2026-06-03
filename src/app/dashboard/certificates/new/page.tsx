@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Header, Footer, PageSize, PageOrientation } from "docx"
 import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
@@ -17,7 +17,7 @@ import { useFirestore } from "@/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
-import { jsPDF } from "jspdf"
+import { jsPDF } from "jspdf" 
 import { generateStaticNarrative } from "./narrative-generator"
 import { cn } from "@/lib/utils"
 
@@ -99,14 +99,15 @@ export default function NewCertificatePage() {
         footerImageUrl: "/footer.jpg",
         status: "Pending",
         createdAt: serverTimestamp()
-      }).catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: "certificates",
-          operation: "create",
-          requestResourceData: formData
-        })
-        errorEmitter.emit("permission-error", permissionError)
-      })
+      }).catch((err) => {
+  console.error("Firestore error:", err)
+  
+  errorEmitter.emit("permission-error", {
+    message: err.message,
+    code: err.code,
+    full: err
+  })
+})
     }
 
     toast({
@@ -522,14 +523,11 @@ export default function NewCertificatePage() {
         sections: [
           {
             properties: {
-              pageSize: {
-                ...PageSize.A4,
-              },
               page: { // Corresponds to page margins
                 margin: {
                   top: 2880, // 1 inch
                   right: 1440, // 1 inch
-                  bottom: 1000,
+                  bottom: 0,
                   left: 1440, // 1 inch
                 },
               },
@@ -722,9 +720,12 @@ export default function NewCertificatePage() {
                 <Label htmlFor="employeeAddress" className="font-bold">Address</Label>
                 <Input 
                   id="employeeAddress" 
-                  placeholder="e.g. 123 Main St., Davao City" 
+                  placeholder="e.g. 123 Main St, Anytown" 
                   value={formData.employeeAddress}
-                  onChange={(e) => setFormData({...formData, employeeAddress: e.target.value})}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    employeeAddress: e.target.value
+                  })}
                 />
               </div>
               

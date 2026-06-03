@@ -13,11 +13,11 @@ export default function HomePage() {
       {/* Floating Circles layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0">
         <div className="absolute top-[50%] left-[90%] w-5 h-5 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-[45%] left-[5%] w-7 h-7 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[60%] left-[5%] w-7 h-7 rounded-full bg-black animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-[25%] right-[15%] w-16 h-16 rounded-full bg-gray-400/50 animate-float" style={{ animationDelay: '2.5s' }}></div>
         <div className="absolute bottom-[40%] left-[30%] w-8 h-8 rounded-full bg-gray-400/50 animate-float" style={{ animationDelay: '3.5s' }}></div>
-        <div className="absolute top-[60%] right-[25%] w-12 h-12 rounded-full bg-yellow-500/50 animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-[80%] left-[10%] w-20 h-20 rounded-full bg-yellow-500/50 animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-[60%] right-[25%] w-10 h-10 rounded-full bg-yellow-500/50 animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-[60%] left-[10%] w-20 h-20 rounded-full bg-yellow-500/50 animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
       {/* Navigation */}

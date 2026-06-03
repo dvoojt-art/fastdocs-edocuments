@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -57,7 +56,6 @@ export default function UserManagementPage() {
     role: "Admin"
   })
 
-  // Ensure form is fresh when dialog opens
   useEffect(() => {
     if (open) {
       setNewAdmin({ displayName: "", email: "", role: "Admin" })
@@ -89,28 +87,21 @@ export default function UserManagementPage() {
         email: cleanEmail,
         createdAt: serverTimestamp()
       })
-      
       toast({
         title: "Admin Authorized",
-        description: `${newAdmin.displayName} has been whitelisted. You can add another or close this window.`,
+        description: `${newAdmin.displayName} has been whitelisted.`,
       })
-      // Reset form but stay open to allow adding "more users"
-      setNewAdmin({ displayName: "", email: "", role: "Admin" })
+      setOpen(false)
     } catch (err: any) {
-      if (err.code === 'permission-denied') {
-        const permissionError = new FirestorePermissionError({
+      const permissionError = new FirestorePermissionError(
+        "Insufficient permissions to authorize new admin user.",
+        {
           path: "adminUsers",
           operation: "create",
           requestResourceData: { ...newAdmin, email: cleanEmail }
-        })
-        errorEmitter.emit("permission-error", permissionError)
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Execution Error",
-          description: err.message || "An unexpected error occurred while adding the user.",
-        })
-      }
+        }
+      )
+      errorEmitter.emit("permission-error", permissionError)
     } finally {
       setIsAdding(false)
     }
@@ -127,10 +118,13 @@ export default function UserManagementPage() {
         })
       })
       .catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: docRef.path,
-          operation: "delete"
-        })
+        const permissionError = new FirestorePermissionError(
+          `Insufficient permissions to revoke admin access at ${docRef.path}.`,
+          {
+            path: docRef.path,
+            operation: "delete"
+          }
+        )
         errorEmitter.emit("permission-error", permissionError)
       })
   }
@@ -199,18 +193,11 @@ export default function UserManagementPage() {
                 </Select>
               </div>
             </div>
-            <DialogFooter className="flex-col sm:flex-row gap-2">
-              <Button 
-                variant="ghost"
-                onClick={() => setOpen(false)}
-                className="font-bold uppercase text-xs"
-              >
-                Done
-              </Button>
+            <DialogFooter>
               <Button 
                 onClick={handleAddAdmin} 
                 disabled={isAdding || !newAdmin.email || !newAdmin.displayName}
-                className="flex-1 font-bold h-12"
+                className="w-full font-bold h-12"
               >
                 {isAdding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
                 Authorize Admin

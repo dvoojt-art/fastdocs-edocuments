@@ -255,7 +255,7 @@ export default function LoginPage() {
                     <Label htmlFor="signup-name" className="font-bold text-[11px] uppercase opacity-60">Full Name</Label>
                     <Input 
                       id="signup-name" 
-                      placeholder="e.g. Orwill Jane Linaza" 
+                      placeholder="e.g. Daryl Cortes" 
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       className="h-12"

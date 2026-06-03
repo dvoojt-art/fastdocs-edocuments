@@ -1,4 +1,3 @@
-
 export type SecurityRuleContext = {
   path: string;
   operation: 'get' | 'list' | 'create' | 'update' | 'delete' | 'write';
@@ -6,11 +5,16 @@ export type SecurityRuleContext = {
 };
 
 export class FirestorePermissionError extends Error {
-  context: SecurityRuleContext;
+  public context: SecurityRuleContext;
 
-  constructor(context: SecurityRuleContext) {
-    super(`Missing or insufficient permissions at ${context.path}`);
-    this.name = 'FirestorePermissionError';
+  constructor(
+    message: string,
+    context: SecurityRuleContext
+  ) {
+    super(message);
+    // Explicitly set the prototype to ensure proper inheritance in all environments
+    Object.setPrototypeOf(this, FirestorePermissionError.prototype);
+    this.name = "FirestorePermissionError";
     this.context = context;
   }
 }
