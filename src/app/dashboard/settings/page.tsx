@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,9 +22,9 @@ export default function SettingsPage() {
   const db = useFirestore()
   const auth = useAuth()
   const { user } = useUser()
-  
+
   const [activeTab, setActiveTab] = useState<Tab>('organization')
-  const settingsRef = doc(db, "settings", "org-config")
+  const settingsRef = useMemo(() => doc(db, "settings", "org-config"), [db])
   const { data: settings, loading: loadingSettings } = useDoc(settingsRef)
 
   const [saving, setSaving] = useState(false)
@@ -83,20 +83,27 @@ export default function SettingsPage() {
 
   const saveSettings = useCallback((data: typeof formData) => {
     if (!db) return
-    
+
     setSaving(true)
-    
+
     setDoc(settingsRef, data, { merge: true })
       .then(() => {
         setHasChanges(false)
       })
-      .catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: settingsRef.path,
-          operation: "write",
-          requestResourceData: data,
-        })
-        errorEmitter.emit("permission-error", permissionError)
+      .catch((err) => {
+        console.error(err)
+
+        errorEmitter.emit(
+          "permission-error",
+          new FirestorePermissionError(
+            `Permission denied when writing to ${settingsRef.path}.`,
+            {
+              operation: "write",
+              path: settingsRef.path,
+              requestResourceData: data,
+            }
+          )
+        )
       })
       .finally(() => {
         setSaving(false)
@@ -161,14 +168,13 @@ export default function SettingsPage() {
   const NavButton = ({ tab, icon: Icon, label }: { tab: Tab, icon: any, label: string }) => {
     const isActive = activeTab === tab
     return (
-      <Button 
-        variant={isActive ? "outline" : "ghost"} 
+      <Button
+        variant={isActive ? "outline" : "ghost"}
         onClick={() => setActiveTab(tab)}
-        className={`justify-start font-bold transition-all duration-300 group h-12 w-full ${
-          isActive 
-            ? "bg-primary text-primary-foreground border-transparent shadow-sm" 
-            : "hover:bg-primary hover:text-primary-foreground"
-        }`}
+        className={`justify-start font-bold transition-all duration-300 group h-12 w-full ${isActive
+          ? "bg-primary text-primary-foreground border-transparent shadow-sm"
+          : "hover:bg-primary hover:text-primary-foreground"
+          }`}
       >
         <Icon className={`mr-2 h-4 w-4 transition-colors ${isActive ? 'text-primary-foreground' : 'group-hover:text-white'}`} />
         {label}
@@ -224,39 +230,39 @@ export default function SettingsPage() {
                 <CardContent className="p-8 space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="companyName" className="font-bold text-xs uppercase">Organization Name</Label>
-                    <Input 
-                      id="companyName" 
-                      value={formData.companyName} 
+                    <Input
+                      id="companyName"
+                      value={formData.companyName}
                       onChange={(e) => handleChange('companyName', e.target.value)}
-                      className="h-12" 
+                      className="h-12"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="address" className="font-bold text-xs uppercase">Office Address</Label>
-                    <Input 
-                      id="address" 
-                      value={formData.address} 
+                    <Input
+                      id="address"
+                      value={formData.address}
                       onChange={(e) => handleChange('address', e.target.value)}
-                      className="h-12" 
+                      className="h-12"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="hrLead" className="font-bold text-xs uppercase">HR Lead Name</Label>
-                      <Input 
-                        id="hrLead" 
-                        value={formData.hrLead} 
+                      <Input
+                        id="hrLead"
+                        value={formData.hrLead}
                         onChange={(e) => handleChange('hrLead', e.target.value)}
-                        className="h-12" 
+                        className="h-12"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email" className="font-bold text-xs uppercase">Support Email</Label>
-                      <Input 
-                        id="email" 
-                        value={formData.supportEmail} 
+                      <Input
+                        id="email"
+                        value={formData.supportEmail}
                         onChange={(e) => handleChange('supportEmail', e.target.value)}
-                        className="h-12" 
+                        className="h-12"
                       />
                     </div>
                   </div>
@@ -273,8 +279,8 @@ export default function SettingsPage() {
                       <Label className="font-bold text-sm">Auto-Save Drafts</Label>
                       <p className="text-xs opacity-60 font-medium">Automatically save generated narratives to your vault.</p>
                     </div>
-                    <Switch 
-                      checked={formData.autoSaveDrafts} 
+                    <Switch
+                      checked={formData.autoSaveDrafts}
                       onCheckedChange={(checked) => handleChange('autoSaveDrafts', checked)}
                     />
                   </div>
@@ -284,8 +290,8 @@ export default function SettingsPage() {
                       <Label className="font-bold text-sm">Email Notifications</Label>
                       <p className="text-xs opacity-60 font-medium">Send an email alert whenever a document is generated.</p>
                     </div>
-                    <Switch 
-                      checked={formData.emailNotifications} 
+                    <Switch
+                      checked={formData.emailNotifications}
                       onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
                     />
                   </div>
@@ -295,14 +301,14 @@ export default function SettingsPage() {
                       <Label className="font-bold text-sm">Audit Trail</Label>
                       <p className="text-xs opacity-60 font-medium">Keep a detailed record of all document activities for compliance.</p>
                     </div>
-                    <Switch 
-                      checked={formData.auditTrail} 
+                    <Switch
+                      checked={formData.auditTrail}
                       onCheckedChange={(checked) => handleChange('auditTrail', checked)}
                     />
                   </div>
                 </CardContent>
                 <CardFooter className="bg-muted/30 p-8 border-t">
-                  <Button 
+                  <Button
                     onClick={() => saveSettings(formData)}
                     disabled={saving || !hasChanges}
                     className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"
@@ -321,25 +327,25 @@ export default function SettingsPage() {
               <CardContent className="p-8 space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="displayName" className="font-bold text-xs uppercase">Full Name</Label>
-                  <Input 
-                    id="displayName" 
-                    value={accountData.displayName} 
-                    onChange={(e) => setAccountData(prev => ({...prev, displayName: e.target.value}))}
-                    className="h-12" 
+                  <Input
+                    id="displayName"
+                    value={accountData.displayName}
+                    onChange={(e) => setAccountData(prev => ({ ...prev, displayName: e.target.value }))}
+                    className="h-12"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="accountEmail" className="font-bold text-xs uppercase">Email Address</Label>
-                  <Input 
-                    id="accountEmail" 
-                    value={accountData.email} 
-                    onChange={(e) => setAccountData(prev => ({...prev, email: e.target.value}))}
-                    className="h-12" 
+                  <Input
+                    id="accountEmail"
+                    value={accountData.email}
+                    onChange={(e) => setAccountData(prev => ({ ...prev, email: e.target.value }))}
+                    className="h-12"
                   />
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/30 p-8 border-t">
-                <Button 
+                <Button
                   onClick={handleAccountSave}
                   disabled={saving}
                   className="w-full h-14 font-bold text-lg shadow-sm hover:shadow-md transition-all"

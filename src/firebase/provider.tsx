@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
 import { Auth } from 'firebase/auth';
@@ -26,8 +26,10 @@ export function FirebaseProvider({
   db: Firestore;
   auth: Auth;
 }) {
+  const value = useMemo(() => ({ app, db, auth }), [app, db, auth]);
+
   return (
-    <FirebaseContext.Provider value={{ app, db, auth }}>
+    <FirebaseContext.Provider value={value}>
       <FirebaseErrorListener />
       {children}
     </FirebaseContext.Provider>
