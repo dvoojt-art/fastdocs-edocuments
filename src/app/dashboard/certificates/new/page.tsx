@@ -720,7 +720,7 @@ export default function NewCertificatePage() {
                 <Label htmlFor="employeeAddress" className="font-bold">Address</Label>
                 <Input 
                   id="employeeAddress" 
-                  placeholder="e.g. 123 Main St, Anytown" 
+                  placeholder="e.g. JP Laurel Ave., Bajada, Davao City" 
                   value={formData.employeeAddress}
                   onChange={(e) => setFormData({
                     ...formData, 
@@ -764,7 +764,7 @@ export default function NewCertificatePage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="allowance" className="font-bold">Allowance</Label>
-                    <Input id="allowance" type="number" placeholder="e.g. 7,000" value={formData.allowance} onChange={(e) => setFormData({...formData, allowance: e.target.value})} />
+                    <Input id="allowance" type="number" placeholder="e.g. 5,000" value={formData.allowance} onChange={(e) => setFormData({...formData, allowance: e.target.value})} />
                   </div>
                 </div>
               )}

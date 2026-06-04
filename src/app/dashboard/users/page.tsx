@@ -164,7 +164,7 @@ export default function UserManagementPage() {
                   id="name" 
                   value={newAdmin.displayName}
                   onChange={(e) => setNewAdmin({...newAdmin, displayName: e.target.value})}
-                  placeholder="e.g. Orwill Jane Linaza" 
+                  placeholder="e.g. Daryl Cortes" 
                 />
               </div>
               <div className="grid gap-2">

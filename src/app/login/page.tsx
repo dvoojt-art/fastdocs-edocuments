@@ -93,20 +93,24 @@ export default function LoginPage() {
       // 1. Super Admin Bypass Check
       let authorized = cleanEmail === SUPER_ADMIN_EMAIL.toLowerCase();
 
-      // 2. Database Check (if not Super Admin)
-      if (!authorized) {
-        const adminQuery = query(
-          collection(db, "adminUsers"), 
-          where("email", "==", cleanEmail), 
-          limit(1)
-        );
-        const adminSnap = await getDocs(adminQuery);
-        authorized = !adminSnap.empty;
-      }
+     // 2. Database Check (if not Super Admin)
+if (!authorized) {
+  console.log("Checking whitelist...");
+  console.log("Email:", cleanEmail);
 
-      if (!authorized) {
-        throw new Error(`Access Denied: The email address "${cleanEmail}" is not whitelisted. Please ask a Super Admin to authorize this email in User Management.`);
-      }
+  const adminQuery = query(
+    collection(db, "adminUsers"),
+    where("email", "==", cleanEmail),
+    limit(1)
+  );
+
+  const adminSnap = await getDocs(adminQuery);
+
+  console.log("Whitelist query completed");
+  console.log("Found records:", adminSnap.size);
+
+  authorized = !adminSnap.empty;
+}
 
       // 3. Create the user in Auth
       const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
@@ -121,47 +125,60 @@ export default function LoginPage() {
         description: "Your authorized account is ready. Welcome to FastDocs!",
       });
       router.push("/dashboard");
-    } catch (error: any) {
-      console.error("Signup error:", error);
-      
-      let message = error.message;
-      if (error.code === 'auth/email-already-in-use') {
-        message = "This email is already registered. Please use the Login tab to enter.";
-      } else if (error.code === 'auth/weak-password') {
-        message = "Password should be at least 6 characters.";
-      }
+      } catch (error: any) {
+    console.error("Signup error code:", error.code);
+    console.error("Signup error message:", error.message);
+    console.error("Full signup error:", error);
 
-      toast({
-        title: "Setup Failed",
-        description: message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+    let message = error.message;
+
+    if (error.code === "auth/email-already-in-use") {
+      message = "This email is already registered. Please use the Login tab to enter.";
+    } else if (error.code === "auth/weak-password") {
+      message = "Password should be at least 6 characters.";
     }
-  };
+
+    toast({
+      title: "Setup Failed",
+      description: message,
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleResetPassword = async () => {
-    const cleanResetEmail = resetEmail.trim().toLowerCase();
-    if (!cleanResetEmail) return;
-    setResetLoading(true);
-    try {
-      await sendPasswordResetEmail(auth, cleanResetEmail);
-      toast({
-        title: "Instructions Sent",
-        description: "Please check your inbox for the reset link.",
-      });
-      setIsResetDialogOpen(false);
-    } catch (error: any) {
-      toast({
-        title: "Reset Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setResetLoading(false);
-    }
-  };
+  const cleanResetEmail = resetEmail.trim().toLowerCase();
+
+  if (!cleanResetEmail) return;
+
+  setResetLoading(true);
+
+  try {
+    await sendPasswordResetEmail(auth, cleanResetEmail);
+
+    console.log("RESET SENT SUCCESSFULLY");
+     console.log("PROJECT:", auth.app.options.projectId);
+     
+    toast({
+      title: "Instructions Sent",
+      description: "Please check your inbox for the reset link.",
+    });
+
+    setIsResetDialogOpen(false);
+  } catch (e: any) {
+    console.log("RESET ERROR:", e.code, e.message);
+
+    toast({
+      title: "Reset Failed",
+      description: e.message,
+      variant: "destructive",
+    });
+  } finally {
+    setResetLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-6">
