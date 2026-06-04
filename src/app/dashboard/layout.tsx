@@ -100,7 +100,7 @@ export default function DashboardLayout({
 
   if (authorized === false) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#0f326e] p-6">
+      <div className="h-screen w-full flex items-center justify-center bg-[#07224f] p-6">
         <div className="max-w-md w-full bg-background rounded-3xl p-10 text-center shadow-none space-y-6">
           <div className="mx-auto bg-destructive h-20 w-20 rounded-full flex items-center justify-center text-destructive-foreground">
             <ShieldAlert className="h-10 w-10" />
@@ -124,7 +124,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <DashboardSidebar />
       <SidebarInset className="bg-background">
-        <header className="flex h-20 shrink-0 items-center gap-2 border-b border-foreground/10 px-6 bg-[#0f326e] text-white">
+        <header className="flex h-20 shrink-0 items-center gap-2 border-b border-foreground/10 px-6 bg-[#07224f] text-white">
           <SidebarTrigger className="-ml-1 hover:bg-white/10 hover:text-white" />
           <Separator orientation="vertical" className="mr-2 h-6 bg-white/20" />
           <div className="flex-1 flex flex-col justify-center">

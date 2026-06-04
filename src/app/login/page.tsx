@@ -184,11 +184,11 @@ if (!authorized) {
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-6">
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-0 opacity-20">
         <div className="absolute top-[10%] left-[10%] w-64 h-64 rounded-full bg-primary/20 blur-3xl"></div>
-        <div className="absolute bottom-[10%] right-[10%] w-96 h-96 rounded-full bg-[#0f326e]/10 blur-3xl"></div>
+        <div className="absolute bottom-[10%] right-[10%] w-96 h-96 rounded-full bg-[#07224f]/10 blur-3xl"></div>
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-[#0f326e] py-10 rounded-t-3xl flex flex-col items-center justify-center shadow-xl border-b border-white/10">
+        <div className="bg-[#07224f] py-10 rounded-t-3xl flex flex-col items-center justify-center shadow-xl border-b border-white/10">
           <Link href="/" className="flex flex-col items-center group">
             <div className="flex items-center gap-3">
               <div className="bg-primary h-12 w-12 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl shadow-lg">
@@ -320,7 +320,7 @@ if (!authorized) {
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4 border-t bg-[#0f326e] p-6">
+          <CardFooter className="flex flex-col gap-4 border-t bg-[#07224f] p-6">
             <Link href="/" className="text-[14px] font-bold uppercase text-white/60 hover:text-white transition-opacity text-center w-full flex items-center justify-center gap-2">
               <ArrowLeft className="h-4 w-4" /> Back to Home
             </Link>

@@ -21,7 +21,7 @@ export default function HomePage() {
       </div>
 
       {/* Navigation */}
-      <header className="px-6 h-20 flex items-center border-b border-white/10 relative z-10 bg-[#0f326e] text-white">
+      <header className="px-6 h-20 flex items-center border-b border-white/10 relative z-10 bg-[#07224f] text-white">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <div className="bg-primary h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-2xl">
@@ -41,7 +41,7 @@ export default function HomePage() {
       <main className="flex-1 relative z-10">
         <section className="w-full py-20 md:py-32 lg:py-40 px-6 text-center">
           <div className="container mx-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#0f326e] px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm text-[#0f326e] mb-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#07224f] px-4 py-1 text-sm font-bold uppercase tracking-widest bg-background/50 backdrop-blur-sm text-[#07224f] mb-8">
               <Zap className="h-4 w-4 fill-current" />
               INSTANT GENERATION
             </div>
@@ -99,7 +99,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="w-full border-t border-white/10 py-10 px-6 relative z-10 bg-[#0f326e] text-white">
+      <footer className="w-full border-t border-white/10 py-10 px-6 relative z-10 bg-[#07224f] text-white">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="bg-primary h-6 w-6 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xs">
