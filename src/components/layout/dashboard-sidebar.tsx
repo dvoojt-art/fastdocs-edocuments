@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -25,9 +24,11 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarHeaderTitle,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuBadge,
   SidebarRail,
 } from "@/components/ui/sidebar"
 
@@ -41,66 +42,6 @@ import { useAuth, useUser, useFirestore, useCollection, useMemoFirebase } from "
 import { signOut } from "firebase/auth"
 import { collection, query, where } from "firebase/firestore"
 
-const data = {
-  navMain: [
-    {
-      title: "Navigation",
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-          icon: LayoutDashboard,
-        },
-        {
-          title: "Employees",
-          url: "/dashboard/employees",
-          icon: Users,
-        },
-        {
-          title: "Documents",
-          url: "/dashboard/certificates",
-          icon: FileText,
-        },
-      ],
-    },
-    {
-      title: "Shortcuts",
-      items: [
-        {
-          title: "Quick Draft",
-          url: "/dashboard/certificates/new",
-          icon: Zap,
-        },
-        {
-          title: "HR Approval Desk",
-          url: "/dashboard/approvals",
-          icon: CheckSquare,
-        },
-      ],
-    },
-    {
-      title: "System",
-      items: [
-        {
-          title: "User Management",
-          url: "/dashboard/users",
-          icon: ShieldAlert,
-        },
-        {
-          title: "Activity",
-          url: "/dashboard/logs",
-          icon: Activity,
-        },
-        {
-          title: "Settings",
-          url: "/dashboard/settings",
-          icon: Settings,
-        },
-      ],
-    },
-  ],
-}
-
 export function DashboardSidebar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -108,14 +49,31 @@ export function DashboardSidebar() {
   const { user } = useUser()
   const db = useFirestore()
 
-  // Fetch admin role from Firestore
   const adminQuery = useMemoFirebase(() => {
     if (!db || !user?.email) return null
-    return query(collection(db, "adminUsers"), where("email", "==", user.email))
+    return query(collection(db, "adminUsers"), where("email", "==", user.email.toLowerCase()))
   }, [db, user?.email])
 
   const { data: adminData } = useCollection(adminQuery)
   const userRole = adminData?.[0]?.role || "HR Administrator"
+
+  const employeesCountQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, "employees")
+  }, [db])
+  const { data: employees } = useCollection(employeesCountQuery)
+
+  const documentsCountQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return collection(db, "certificates")
+  }, [db])
+  const { data: documents } = useCollection(documentsCountQuery)
+
+  const pendingCountQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return query(collection(db, "certificates"), where("status", "==", "Pending"))
+  }, [db])
+  const { data: pendingItems } = useCollection(pendingCountQuery)
 
   const handleLogout = async () => {
     try {
@@ -135,42 +93,62 @@ export function DashboardSidebar() {
     .toUpperCase()
     .substring(0, 2)
 
+  const navData = [
+    {
+      title: "Navigation",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Employees", url: "/dashboard/employees", icon: Users, count: employees?.length ?? 0 },
+        { title: "Documents", url: "/dashboard/certificates", icon: FileText, count: documents?.length ?? 0 },
+      ],
+    },
+    {
+      title: "Shortcuts",
+      items: [
+        { title: "Quick Draft", url: "/dashboard/certificates/new", icon: Zap },
+        { title: "HR Approval Desk", url: "/dashboard/approvals", icon: CheckSquare, count: pendingItems?.length ?? 0, variant: "primary" },
+      ],
+    },
+    {
+      title: "System",
+      items: [
+        { title: "User Management", url: "/dashboard/users", icon: ShieldAlert },
+        { title: "Activity", url: "/dashboard/logs", icon: Activity },
+        { title: "Settings", url: "/dashboard/settings", icon: Settings },
+      ],
+    },
+  ]
+
   return (
     <Sidebar collapsible="icon" className="border-r border-foreground/10">
       <SidebarHeader className="h-20 flex flex-col justify-center px-4 border-b border-foreground/10">
         <Link href="/dashboard" className="flex flex-col">
           <div className="flex items-center gap-2">
-            <div className="bg-primary h-8 w-8 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xl">
-              F
-            </div>
-            <span className="font-headline font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">
-              FastDocs
-            </span>
+            <div className="bg-primary h-8 w-8 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xl">F</div>
+            <span className="font-headline font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">FastDocs</span>
           </div>
-          <span className="text-[8px] font-bold uppercase tracking-[0.2em] opacity-60 ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">
-            Callbox Inc. Davao
-          </span>
+          <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-primary ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">Callbox Inc. Davao</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {data.navMain.map((group) => (
+        {navData.map((group) => (
           <SidebarGroup key={group.title}>
             <SidebarGroupLabel className="font-bold uppercase tracking-widest text-[10px] opacity-50">{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={pathname === item.url}
-                      tooltip={item.title}
-                      className="font-bold"
-                    >
+                    <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title} className="font-bold">
                       <Link href={item.url}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
+                    {item.count !== undefined && (
+                      <SidebarMenuBadge className={item.variant === "primary" ? "bg-primary text-primary-foreground font-bold" : "bg-muted-foreground/20 text-foreground font-bold"}>
+                        ({item.count})
+                      </SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -183,13 +161,8 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-                    {userInitials}
-                  </div>
+                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">{userInitials}</div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{userName}</span>
                     <span className="truncate text-xs opacity-60">{userRole}</span>
@@ -197,16 +170,8 @@ export function DashboardSidebar() {
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                align="start"
-                sideOffset={4}
-              >
-                <DropdownMenuItem 
-                  onClick={handleLogout} 
-                  className="cursor-pointer font-bold focus:bg-destructive focus:text-destructive-foreground"
-                >
+              <DropdownMenuContent side="top" className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-none border-2 border-foreground" align="start">
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer font-bold focus:bg-destructive focus:text-destructive-foreground">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

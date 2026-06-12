@@ -11,10 +11,14 @@ export class FirestorePermissionError extends Error {
     message: string,
     context: SecurityRuleContext
   ) {
+    // Calling super() first is mandatory in TypeScript/JavaScript classes
     super(message);
-    // Explicitly set the prototype to ensure proper inheritance in all environments
-    Object.setPrototypeOf(this, FirestorePermissionError.prototype);
+    
+    // Ensure the name is set correctly for better debugging
     this.name = "FirestorePermissionError";
     this.context = context;
+
+    // Set the prototype explicitly for extending built-in Error in some environments
+    Object.setPrototypeOf(this, FirestorePermissionError.prototype);
   }
 }

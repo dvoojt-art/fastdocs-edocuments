@@ -677,7 +677,18 @@ export default function NewCertificatePage() {
                   />
                 </div>
               </div>
-
+                  <div className="space-y-2">
+                <Label htmlFor="employeeAddress" className="font-bold">Address</Label>
+                <Input 
+                  id="employeeAddress" 
+                  placeholder="e.g. JP Laurel Ave., Bajada, Davao City" 
+                  value={formData.employeeAddress}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    employeeAddress: e.target.value
+                  })}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="position" className="font-bold">Position</Label>
                 <Select
@@ -716,18 +727,7 @@ export default function NewCertificatePage() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="employeeAddress" className="font-bold">Address</Label>
-                <Input 
-                  id="employeeAddress" 
-                  placeholder="e.g. JP Laurel Ave., Bajada, Davao City" 
-                  value={formData.employeeAddress}
-                  onChange={(e) => setFormData({
-                    ...formData, 
-                    employeeAddress: e.target.value
-                  })}
-                />
-              </div>
+              
               
               <div className="space-y-2">
                 <Label htmlFor="type" className="font-bold">Document Type</Label>

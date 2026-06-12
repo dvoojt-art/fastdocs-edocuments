@@ -196,7 +196,7 @@ if (!authorized) {
               </div>
               <span className="font-headline font-bold text-3xl tracking-tight text-white">FastDocs</span>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 mt-2">Callbox Inc. Davao</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary mt-2">Callbox Inc. Davao</span>
           </Link>
         </div>
 

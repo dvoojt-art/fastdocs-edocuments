@@ -1,11 +1,24 @@
 "use client"
 
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Zap, Activity, Clock, User, Loader2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Zap, Activity, Clock, User, Loader2, Trash2 } from "lucide-react"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, limit } from "firebase/firestore"
+import { collection, query, orderBy, limit, doc, deleteDoc } from "firebase/firestore"
+import { toast } from "sonner"
 
 export default function LogsPage() {
   const db = useFirestore()
@@ -22,6 +35,10 @@ export default function LogsPage() {
 
   const { data: certificates, loading: loadingCerts } = useCollection(certificatesQuery)
   const { data: employees, loading: loadingEmps } = useCollection(employeesQuery)
+
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [selectedLog, setSelectedLog] = useState<any | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const stats = [
     { 
@@ -55,6 +72,28 @@ export default function LogsPage() {
       minute: 'numeric',
       second: 'numeric'
     });
+  }
+
+  const handleDeleteClick = (log: any) => {
+    setSelectedLog(log)
+    setIsAlertOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedLog || !db) return
+
+    setIsDeleting(true)
+    try {
+      await deleteDoc(doc(db, "certificates", selectedLog.id))
+      toast.success(`Draft for ${selectedLog.employeeName} has been deleted.`)
+      setIsAlertOpen(false)
+      setSelectedLog(null)
+    } catch (error) {
+      console.error("Error deleting document: ", error)
+      toast.error("Failed to delete the draft. Please try again.")
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
@@ -97,12 +136,13 @@ export default function LogsPage() {
                 <TableHead className="font-bold">Date</TableHead>
                 <TableHead className="font-bold">Status</TableHead>
                 <TableHead className="font-bold">Document Type</TableHead>
+                <TableHead className="font-bold text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loadingCerts ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20">
+                  <TableCell colSpan={6} className="text-center py-20">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto opacity-20" />
                     <p className="mt-2 font-bold opacity-20 uppercase text-xs">Streaming logs...</p>
                   </TableCell>
@@ -126,12 +166,19 @@ export default function LogsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm italic font-medium">{log.certificateType}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive hover:text-destructive-foreground" onClick={() => handleDeleteClick(log)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
               {!loadingCerts && certificates?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-20 opacity-40 italic">
+                  <TableCell colSpan={6} className="text-center py-20 opacity-40 italic">
                     No activity recorded yet.
                   </TableCell>
                 </TableRow>
@@ -140,6 +187,27 @@ export default function LogsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the draft certificate for <span className="font-bold">{selectedLog?.employeeName}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {isDeleting ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...</>
+              ) : (
+                "Yes, delete it"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

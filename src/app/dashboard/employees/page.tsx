@@ -19,8 +19,11 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+import { useRouter } from "next/navigation"
+
 
 export default function EmployeesPage() {
+  const router = useRouter()
   const db = useFirestore()
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState("")
@@ -64,12 +67,13 @@ export default function EmployeesPage() {
     const docRef = doc(db, "employees", id)
     deleteDoc(docRef)
       .catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: docRef.path,
-          operation: "delete"
-        })
-        errorEmitter.emit("permission-error", permissionError)
-      })
+  const permissionError = new FirestorePermissionError({
+    path: "employees",
+    operation: "delete",
+    requestResourceData: {}
+  })
+  errorEmitter.emit("permission-error", permissionError)
+})
     
     toast({
       title: "Record Deleted",
@@ -255,9 +259,12 @@ export default function EmployeesPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem className="font-bold cursor-pointer">
-                            <Edit className="mr-2 h-4 w-4" /> Edit Profile
-                          </DropdownMenuItem>
+<DropdownMenuItem
+  onClick={() => router.push(`/dashboard/employees/edit?id=${emp.id}`)}
+>
+  <Edit className="mr-2 h-4 w-4" />
+  Edit Profile
+</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleCopyEmail(emp.email)} className="font-bold cursor-pointer">
                             <Copy className="mr-2 h-4 w-4" /> Copy Email
                           </DropdownMenuItem>
