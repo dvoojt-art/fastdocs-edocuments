@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 import { jsPDF } from "jspdf"
 
 export default function ApprovalsPage() {
@@ -115,6 +116,7 @@ export default function ApprovalsPage() {
           title: `Document ${newStatus}`,
           description: `The request has been updated successfully.`,
         })
+        setLocalPendingCerts(prev => prev.filter(cert => cert.id !== id))
       })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError(
@@ -139,6 +141,7 @@ export default function ApprovalsPage() {
           title: "Request Deleted",
           description: "The certificate request has been removed from the queue.",
         })
+        setLocalPendingCerts(prev => prev.filter(cert => cert.id !== id))
       })
       .catch((err) => {
   console.error("FIREBASE ERROR:", err)
