@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import { useFirestore } from "@/firebase"
-
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -68,15 +69,28 @@ export default function EditEmployeePage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      <div className="flex items-center gap-4">
+        <Button asChild variant="ghost" size="icon" className="hover:bg-muted">
+          <Link href="/dashboard/employees">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+        </Button>
+        <div>
+          <h2 className="text-3xl font-headline font-bold tracking-tight">
+            Edit <span className="text-primary">Employee</span>
+          </h2>
+          <p className="font-bold opacity-60 uppercase text-[10px] tracking-widest mt-1">Update team member details</p>
+        </div>
+      </div>
       <Card>
-        <CardHeader>
-          <CardTitle>Edit Employee</CardTitle>
-        </CardHeader>
+        <CardHeader className="bg-muted/30 border-b p-6">
+            <CardTitle className="font-headline font-bold text-xl uppercase">Profile Details</CardTitle>
+          </CardHeader>
 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="font-bold">First Name</Label>
+              <Label htmlFor="firstName" className="font-bold">First Name*</Label>
               <Input
                 id="firstName"
                 placeholder="First Name"
@@ -85,7 +99,7 @@ export default function EditEmployeePage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName" className="font-bold">Last Name</Label>
+              <Label htmlFor="lastName" className="font-bold">Last Name*</Label>
               <Input
                 id="lastName"
                 placeholder="Last Name"
@@ -96,7 +110,7 @@ export default function EditEmployeePage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="font-bold">Email</Label>
+            <Label htmlFor="email" className="font-bold">Email*</Label>
             <Input
               id="email"
               placeholder="Email"
@@ -105,29 +119,58 @@ export default function EditEmployeePage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="position" className="font-bold">Position</Label>
-              <Input
-                id="position"
-                placeholder="Position"
-                value={employee.position}
-                onChange={(e) => setEmployee({ ...employee, position: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="department" className="font-bold">Department</Label>
-              <Input
-                id="department"
-                placeholder="Department"
-                value={employee.department}
-                onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
-              />
-            </div>
-          </div>
+          
+          
 
           <div className="space-y-2">
-            <Label htmlFor="status" className="font-bold">Employment Status</Label>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="position" className="font-bold">Position*</Label>
+                <Select
+                  value={employee.position || ""}
+                  onValueChange={(value) =>
+                    setEmployee({
+                      ...employee,
+                      position: value,
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SDR">Sales Development Representative</SelectItem>
+                    <SelectItem value="CSM">Client Service Manager</SelectItem>
+                    <SelectItem value="IT">IT Tech Support</SelectItem>
+                    <SelectItem value="OJT">On-The-Job-Training Specialist</SelectItem>
+                  </SelectContent>
+                </Select>       
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dept" className="font-bold">Department*</Label>
+                <Select
+                  value={employee.department || ""}
+                  onValueChange={(value) =>
+                    setEmployee({
+                      ...employee,
+                      department: value,
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Sales">Sales</SelectItem>
+                    <SelectItem value="Operations">Operations</SelectItem>
+                    <SelectItem value="Engineering">Engineering</SelectItem>
+                    <SelectItem value="Human Resources">Human Resources</SelectItem>
+                    <SelectItem value="Marketing">Marketing</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Label htmlFor="status" className="font-bold">Employment Status*</Label>
             <Select value={employee.status} onValueChange={(v) => setEmployee({ ...employee, status: v })}>
               <SelectTrigger id="status">
                 <SelectValue placeholder="Select status" />
@@ -135,15 +178,16 @@ export default function EditEmployeePage() {
               <SelectContent>
                 <SelectItem value="Active">Active</SelectItem>
                 <SelectItem value="On Leave">On Leave</SelectItem>
-                <SelectItem value="On Leave">Probationary</SelectItem>
+                <SelectItem value="Prob">Probationary</SelectItem>
                 <SelectItem value="Resigned">Resigned</SelectItem>
                 <SelectItem value="End of Contract">End of Contract</SelectItem>
+                <SelectItem value="Inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Button onClick={handleSave} className="w-full">
-            Save Changes
+            Save Employee Changes
           </Button>
         </CardContent>
       </Card>

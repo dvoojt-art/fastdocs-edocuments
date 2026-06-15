@@ -20,7 +20,7 @@ import { FirestorePermissionError } from "@/firebase/errors"
 import { jsPDF } from "jspdf" 
 import { generateStaticNarrative } from "./narrative-generator"
 import { cn } from "@/lib/utils"
-
+import { createNotification } from "@/lib/notifications"
 
 const FOOTER_DATA = [
   {
@@ -77,7 +77,7 @@ export default function NewCertificatePage() {
   })
   const { toast } = useToast()
 
-  const handleDraft = () => {
+  const handleDraft = async () => {
     if (!formData.employeeName || !formData.position || !formData.startDate || !formData.endDate) {
       toast({
         title: "Missing Information",
@@ -91,29 +91,40 @@ export default function NewCertificatePage() {
     setDraftedNarrative(result)
     setIsDrafted(true)
     
-    if (db) {
-      addDoc(collection(db, "certificates"), {
+    if (!db) return
+
+    try {
+      await addDoc(collection(db, "certificates"), {
         ...formData,
         narrative: result,
         headerImageUrl: "/header.jpg",
         footerImageUrl: "/footer.jpg",
         status: "Pending",
         createdAt: serverTimestamp()
-      }).catch((err) => {
-  console.error("Firestore error:", err)
-  
-  errorEmitter.emit("permission-error", {
-    message: err.message,
-    code: err.code,
-    full: err
-  })
-})
-    }
+      });
 
-    toast({
-      title: "Draft Created",
-      description: "Document saved and sent for approval.",
-    })
+      // Trigger Notification
+      await createNotification(db, {
+        title: "New Document Drafted",
+        message: `${formData.certificateType} for ${formData.employeeName} is awaiting approval.`,
+        type: "Info",
+        priority: "HR",
+        link: "/dashboard/approvals"
+      });
+
+      toast({
+        title: "Draft Created",
+        description: "Document saved and sent for approval.",
+      });
+
+    } catch (err: any) {
+      console.error("Firestore error:", err);
+      errorEmitter.emit("permission-error", {
+        message: err.message,
+        code: err.code,
+        full: err
+      });
+    }
   }
 
   const handleCopy = () => {

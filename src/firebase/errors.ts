@@ -7,10 +7,8 @@ export type SecurityRuleContext = {
 export class FirestorePermissionError extends Error {
   public context: SecurityRuleContext;
 
-  constructor(
-    message: string,
-    context: SecurityRuleContext
-  ) {
+  constructor(message: string, context: SecurityRuleContext) {
+    
     // Calling super() first is mandatory in TypeScript/JavaScript classes
     super(message);
     

@@ -15,7 +15,7 @@ import { updateProfile, updateEmail } from "firebase/auth"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 
-type Tab = 'organization' | 'account' | 'notifications' | 'security'
+type Tab = 'organization' | 'account' | 'notification' | 'security'
 
 export default function SettingsPage() {
   const { toast } = useToast()
@@ -215,7 +215,7 @@ export default function SettingsPage() {
           <nav className="flex flex-col gap-2">
             <NavButton tab="organization" icon={Building2} label="Organization" />
             <NavButton tab="account" icon={UserCog} label="Account" />
-            <NavButton tab="notifications" icon={Bell} label="Notifications" />
+            <NavButton tab="notification" icon={Bell} label="Notification" />
             <NavButton tab="security" icon={Shield} label="Security" />
           </nav>
         </div>
@@ -358,7 +358,7 @@ export default function SettingsPage() {
           ) : (
             <Card className="shadow-sm border">
               <CardContent className="p-12 text-center opacity-40 italic font-medium">
-                The {activeTab} module is coming soon in a future update.
+                The {activeTab} is now available. Additional features will be added in future updates.
               </CardContent>
             </Card>
           )}

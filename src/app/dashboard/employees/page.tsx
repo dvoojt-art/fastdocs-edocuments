@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
 import { useRouter } from "next/navigation"
-
+import { cn } from "@/lib/utils"
 
 export default function EmployeesPage() {
   const router = useRouter()
@@ -64,16 +64,17 @@ export default function EmployeesPage() {
 
   const handleDelete = (id: string, name: string) => {
     if (!db) return
-    const docRef = doc(db, "employees", id)
-    deleteDoc(docRef)
-      .catch(async (err) => {
-  const permissionError = new FirestorePermissionError({
+    const permissionError = new FirestorePermissionError(
+  "Permission denied deleting employee",
+  {
     path: "employees",
     operation: "delete",
-    requestResourceData: {}
-  })
-  errorEmitter.emit("permission-error", permissionError)
-})
+    requestResourceData: {},
+  }
+)
+    errorEmitter.emit("permission-error", permissionError)
+
+    deleteDoc(doc(db, "employees", id))
     
     toast({
       title: "Record Deleted",
@@ -240,10 +241,15 @@ export default function EmployeesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        className={`font-bold ${
-                          emp.status === 'Active' ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'
-                        }`}
+                      <Badge
+                        className={cn("font-bold", {
+                          "bg-green-500 text-white": emp.status === "Active",
+                          "bg-yellow-500 text-white": emp.status === "On Leave",
+                          "bg-blue-500 text-white": emp.status === "Probationary",
+                          "bg-red-500 text-white": emp.status === "Resigned",
+                          "bg-gray-500 text-white": emp.status === "End of Contract",
+                          "bg-gray-400 text-white": emp.status === "Inactive",
+                        })}
                       >
                         {emp.status}
                       </Badge>
@@ -259,12 +265,12 @@ export default function EmployeesPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-<DropdownMenuItem
-  onClick={() => router.push(`/dashboard/employees/edit?id=${emp.id}`)}
->
-  <Edit className="mr-2 h-4 w-4" />
-  Edit Profile
-</DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => router.push(`/dashboard/employees/edit?id=${emp.id}`)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Profile
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleCopyEmail(emp.email)} className="font-bold cursor-pointer">
                             <Copy className="mr-2 h-4 w-4" /> Copy Email
                           </DropdownMenuItem>

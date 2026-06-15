@@ -24,7 +24,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarHeaderTitle,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,

@@ -15,6 +15,7 @@ import { useFirestore } from "@/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
+import { createNotification } from "@/lib/notifications"
 
 export default function NewEmployeePage() {
   const [loading, setLoading] = useState(false)
@@ -56,14 +57,28 @@ export default function NewEmployeePage() {
           title: "Employee Registered",
           description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
         })
+
+               
+        // Trigger Notification
+        createNotification(db, {
+          title: "New Employee Registered",
+          message: `${formData.firstName} ${formData.lastName} was added to ${formData.department} department.`,
+          type: "Success",
+          link: "/dashboard/employees"
+        });
+
+
         router.push("/dashboard/employees")
       })
       .catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: "employees",
-          operation: "create",
-          requestResourceData: formData
-        })
+        const permissionError = new FirestorePermissionError(
+          "Permission denied while creating employee",
+          {
+            path: "employees",
+            operation: "create",
+            requestResourceData: formData,
+          }
+)
         errorEmitter.emit("permission-error", permissionError)
       })
       .finally(() => setLoading(false))
@@ -135,17 +150,23 @@ export default function NewEmployeePage() {
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="position" className="font-bold">Position*</Label>
-                <Input 
-                  id="position" 
-                  placeholder="e.g. Sales Specialist" 
-                  className="h-12"
+                <Select 
                   value={formData.position}
-                  onChange={(e) => setFormData({...formData, position: e.target.value})}
-                  required
-                />
+                  onValueChange={(v) => setFormData({...formData, position: v})}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select position"/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SDR">Sales Development Representative</SelectItem>
+                    <SelectItem value="CSM">Client Service Manager</SelectItem>
+                    <SelectItem value="IT">IT Tech Support</SelectItem>
+                    <SelectItem value="OJT">On-The-Job-Training Specialist</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dept" className="font-bold">Department</Label>
+                <Label htmlFor="dept" className="font-bold">Department*</Label>
                 <Select 
                   value={formData.department}
                   onValueChange={(v) => setFormData({...formData, department: v})}
@@ -166,7 +187,7 @@ export default function NewEmployeePage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="joinDate" className="font-bold">Join Date</Label>
+                <Label htmlFor="joinDate" className="font-bold">Join Date*</Label>
                 <Input 
                   id="joinDate" 
                   type="date"
@@ -176,7 +197,7 @@ export default function NewEmployeePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status" className="font-bold">Employment Status</Label>
+                <Label htmlFor="status" className="font-bold">Employment Status*</Label>
                 <Select 
                   value={formData.status}
                   onValueChange={(v) => setFormData({...formData, status: v})}
@@ -190,6 +211,7 @@ export default function NewEmployeePage() {
                     <SelectItem value="Probationary">Probationary</SelectItem>
                     <SelectItem value="Resigned">Resigned</SelectItem>
                     <SelectItem value="End of Contract">End of Contract</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

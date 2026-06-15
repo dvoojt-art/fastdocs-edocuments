@@ -10,6 +10,7 @@ import { useUser, useFirestore, useAuth } from "@/firebase";
 import { Loader2, ShieldAlert, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "firebase/auth";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const WHITELISTED_ADMIN_EMAIL = "admin@callboxinc.com";
 
@@ -112,6 +113,9 @@ export default function DashboardLayout({
                FastDocs <span className="text-primary">Console</span>
              </h1>
              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary mt-0.5">Callbox Inc. Davao</span>
+          </div>
+          <div className="flex items-center gap-4 ml-auto">
+            <NotificationBell />
           </div>
         </header>
         <main className="p-6 bg-background min-h-screen">

@@ -58,7 +58,11 @@ export default function ApprovalsPage() {
     return query(
       collection(db, "certificates"),
       where("status", "==", "Pending"),
+
+
       orderBy("createdAt", "desc")
+
+      
     )
   }, [db])
 
@@ -118,18 +122,12 @@ export default function ApprovalsPage() {
         })
         setLocalPendingCerts(prev => prev.filter(cert => cert.id !== id))
       })
-      .catch(async (err) => {
-        const permissionError = new FirestorePermissionError(
-          `Insufficient permissions to update status at ${docRef.path}`,
-          {
-            path: docRef.path,
-            operation: "update",
-            requestResourceData: updateData
-          }
-        )
-        errorEmitter.emit("permission-error", permissionError)
+
+
+      .catch((err) => {
+        console.error("APPROVAL ERROR:", err)
       })
-  }
+        }
 
   const handleDelete = (id: string) => {
     if (!db) return
