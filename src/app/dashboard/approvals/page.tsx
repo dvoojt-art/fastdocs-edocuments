@@ -10,19 +10,8 @@ import { Check, X, Loader2, Clock, CheckCircle, XCircle, Users, Edit, Trash2, Do
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, where, orderBy, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
-import { errorEmitter } from "@/firebase/error-emitter"
-import { FirestorePermissionError } from "@/firebase/errors"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
 import { jsPDF } from "jspdf"
 
 export default function ApprovalsPage() {
@@ -588,7 +577,7 @@ export default function ApprovalsPage() {
           <Table>
             <TableHeader className="bg-muted/20">
               <TableRow>
-                <TableHead className="font-bold uppercase text-xs">NAME</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Full Name</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Document Type</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Request Date</TableHead>
                 <TableHead className="text-right font-bold uppercase text-xs">Actions</TableHead>
@@ -612,22 +601,7 @@ export default function ApprovalsPage() {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="font-bold h-9"
-                          onClick={() => handleDownloadWord(cert)}
-                        >
-                          <Download className="h-4 w-4 mr-1" /> DOCX
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="font-bold h-9"
-                          onClick={() => handleDownloadPDF(cert)}
-                        >
-                          <Download className="h-4 w-4 mr-1" /> PDF
-                        </Button>
+                        
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -686,34 +660,52 @@ export default function ApprovalsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto p-8 bg-gray-100">
-            <div className="max-w-2xl mx-auto bg-white shadow-lg p-[25mm]">
-              <img src="/header.jpg" alt="Document Header" className="w-full" />
-              <div className="my-8">
-                <div className="space-y-2">
-                  <Label className="font-bold text-xs uppercase opacity-60">Editable Narrative</Label>
-                  <Textarea
-                    className="min-h-[297mm] font-['Times_New_Roman',_serif] leading-relaxed bg-transparent border-none shadow-none focus-visible:ring-0 p-0 text-base resize-none"
-                    value={editedNarrative}
-                    onChange={(e) => setEditedNarrative(e.target.value)}
-                  />
+
+            <div className="max-w-2xl mx-auto bg-white shadow-lg relative min-h-[1122px]">
+             
+              {/* Header */}
+              <div className="absolute top-0 z-10 bg-white">
+                <img
+                  src="/header.jpg"
+                  alt="Document Header"
+                  className="w-full"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="px-[25mm] pt-20 pb-40">
+                <Textarea
+                  value={editedNarrative}
+                  onChange={(e) => setEditedNarrative(e.target.value)}
+                  className="min-h-[700px] font-['Times_New_Roman',_serif]
+                            leading-relaxed bg-transparent border-none
+                            shadow-none resize-none focus-visible:ring-0"
+                />
+
+                {/* Signature */}
+                <div className="mt-10">
+                  <img src="/sign.png" alt="Signature" className="h-10" />
+                  <p className="font-bold text-sm">
+                    Orwill Jane M. Linaza
+                  </p>
+                  <p className="text-[12px] font-bold">
+                    People Operations Officer
+                  </p>
                 </div>
               </div>
 
-              {/* Signature Simulation */}
-              <div className="mt-12 pt-10">
-                <img src="/sign.png" alt="Signature" className="h-10" />
-                <div className="w-56 pt-1">
-                  <p className="font-bold text-sm">Orwill Jane M. Linaza</p>
-                  <p className="text-[12px] font-bold">People Operations Officer</p>
-                </div>
+              {/* Footer */}
+              <div className="absolute bottom-0 left-0 right-0">
+                <img
+                  src="/footer.jpg"
+                  alt="Document Footer"
+                  className="w-full"
+                />
               </div>
+
             </div>
           </div>
-          <div className="px-8 pb-8 bg-gray-100">
-            <div className="max-w-2xl mx-auto">
-              <img src="/footer.jpg" alt="Document Footer" className="w-full mt-auto" />
-            </div>
-          </div>
+
           <DialogFooter className="p-6 border-t bg-muted/20">
             <Button variant="outline" onClick={() => setEditingCert(null)} className="font-bold h-12 shadow-none">Cancel</Button>
             <Button onClick={handleEditSave} className="font-bold h-12 px-8 shadow-none">Save Changes</Button>

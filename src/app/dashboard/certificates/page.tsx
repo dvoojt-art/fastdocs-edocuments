@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType, Header, Footer } from "docx"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { jsPDF } from "jspdf"
+import { saveAs } from "file-saver"
 import { useToast } from "@/hooks/use-toast"
 
 
@@ -123,10 +125,10 @@ export default function CertificatesPage() {
       const lines = cert.narrative.split("\n")
       let currentY = 50;
 
-      lines.forEach((line: string) => {
+      for (const line of lines) {
         if (line.trim() === "") {
           currentY += 5
-          return;
+          continue;
         }
   
         const titles = [
@@ -143,27 +145,23 @@ export default function CertificatesPage() {
         const isTitle =
           titles.includes(line.trim().toUpperCase()) ||
           titles.includes(line.trim())
-  
-        const isIssuedLine = line.includes("Issued this");
 
-        const isIndentedParagraph = 
-          line.startsWith('"Confidentiality.') || 
-          line.startsWith('"Non-Competition.') || 
-          line.startsWith('Employee shall not') || 
-          line.startsWith('Neither shall employee');
-        
+        const isIssuedLine = line.includes("Issued this");
+        const isIndentedParagraph = line.startsWith('"Confidentiality.') || line.startsWith('"Non-Competition.') || line.startsWith("Employee shall not") || line.startsWith("Neither shall employee")
+        const isRecognitionNameLine = cert.certificateType === "Certificate of Recognition" && line.trim() === `${cert.salutation} ${cert.employeeName}`.toUpperCase();
+        const isRecognitionPositionLine = cert.certificateType === "Certificate of Recognition" && line.trim() === cert.position.toUpperCase();
+        const possessivePronoun = cert.salutation === "Mr." ? "his" : "her";
+        const compensationIntroLine = `${possessivePronoun.charAt(0).toUpperCase() + possessivePronoun.slice(1)} monthly compensation is as follows:`;
+        const isCompensationIntro = line.trim() === compensationIntroLine;
         const currentMargin = isIndentedParagraph ? margin + 9 : margin;
         const currentContentWidth = isIndentedParagraph ? contentWidth - 18 : contentWidth;
   
-        // NORMAL FIXED FONT SIZE
-        if (isTitle) {
-          doc.setFontSize(18);
-        } else if (isIndentedParagraph) {
-          doc.setFontSize(9);
-        } else {
-          doc.setFontSize(9);
-        }
-  
+        if (isTitle) doc.setFontSize(18);
+        else if (isIndentedParagraph) doc.setFontSize(9);
+        else if (cert.certificateType === "Certificate of Employment (COE with Compensation)") doc.setFontSize(12);
+        else if (isRecognitionNameLine || isRecognitionPositionLine) doc.setFontSize(9);
+        else doc.setFontSize(10);
+
         const splitText = doc.splitTextToSize(line, currentContentWidth)
   
         // AUTO PAGE BREAK
@@ -184,27 +182,88 @@ export default function CertificatesPage() {
   
         if (isTitle) {
           doc.setFont("times", "bold")
-  
-          doc.text(line, pageWidth / 2, currentY, {
-            align: "center",
-          })
-  
+          const textToRender = line.trim().toUpperCase() === "CERTIFICATION" ? "C E R T I F I C A T I O N" : line;
+          doc.text(textToRender, pageWidth / 2, currentY, { align: "center" })
           currentY += 14
+        } else if (isRecognitionNameLine) {
+          doc.setFont("times", "bold");
+          doc.setFontSize(22);
+          doc.text(line, pageWidth / 2, currentY, { align: "center" });
+          currentY += 10;
+        } else if (isRecognitionPositionLine) {
+          doc.setFont("times", "normal");
+          doc.setFontSize(14);
+          doc.text(line, pageWidth / 2, currentY, { align: "center" });
+          currentY += 10;
+        } else if (isCompensationIntro) {
+          doc.setFont("times", "bolditalic");
+          doc.text(line, currentMargin, currentY);
+          currentY += 7;
+          currentY += 10;
         } else {
-          doc.setFont("times", "normal")
-  
-          doc.text(splitText, currentMargin, currentY, {
-            align: "justify",
-            maxWidth: currentContentWidth,
-          })
-  
-          currentY += splitText.length * 7
+          doc.setFont("times", "normal");
+
+          const { salutation, employeeName } = cert;
+          const fullNameWithSalutation = `${salutation} ${employeeName}`;
+          const companyNames = [
+            "Contact DB Incorporated",
+            "Confidentiality.",
+            "Non-Competition."
+          ];
+          const legalTerms = ['"Confidentiality."', '"Non-Competition."'];
+          const highlights = [fullNameWithSalutation, ...companyNames, ...legalTerms];
+
+          const renderJustifiedLineWithHighlights = (text: string, y: number) => {
+            const textLines = doc.splitTextToSize(text, currentContentWidth);
+
+            textLines.forEach((lineText: string, lineIndex: number) => {
+              const isLastLine = lineIndex === textLines.length - 1;
+              let currentX = currentMargin;
+              const words = lineText.split(' ');
+              const totalWordsWidth = doc.getTextWidth(lineText.replace(/\s/g, ''));
+              const spaceWidth = (words.length > 1 && !isLastLine)
+                ? (currentContentWidth - totalWordsWidth) / (words.length - 1)
+                : doc.getTextWidth(' ');
+
+              const highlightRegex = new RegExp(`(${highlights.map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+              const parts = lineText.split(highlightRegex).filter(Boolean);
+
+              parts.forEach(part => {
+                const isHighlight = highlights.includes(part);
+                doc.setFont("times", isHighlight ? "bold" : "normal");
+
+                const wordsInPart = part.split(' ');
+                wordsInPart.forEach((word, wordIndex) => {
+                  doc.text(word, currentX, y);
+                  currentX += doc.getTextWidth(word);
+                  if (wordIndex < wordsInPart.length - 1) {
+                    currentX += doc.getTextWidth(' ');
+                  }
+                });
+
+                if (parts.length > 1) {
+                   currentX += doc.getTextWidth(' ');
+                }
+              });
+
+              if (!isLastLine && parts.length === 1) {
+                 // Fallback for standard justification on non-highlighted lines
+                 doc.setFont("times", "normal");
+                 doc.text(lineText, currentMargin, y, { align: 'justify', maxWidth: currentContentWidth });
+              }
+
+              y += 5;
+            });
+            return y;
+          };
+
+          currentY = renderJustifiedLineWithHighlights(line, currentY);
         }
   
         if (isIssuedLine) {
           currentY += 10
         }
-      })
+      }
   
       // =========================
       // SIGNATURE
@@ -218,21 +277,21 @@ export default function CertificatesPage() {
       }
   
       // --- E-Signature (Image) ---
-      const signatureWidth = 40;
+      const signatureWidth = 50;
       const signatureHeight = 15; // Adjust as needed for aspect ratio
-      doc.addImage(signBase64, "PNG", margin, signatureY - 5, signatureWidth, signatureHeight);
+      doc.addImage(signBase64, "PNG", margin - 5, signatureY, signatureWidth, signatureHeight);
       
       // Printed name and title below the signature
       const textY = signatureY + signatureHeight;
       doc.setFont("times", "normal");
-      doc.setFontSize(11);
+      doc.setFontSize(12);
       doc.text("Orwill Jane M. Linaza", margin, textY);
       doc.text("People Operations Officer", margin, textY + 5);
       // =========================
       // ADD FOOTER
       // =========================
   
-      doc.addImage(footerBase64, "JPEG", 0, pageHeight - 35, pageWidth, 35);
+      doc.addImage(footerBase64, "JPEG", 0, pageHeight - 30, pageWidth, 23);
   
       // =========================
       // SAVE
@@ -256,6 +315,131 @@ export default function CertificatesPage() {
       })
     }
   }
+
+  const handleDownloadWord = async (cert: any) => {
+    if (!cert.narrative) return;
+
+    const getImageBuffer = async (url: string) => {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+      });
+    };
+
+    try {
+      const headerBuffer = await getImageBuffer("/header.jpg");
+      const footerBuffer = await getImageBuffer("/footer.jpg");
+      const signBuffer = await getImageBuffer("/sign.png");
+
+      const contentParagraphs = cert.narrative.split('\n').flatMap((line: string) => {
+        if (line.trim() === "") {
+          return new Paragraph({ children: [new TextRun("")] });
+        }
+
+        const isIndentedParagraph = line.startsWith('"Confidentiality.') || line.startsWith('"Non-Competition.') || line.startsWith("Employee shall not") || line.startsWith("Neither shall employee");
+        const isRecognitionNameLine = cert.certificateType === "Certificate of Recognition" && line.trim() === `${cert.salutation} ${cert.employeeName}`.toUpperCase();
+        const isRecognitionPositionLine = cert.certificateType === "Certificate of Recognition" && line.trim() === cert.position.toUpperCase();
+        const possessivePronoun = cert.salutation === "Mr." ? "his" : "her";
+        const compensationIntroLine = `${possessivePronoun.charAt(0).toUpperCase() + possessivePronoun.slice(1)} monthly compensation is as follows:`;
+        const isCompensationIntro = line.trim() === compensationIntroLine;
+        const titles = ["CERTIFICATION", "CERTIFICATE OF EMPLOYMENT", "CERTIFICATE OF TERMINATION", "CERTIFICATE OF RECOGNITION", "CERTIFICATE OF COMPLETION", "CLEARANCE CERTIFICATE", "LETTER OF RECOMMENDATION", "CERTIFICATE OF EMPLOYMENT (STANDARD COE)", "CERTIFICATE OF EMPLOYMENT (COE WITH COMPENSATION)"];
+        const isTitle = titles.includes(line.trim().toUpperCase());
+
+        if (isTitle) {
+          return new Paragraph({
+            children: [new TextRun({ 
+              text: line.trim().toUpperCase() === "CERTIFICATION" ? "C E R T I F I C A T I O N" : line, 
+              bold: true, 
+              size: 32 
+            })],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 280 },
+          });
+        }
+
+        if (isRecognitionNameLine) {
+          return new Paragraph({
+            children: [new TextRun({ text: line, bold: true, size: 44 })],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+          });
+        }
+
+        if (isRecognitionPositionLine) {
+          return new Paragraph({
+            children: [new TextRun({ text: line, size: 28 })],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+          });
+        }
+
+        if (isCompensationIntro) {
+          return new Paragraph({
+            children: [new TextRun({ text: line, bold: true, italics: true, size: 24 })],
+            alignment: AlignmentType.JUSTIFIED,
+            spacing: { after: 100 },
+          });
+        }
+
+        const { salutation, employeeName } = cert;
+        const fullNameWithSalutation = `${salutation} ${employeeName}`;
+        const companyNames = ["Contact DB Incorporated", "Confidentiality.", "Non-Competition."];
+        const legalTerms = ['"Confidentiality."', '"Non-Competition."'];
+        const highlights = [fullNameWithSalutation, ...companyNames, ...legalTerms];
+        const highlightRegex = new RegExp(`(${highlights.map(h => h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+        const parts = line.split(highlightRegex).filter(Boolean);
+
+        return new Paragraph({
+          children: parts.map(part => new TextRun({
+            text: part,
+            bold: highlights.includes(part),
+            size:
+              cert.certificateType === "Certificate of Employment (COE with Compensation)" ||
+              cert.certificateType === "Certificate of Termination"
+                ? 24
+                : isIndentedParagraph
+                ? 18
+                : 22,
+          })),
+          alignment: AlignmentType.JUSTIFIED,
+          indent: isIndentedParagraph ? { left: 720 } : undefined,
+          spacing: { after: cert.certificateType === "Certificate of Termination" ? 140 : 100 },
+        });
+      });
+
+      const signatureParagraphs = [
+        new Paragraph({
+          children: [new ImageRun({ data: signBuffer, transformation: { width: 190, height: 55 } })],
+          indent: { left: -288 },
+          spacing: { before: 400 },
+        }),
+        new Paragraph({ children: [new TextRun({ text: "Orwill Jane M. Linaza", bold: true, size: 24 })] }),
+        new Paragraph({ children: [new TextRun({ text: "People Operations Officer", bold: true, size: 24 })] }),
+      ];
+
+      const doc = new Document({
+        sections: [{
+          properties: { page: { margin: { top: 2880, right: 1440, bottom: 0, left: 1440 } } },
+          headers: { default: new Header({ children: [new Paragraph({ children: [new ImageRun({ data: headerBuffer, transformation: { width: 835, height: 135 }, floating: { verticalPosition: { offset: 0 }, horizontalPosition: { offset: 0 } } })] })] }) },
+          footers: { default: new Footer({ children: [new Paragraph({ children: [new ImageRun({ data: footerBuffer, transformation: { width: 800, height: 85 }, floating: { verticalPosition: { offset: 9705525 }, horizontalPosition: { offset: 0 } } })] })] }) },
+          children: [...contentParagraphs, ...signatureParagraphs],
+        }],
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const filename = `${cert.employeeName.replace(/\s+/g, "_")}_${cert.certificateType.replace(/\s+/g, "_")}.docx`;
+      saveAs(blob, filename);
+
+      toast({ title: "Word Document Exported", description: "The .docx file has been generated successfully." });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Export Failed", description: "Failed to generate .docx file.", variant: "destructive" });
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -284,8 +468,8 @@ export default function CertificatesPage() {
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead className="font-bold uppercase text-xs">NAME</TableHead>
-                <TableHead className="font-bold uppercase text-xs">Type</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Full Name</TableHead>
+                <TableHead className="font-bold uppercase text-xs">Document Type</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Generated Date</TableHead>
                 <TableHead className="font-bold uppercase text-xs">Status</TableHead>
                 <TableHead className="text-right font-bold uppercase text-xs">Actions</TableHead>
@@ -312,14 +496,34 @@ export default function CertificatesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="hover:bg-primary/10"
-                        onClick={() => setSelectedCert(cert)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="hover:bg-primary/10"
+                          onClick={() => setSelectedCert(cert)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        {cert.status === 'Approved' && (
+                          <>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="font-bold h-9"
+                              onClick={() => handleDownloadWord(cert)}>
+                              <Download className="h-4 w-4 mr-1" /> DOCX
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="font-bold h-9"
+                              onClick={() => handleDownloadPDF(cert)}>
+                              <Download className="h-4 w-4 mr-1" /> PDF
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

@@ -54,7 +54,7 @@ export function DashboardSidebar() {
   }, [db, user?.email])
 
   const { data: adminData } = useCollection(adminQuery)
-  const userRole = adminData?.[0]?.role || "HR Administrator"
+  const userRole = adminData?.[0]?.role || "Super Admin"
 
   const employeesCountQuery = useMemoFirebase(() => {
     if (!db) return null

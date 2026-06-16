@@ -10,12 +10,7 @@ import Link from "next/link"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, doc, deleteDoc, writeBatch, serverTimestamp } from "firebase/firestore"
 import { useState, useRef } from "react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
 import { errorEmitter } from "@/firebase/error-emitter"
 import { FirestorePermissionError } from "@/firebase/errors"
@@ -198,21 +193,19 @@ export default function EmployeesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="ml-auto text-[10px] font-bold opacity-40 uppercase">
-              CSV Headers: firstName, lastName, email, position, department, status, joinDate
-            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-muted/20">
               <TableRow>
-                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Full Name</TableHead>
-                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Position</TableHead>
-                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Department</TableHead>
-                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Status</TableHead>
-                <TableHead className="font-bold uppercase text-[10px] tracking-wider">Join Date</TableHead>
-                <TableHead className="text-right font-bold uppercase text-[10px] tracking-wider">Actions</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider">Full Name</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider">Email</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider">Position</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider">Department</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider">Status</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider">Join Date</TableHead>
+                <TableHead className="font-bold uppercase text-[15px] tracking-wider text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -228,15 +221,13 @@ export default function EmployeesPage() {
                   <TableRow key={emp.id} className="hover:bg-muted/30">
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-bold">{emp.firstName} {emp.lastName}</span>
-                        <span className="text-[10px] opacity-50 font-medium flex items-center gap-1">
-                          <Mail className="h-2 w-2" /> {emp.email}
-                        </span>
+                        <span className="font-bold">{emp.lastName}, {emp.firstName}</span>
                       </div>
                     </TableCell>
+                    <TableCell className="font-medium">{emp.email}</TableCell>
                     <TableCell className="font-medium">{emp.position}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="font-bold text-[10px] uppercase">
+                      <Badge variant="secondary" className="font-bold text-[12px] uppercase">
                         {emp.department}
                       </Badge>
                     </TableCell>

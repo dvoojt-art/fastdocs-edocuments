@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, FormEvent } from 'react';
@@ -13,14 +12,7 @@ import { Loader2, Eye, EyeOff, ShieldAlert, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth, useFirestore } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SUPER_ADMIN_EMAIL = "admin@callboxinc.com";
@@ -42,8 +34,7 @@ export default function LoginPage() {
   const db = useFirestore();
   const { toast } = useToast();
 
-  const handleLogin = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (e: FormEvent) => {e.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !password) return;
 
@@ -66,8 +57,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleSignUp = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSignUp = async (e: FormEvent) => {e.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !password || !displayName) {
       toast({
@@ -215,7 +205,7 @@ if (!authorized) {
                     <Input 
                       id="email" 
                       type="email" 
-                      placeholder="admin@callboxinc.com" 
+                      placeholder="Enter your email address" 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="h-12"

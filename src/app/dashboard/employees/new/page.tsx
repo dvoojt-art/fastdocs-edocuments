@@ -58,7 +58,6 @@ export default function NewEmployeePage() {
           description: `${formData.firstName} ${formData.lastName} has been added to the hub.`,
         })
 
-               
         // Trigger Notification
         createNotification(db, {
           title: "New Employee Registered",
@@ -85,8 +84,6 @@ export default function NewEmployeePage() {
     }
   }
 
-  
-
   return (
     <div className="max-w-2xl mx-auto space-y-8 pb-20">
       <div className="flex items-center gap-4">
@@ -111,17 +108,6 @@ export default function NewEmployeePage() {
           <CardContent className="p-8 space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="font-bold">First Name*</Label>
-                <Input 
-                  id="firstName" 
-                  placeholder="e.g. Daryl" 
-                  className="h-12"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="lastName" className="font-bold">Last Name*</Label>
                 <Input 
                   id="lastName" 
@@ -132,6 +118,18 @@ export default function NewEmployeePage() {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="font-bold">First Name*</Label>
+                <Input 
+                  id="firstName" 
+                  placeholder="e.g. Daryl" 
+                  className="h-12"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                  required
+                />
+              </div>
+              
             </div>
 
             <div className="space-y-2">
@@ -159,9 +157,9 @@ export default function NewEmployeePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="SDR">Sales Development Representative</SelectItem>
-                    <SelectItem value="CSM">Client Service Manager</SelectItem>
+                    <SelectItem value="CSM">Client Success Manager</SelectItem>
                     <SelectItem value="IT">IT Tech Support</SelectItem>
-                    <SelectItem value="OJT">On-The-Job-Training Specialist</SelectItem>
+                    <SelectItem value="OJT">On-The-Job-Training</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -175,11 +173,12 @@ export default function NewEmployeePage() {
                     <SelectValue placeholder="Select dept" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Sales">Sales</SelectItem>
-                    <SelectItem value="Operations">Operations</SelectItem>
-                    <SelectItem value="Engineering">Engineering</SelectItem>
-                    <SelectItem value="Human Resources">Human Resources</SelectItem>
-                    <SelectItem value="Marketing">Marketing</SelectItem>
+                    <SelectItem value="NAM">North America</SelectItem>
+                    <SelectItem value="APAC">Asia Pacific</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="HR">Human Resources</SelectItem>
+                    <SelectItem value="GenServ">General Services</SelectItem>
+                    <SelectItem value="IT">IT</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
