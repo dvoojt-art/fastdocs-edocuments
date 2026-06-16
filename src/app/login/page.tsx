@@ -262,7 +262,7 @@ if (!authorized) {
                     <Label htmlFor="signup-name" className="font-bold text-[11px] uppercase opacity-60">Full Name</Label>
                     <Input 
                       id="signup-name" 
-                      placeholder="e.g. Daryl Cortes" 
+                      placeholder="e.g., Daryl Cortes" 
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       className="h-12"
@@ -287,7 +287,7 @@ if (!authorized) {
                       <Input 
                         id="signup-password" 
                         type={showSignupPassword ? "text" : "password"} 
-                        placeholder="Min. 6 characters"
+                        placeholder="Minimum of 6 characters"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="h-12 pr-10"

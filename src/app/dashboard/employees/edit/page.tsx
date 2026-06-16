@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import { useFirestore } from "@/firebase"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, UserPen, Loader2} from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -89,22 +89,24 @@ export default function EditEmployeePage() {
 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="font-bold">First Name*</Label>
-              <Input
-                id="firstName"
-                placeholder="First Name"
-                value={employee.firstName}
-                onChange={(e) => setEmployee({ ...employee, firstName: e.target.value })}
-              />
-            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="lastName" className="font-bold">Last Name*</Label>
               <Input
                 id="lastName"
-                placeholder="Last Name"
+                placeholder="Last name"
                 value={employee.lastName}
                 onChange={(e) => setEmployee({ ...employee, lastName: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="firstName" className="font-bold">First Name*</Label>
+              <Input
+                id="firstName"
+                placeholder="First name"
+                value={employee.firstName}
+                onChange={(e) => setEmployee({ ...employee, firstName: e.target.value })}
               />
             </div>
           </div>
@@ -118,9 +120,6 @@ export default function EditEmployeePage() {
               onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
             />
           </div>
-
-          
-          
 
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-6">
@@ -140,9 +139,9 @@ export default function EditEmployeePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="SDR">Sales Development Representative</SelectItem>
-                    <SelectItem value="CSM">Client Service Manager</SelectItem>
+                    <SelectItem value="CSM">Client Success Manager</SelectItem>
                     <SelectItem value="IT">IT Tech Support</SelectItem>
-                    <SelectItem value="OJT">On-The-Job-Training Specialist</SelectItem>
+                    <SelectItem value="OJT">On-The-Job-Training</SelectItem>
                   </SelectContent>
                 </Select>       
               </div>
@@ -161,34 +160,71 @@ export default function EditEmployeePage() {
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Sales">Sales</SelectItem>
-                    <SelectItem value="Operations">Operations</SelectItem>
-                    <SelectItem value="Engineering">Engineering</SelectItem>
-                    <SelectItem value="Human Resources">Human Resources</SelectItem>
-                    <SelectItem value="Marketing">Marketing</SelectItem>
+                    <SelectItem value="NAM">North America</SelectItem>
+                    <SelectItem value="APAC">Asia Pacific</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="HR">Human Resources</SelectItem>
+                    <SelectItem value="GenServ">General Services</SelectItem>
+                    <SelectItem value="IT">IT</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <Label htmlFor="status" className="font-bold">Employment Status*</Label>
-            <Select value={employee.status} onValueChange={(v) => setEmployee({ ...employee, status: v })}>
-              <SelectTrigger id="status">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="On Leave">On Leave</SelectItem>
-                <SelectItem value="Prob">Probationary</SelectItem>
-                <SelectItem value="Resigned">Resigned</SelectItem>
-                <SelectItem value="End of Contract">End of Contract</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="joinDate" className="font-bold">Join Date*</Label>
+                <Input
+                  id="joinDate"
+                  type="date"
+                  className="h-12"
+                  value={employee.joinDate || ""}
+                  onChange={(e) =>
+                    setEmployee({
+                      ...employee,
+                      joinDate: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status" className="font-bold">Employment Status*</Label>
+                <Select
+                  value={employee.status || ""}
+                  onValueChange={(value) =>
+                    setEmployee({
+                      ...employee,
+                      status: value,
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select employment status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="On Leave">On Leave</SelectItem>
+                    <SelectItem value="Probationary">Probationary</SelectItem>
+                    <SelectItem value="Resigned">Resigned</SelectItem>
+                    <SelectItem value="End of Contract">End of Contract</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
-
-          <Button onClick={handleSave} className="w-full">
-            Save Employee Changes
-          </Button>
+          <Button onClick={handleSave} className="w-full h-14 font-bold text-lg shadow-none">
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                <>
+                  <UserPen className="mr-2 h-5 w-5" />
+                  Save Employee Changes
+                </>
+              )}
+            </Button>
         </CardContent>
       </Card>
     </div>

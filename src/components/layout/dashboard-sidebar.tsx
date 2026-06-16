@@ -144,7 +144,7 @@ export function DashboardSidebar() {
                       </Link>
                     </SidebarMenuButton>
                     {item.count !== undefined && (
-                      <SidebarMenuBadge className={item.variant === "primary" ? "bg-primary text-primary-foreground font-bold" : "bg-muted-foreground/20 text-foreground font-bold"}>
+                      <SidebarMenuBadge className={"variant" in item && item.variant === "primary" ? "bg-primary text-primary-foreground font-bold" : "bg-muted-foreground/20 text-foreground font-bold"}>
                         ({item.count})
                       </SidebarMenuBadge>
                     )}

@@ -111,7 +111,7 @@ export default function NewEmployeePage() {
                 <Label htmlFor="lastName" className="font-bold">Last Name*</Label>
                 <Input 
                   id="lastName" 
-                  placeholder="e.g. Cortes" 
+                  placeholder="e.g., Cortes" 
                   className="h-12"
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
@@ -122,7 +122,7 @@ export default function NewEmployeePage() {
                 <Label htmlFor="firstName" className="font-bold">First Name*</Label>
                 <Input 
                   id="firstName" 
-                  placeholder="e.g. Daryl" 
+                  placeholder="e.g., Daryl" 
                   className="h-12"
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
@@ -133,7 +133,7 @@ export default function NewEmployeePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-bold">Work Email*</Label>
+              <Label htmlFor="email" className="font-bold">Email*</Label>
               <Input 
                 id="email" 
                 type="email"
@@ -164,13 +164,13 @@ export default function NewEmployeePage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dept" className="font-bold">Department*</Label>
+                <Label htmlFor="deparment" className="font-bold">Department*</Label>
                 <Select 
                   value={formData.department}
                   onValueChange={(v) => setFormData({...formData, department: v})}
                 >
                   <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select dept" />
+                    <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="NAM">North America</SelectItem>
@@ -196,13 +196,14 @@ export default function NewEmployeePage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status" className="font-bold">Employment Status*</Label>
+                <Label htmlFor="employment status" className="font-bold">Employment Status*</Label>
                 <Select 
                   value={formData.status}
                   onValueChange={(v) => setFormData({...formData, status: v})}
                 >
+                  
                   <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder="Select employment status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
@@ -215,6 +216,7 @@ export default function NewEmployeePage() {
                 </Select>
               </div>
             </div>
+            
           </CardContent>
           <CardFooter className="bg-muted/30 p-8 border-t">
             <Button 

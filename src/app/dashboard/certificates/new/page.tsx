@@ -682,7 +682,7 @@ export default function NewCertificatePage() {
                   <Label htmlFor="employeeName" className="font-bold">Full Name</Label>
                   <Input 
                     id="employeeName" 
-                    placeholder="e.g. Daryl Cortes" 
+                    placeholder="e.g., Daryl Cortes" 
                     value={formData.employeeName}
                     onChange={(e) => setFormData({...formData, employeeName: e.target.value})}
                   />
@@ -692,7 +692,7 @@ export default function NewCertificatePage() {
                 <Label htmlFor="employeeAddress" className="font-bold">Address</Label>
                 <Input 
                   id="employeeAddress" 
-                  placeholder="e.g. JP Laurel Ave., Bajada, Davao City" 
+                  placeholder="e.g., JP Laurel Ave., Bajada, Davao City" 
                   value={formData.employeeAddress}
                   onChange={(e) => setFormData({
                     ...formData, 
@@ -707,7 +707,7 @@ export default function NewCertificatePage() {
                   onValueChange={(v) => setFormData({ ...formData, position: v })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Position" />
+                    <SelectValue placeholder="Select position" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Sales Development Representative">Sales Development Representative</SelectItem>
@@ -725,7 +725,7 @@ export default function NewCertificatePage() {
                   onValueChange={(v) => setFormData({ ...formData, department: v })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Department" />
+                    <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="North America (NAM)">North America (NAM)</SelectItem>
@@ -747,7 +747,7 @@ export default function NewCertificatePage() {
                   onValueChange={(v) => setFormData({...formData, certificateType: v})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Document Type" />
+                    <SelectValue placeholder="Select document type" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Certificate of Employment (Standard COE)">Certificate of Employment (Standard COE)</SelectItem>
@@ -768,14 +768,14 @@ export default function NewCertificatePage() {
                     <Input 
                       id="basicRate" 
                       type="number"
-                      placeholder="e.g. 20,000"
+                      placeholder="e.g., 20,000"
                       value={formData.basicRate}
                       onChange={(e) => setFormData({...formData, basicRate: e.target.value})}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="allowance" className="font-bold">Allowance</Label>
-                    <Input id="allowance" type="number" placeholder="e.g. 5,000" value={formData.allowance} onChange={(e) => setFormData({...formData, allowance: e.target.value})} />
+                    <Input id="allowance" type="number" placeholder="e.g., 5,000" value={formData.allowance} onChange={(e) => setFormData({...formData, allowance: e.target.value})} />
                   </div>
                 </div>
               )}
@@ -837,7 +837,7 @@ export default function NewCertificatePage() {
                   onValueChange={(v) => setFormData({...formData, employmentStatus: v})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Employment Status" />
+                    <SelectValue placeholder="Select employment status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Active">Active</SelectItem>
@@ -854,7 +854,7 @@ export default function NewCertificatePage() {
                   <Label htmlFor="terminationReason" className="font-bold">Reason for Termination</Label>
                   <Input 
                     id="terminationReason" 
-                    placeholder="e.g. company-wide retrenchment" 
+                    placeholder="e.g., company-wide retrenchment" 
                     value={formData.terminationReason}
                     onChange={(e) => setFormData({...formData, terminationReason: e.target.value})}
                   />
@@ -866,7 +866,7 @@ export default function NewCertificatePage() {
                   <Label htmlFor="purpose" className="font-bold">Purpose of Issuance</Label>
                   <Input 
                     id="purpose" 
-                    placeholder={"e.g. Bank loan application"} 
+                    placeholder={"e.g., Bank loan application"} 
                     value={formData.purposeOfCertificate}
                     onChange={(e) => setFormData({...formData, purposeOfCertificate: e.target.value})}
                   />

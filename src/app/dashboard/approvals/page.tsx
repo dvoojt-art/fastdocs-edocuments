@@ -570,9 +570,10 @@ export default function ApprovalsPage() {
             <Clock className="h-6 w-6 text-primary" />
             <CardTitle className="font-headline font-bold text-2xl uppercase">Pending Requests</CardTitle>
           </div>
-          <CardDescription className="opacity-60 font-medium">Items requiring your immediate attention</CardDescription>
-                    
+          <CardDescription className="opacity-80 font-medium">Items requiring your immediate attention</CardDescription>
+              
         </CardHeader>
+        <p className="text-right font-bold opacity-60 text-xs tracking-widest mt-1">Documents can be edited or deleted before approval or rejection.</p>
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-muted/20">

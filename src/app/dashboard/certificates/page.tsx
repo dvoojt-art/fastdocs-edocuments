@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Eye, Loader2, FileText, Download } from "lucide-react"
+import { Search, Eye, Loader2, FileText, Download, Users } from "lucide-react"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { useState } from "react"
@@ -453,17 +453,23 @@ export default function CertificatesPage() {
       </div>
 
       <Card className="shadow-none overflow-hidden border">
-        <CardHeader className="border-b pb-6 bg-muted/20">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search by employee name..." 
-              className="pl-10 h-12 shadow-none" 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <CardHeader className="border-b bg-muted/30 pb-6">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-primary" />
+            <div className="relative flex-1 max-w-md ml-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search employee name..." 
+                className="pl-10 h-10 bg-background"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+         
           </div>
         </CardHeader>
+         <p className="text-right font-bold opacity-60 text-xs tracking-widest mt-1">Only Approved Documents Can Be Downloaded.</p>
+  
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-muted/50">
@@ -521,6 +527,7 @@ export default function CertificatesPage() {
                               onClick={() => handleDownloadPDF(cert)}>
                               <Download className="h-4 w-4 mr-1" /> PDF
                             </Button>
+                            
                           </>
                         )}
                       </div>
