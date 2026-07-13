@@ -3,40 +3,9 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { 
-  LayoutDashboard, 
-  FileText, 
-  Settings, 
-  CheckSquare, 
-  Zap,
-  Activity,
-  LogOut,
-  ChevronUp,
-  Users,
-  ShieldAlert
-} from "lucide-react"
-
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuBadge,
-  SidebarRail,
-} from "@/components/ui/sidebar"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { LayoutDashboard, FileText, Settings, CheckSquare, Zap, Activity, LogOut, ChevronUp, Users, ShieldAlert } from "lucide-react"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuBadge, SidebarRail } from "@/components/ui/sidebar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useAuth, useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { signOut } from "firebase/auth"
 import { collection, query, where } from "firebase/firestore"
@@ -47,7 +16,6 @@ export function DashboardSidebar() {
   const auth = useAuth()
   const { user } = useUser()
   const db = useFirestore()
-
   const adminQuery = useMemoFirebase(() => {
     if (!db || !user?.email) return null
     return query(collection(db, "adminUsers"), where("email", "==", user.email.toLowerCase()))
@@ -55,25 +23,31 @@ export function DashboardSidebar() {
 
   const { data: adminData } = useCollection(adminQuery)
   const userRole = adminData?.[0]?.role || "Super Admin"
-
   const employeesCountQuery = useMemoFirebase(() => {
     if (!db) return null
     return collection(db, "employees")
   }, [db])
   const { data: employees } = useCollection(employeesCountQuery)
-
   const documentsCountQuery = useMemoFirebase(() => {
     if (!db) return null
     return collection(db, "certificates")
   }, [db])
   const { data: documents } = useCollection(documentsCountQuery)
-
   const pendingCountQuery = useMemoFirebase(() => {
     if (!db) return null
     return query(collection(db, "certificates"), where("status", "==", "Pending"))
   }, [db])
   const { data: pendingItems } = useCollection(pendingCountQuery)
+    const passwordResetQuery = useMemoFirebase(() => {
+  if (!db) return null
 
+  return query(
+    collection(db, "passwordResetRequests"),
+    where("status", "==", "Pending")
+  )
+}, [db])
+
+const { data: passwordResetRequests } = useCollection(passwordResetQuery)
   const handleLogout = async () => {
     try {
       await signOut(auth)
@@ -101,11 +75,27 @@ export function DashboardSidebar() {
         { title: "Documents", url: "/dashboard/certificates", icon: FileText, count: documents?.length ?? 0 },
       ],
     },
+    
     {
       title: "Shortcuts",
       items: [
-        { title: "Quick Draft", url: "/dashboard/certificates/new", icon: Zap },
-        { title: "HR Approval Desk", url: "/dashboard/approvals", icon: CheckSquare, count: pendingItems?.length ?? 0, variant: "primary" },
+        { 
+          title: "Quick Draft", 
+          url: "/dashboard/certificates/new", 
+          icon: Zap 
+        },
+        { 
+          title: "HR Approval Desk", 
+          url: "/dashboard/approvals", 
+          icon: CheckSquare, 
+          count: pendingItems?.length ?? 0, 
+          variant: "primary" 
+        },
+        { 
+          title: "Password Reset Requests", 
+          url: "/dashboard/password-reset", 
+          icon: ShieldAlert 
+        },
       ],
     },
     {
@@ -117,7 +107,6 @@ export function DashboardSidebar() {
       ],
     },
   ]
-
   return (
     <Sidebar collapsible="icon" className="border-r border-foreground/10">
       <SidebarHeader className="h-20 flex flex-col justify-center px-4 border-b border-foreground/10">
@@ -126,7 +115,11 @@ export function DashboardSidebar() {
             <div className="bg-primary h-8 w-8 rounded-full flex items-center justify-center text-primary-foreground font-headline font-bold text-xl">F</div>
             <span className="font-headline font-bold text-xl tracking-tight group-data-[collapsible=icon]:hidden">FastDocs</span>
           </div>
-          <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-primary ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">Callbox Inc. Davao</span>
+<<<<<<< HEAD
+          <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-primary ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em] text-primary" strokeWidth={4} /></span>x Inc. Davao</span>
+=======
+          <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-primary ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em] text-primary" strokeWidth={4} /></span>x Inc. Davao</span>        
+>>>>>>> cdaf721 (deploy)
         </Link>
       </SidebarHeader>
       <SidebarContent>
