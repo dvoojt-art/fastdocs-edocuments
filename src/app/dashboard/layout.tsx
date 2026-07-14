@@ -12,7 +12,6 @@ import { Loader2, ShieldAlert, LogOut, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "firebase/auth";
 import { NotificationBell } from "@/components/NotificationBell";
-import { ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils";
 
@@ -142,14 +141,8 @@ export default function DashboardLayout({
           <div className="flex-1 flex flex-col justify-center">
              <h1 className="font-headline font-bold text-lg uppercase tracking-tight leading-none">
                FastDocs <span className="text-primary">Console</span>
-<<<<<<< HEAD
              </h1>
              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mt-1">Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em] text-primary" strokeWidth={4} /></span>x Inc. Davao</span>
-=======
-              </h1>
-             <span className={cn("text-[9px] font-bold uppercase tracking-[0.2em] mt-0.5", role === 'admin' ? "text-white/60" : "text-muted-foreground")}>Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em]" strokeWidth={4} /></span>x Inc. Davao</span>
-             
->>>>>>> cdaf721 (deploy)
           </div>
           <div className="flex items-center gap-2 ml-auto">
             

@@ -1,15 +1,11 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-<<<<<<< HEAD
 import { 
   Zap, 
   ArrowRight, 
   ShieldCheck,
-  LayoutGrid
+  LayoutGrid, Shield, Users
 } from "lucide-react"
-=======
-import { ShieldCheck, Shield, LayoutGrid, Zap, Users } from "lucide-react"
->>>>>>> cdaf721 (deploy)
 import { ChevronUp } from "lucide-react"
 
 export default function HomePage() {
@@ -35,11 +31,7 @@ export default function HomePage() {
             <div className="flex flex-col">
               <span className="font-headline font-bold text-2xl tracking-tight text-white leading-none">FastDocs</span>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mt-1">Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em] text-primary" strokeWidth={4} /></span>x Inc. Davao</span>
-<<<<<<< HEAD
             </div>
-=======
-            </div> 
->>>>>>> cdaf721 (deploy)
           </div>
         </div>
         <nav className="ml-auto flex gap-6 items-center">

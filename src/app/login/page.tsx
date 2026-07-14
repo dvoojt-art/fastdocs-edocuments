@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Loader2, Eye, EyeOff, ArrowLeft, ChevronUp, Info } from 'lucide-react';
+import { Loader2, Eye, EyeOff, ArrowLeft, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -128,13 +128,10 @@ export default function LoginPage() {
                 FastDocs
               </span>
             </div>
-<<<<<<< HEAD
            <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-primary ml-10 -mt-0.5 group-data-[collapsible=icon]:hidden">Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em] text-primary" strokeWidth={4} /></span>x Inc. Davao</span>
-=======
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 mt-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mt-1">Callb<span className="relative inline-block">o<ChevronUp className="absolute -top-[0.2em] left-1/2 -translate-x-1/2 h-[0.5em] w-[0.5em] text-primary" strokeWidth={4} /></span>x Inc. Davao</span>
             </span>
->>>>>>> cdaf721 (deploy)
           </Link>
         </div>
 
